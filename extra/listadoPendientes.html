@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Eventos por Revisar</title>
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+        .filters { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .btn-select { padding: 6px 12px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div style="padding: 20px;">
+        <h1>Eventos por Revisar</h1>
+        <div class="filters">
+            <strong>🔍 Filtros:</strong>
+            <select>
+                <option>Últimas 24h</option>
+                <option>Última semana</option>
+            </select>
+            <select>
+                <option>Magnitud >3.5</option>
+                <option>Magnitud >4.0</option>
+            </select>
+            <button style="margin-left: 10px;">Aplicar</button>
+        </div>
+        <table>
+            <thead>
+                <tr style="background-color: #2c3e50; color: white;">
+                    <th>Fecha/Hora</th>
+                    <th>Ubicación</th>
+                    <th>Magnitud</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>24/04/2025 00:23:10</td>
+                    <td>12.34°S, 76.12°W</td>
+                    <td>4.2</td>
+                    <td><button class="btn-select" onclick="window.location.href='detalleEvento.html'">Seleccionar</button></td>
+                </tr>
+                <tr>
+                    <td>23/04/2025 22:45:33</td>
+                    <td>11.89°S, 77.04°W</td>
+                    <td>3.8</td>
+                    <td><button class="btn-select" onclick="window.location.href='detalleEvento.html'">Seleccionar</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
