@@ -1,3 +1,9 @@
+package tpi.diseno.sismos.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+
 @Entity
 public class Usuario {
 
