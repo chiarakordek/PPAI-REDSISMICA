@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Entity
 public class CambioEstado {
 
+    private CambioEstadoRepository repository;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,4 +28,58 @@ public class CambioEstado {
 /** Estado que se asigna al evento sísmico tras este cambio. */
     @ManyToOne
     private Estado estado;
+
+    public CambioEstado() {
+    }
+
+    public CambioEstado(String denominacion, String nombreUnidadMedida, Double valorUmbral, LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado) {
+        this.denominacion = denominacion;
+        this.nombreUnidadMedida = nombreUnidadMedida;
+        this.valorUmbral = valorUmbral;
+        this.fechaCambioEstado = fechaCambioEstado;
+        this.eventoSismico = eventoSismico;
+        this.estado = estado;
+
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+    public String getDenominacion() { return this.denominacion; }
+
+    public void setDenominacion(String denominacion, Long id) { 
+        this.denominacion = denominacion;
+    }
+
+    public String getNombreUnidadMedida() { return nombreUnidadMedida; }
+
+    public void setNombreUnidadMedida(String nombreUnidadMedida) { 
+        this.nombreUnidadMedida = nombreUnidadMedida;
+    } 
+
+    public Double getValorUmbral() { return valorUmbral; }
+
+    public void setValorUmbral(Double valorUmbral) { this.valorUmbral = valorUmbral; }
+
+    public LocalDateTime getFechaCambioEstado() { return fechaCambioEstado; }
+
+    public void setFechaFin(LocalDateTime fechaCambioEstado) { this.fechaCambioEstado = fechaCambioEstado; }
+
+    public EventoSismico getEventoSismico() { return eventoSismico; }
+
+    public void setEventoSismico(EventoSismico eventoSismico) { this.eventoSismico = eventoSismico; }
+
+    public Estado getEstado() { return estado; }
+
+    public void setEstado(Estado estado) { this.estado = estado; }
+
+    public boolean esUltimoCambioEstado(){
+        cambiosEstado = eventoSismico.getCambiosEstado();
+        for (CambioEstado cambio : cambiosEstado) {
+            if (cambio.getFechaCambioEstado().isAfter(this.fechaCambioEstado)) {
+                return false; // Hay un cambio posterior, por lo tanto no es el último
+            }
+        }
+        return true; // No hay cambios posteriores, por lo tanto es el último
+    }
 }
