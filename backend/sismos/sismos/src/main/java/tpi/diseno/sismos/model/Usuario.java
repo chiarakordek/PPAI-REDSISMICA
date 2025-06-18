@@ -13,4 +13,22 @@ public class Usuario {
 /** Empleado asociado a este usuario. */
     @OneToOne
     private Empleado empleado;
+    public Usuario(String nombre, Empleado empleado) {
+        this.nombre = nombre;
+        this.empleado = empleado;
+    }
+    public Usuario() {
+    }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    public String getNombre() {
+        return this.nombre;
+    }
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
+    }
+    public Empleado getEmpleado() {
+        return this.empleado;
+    }
 }
