@@ -30,4 +30,48 @@ public class SerieTemporal {
 /** Lista de muestras sísmicas registradas en esta serie temporal. */
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
     private List<MuestraSismica> muestrasSismicas;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCondicionAlarma() {
+        return condicionAlarma;
+    }
+
+    public void setCondicionAlarma(String condicionAlarma) {
+        this.condicionAlarma = condicionAlarma;
+    }
+
+    public LocalDateTime getFechaHoraInicioRegistroMuestra() {
+        return fechaHoraInicioRegistroMuestra;
+    }
+
+    public void setFechaHoraInicioRegistroMuestra(LocalDateTime fechaHoraInicioRegistroMuestra) {
+        this.fechaHoraInicioRegistroMuestra = fechaHoraInicioRegistroMuestra;
+    }
+
+    public LocalDateTime getFechaHoraRegistro() {
+        return fechaHoraRegistro;
+    }
+
+    public void setFechaHoraRegistro(LocalDateTime fechaHoraRegistro) {
+        this.fechaHoraRegistro = fechaHoraRegistro;
+    }
+
+    public LocalDateTime getFrecuenciaMuestreo() {
+        return frecuenciaMuestreo;
+    }
+
+    public void setFrecuenciaMuestreo(LocalDateTime frecuenciaMuestreo) {
+        this.frecuenciaMuestreo = frecuenciaMuestreo;
+    }
+
+    public EventoSismico getEventoSismico() {
+        return eventoSismico;
+    }
 }
