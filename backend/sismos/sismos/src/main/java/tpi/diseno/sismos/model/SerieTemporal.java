@@ -31,6 +31,18 @@ public class SerieTemporal {
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
     private List<MuestraSismica> muestrasSismicas;
 
+
+    public SerieTemporal() {
+    }
+
+    public SerieTemporal(String condicionAlarma, LocalDateTime fechaHoraInicioRegistroMuestra, LocalDateTime fechaHoraRegistro, LocalDateTime frecuenciaMuestreo, EventoSismico eventoSismico) {
+        this.condicionAlarma = condicionAlarma;
+        this.fechaHoraInicioRegistroMuestra = fechaHoraInicioRegistroMuestra;
+        this.fechaHoraRegistro = fechaHoraRegistro;
+        this.frecuenciaMuestreo = frecuenciaMuestreo;
+        this.eventoSismico = eventoSismico;
+    }
+
     public Long getId() {
         return id;
     }

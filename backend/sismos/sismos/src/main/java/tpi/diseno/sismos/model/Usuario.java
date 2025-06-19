@@ -19,6 +19,7 @@ public class Usuario {
     }
     public Usuario() {
     }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }

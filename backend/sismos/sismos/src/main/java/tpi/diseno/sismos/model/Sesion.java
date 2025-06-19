@@ -23,6 +23,16 @@ public class Sesion {
     @ManyToOne
     private Usuario usuarioLogueado;
 
+    public Sesion() {
+    }
+
+    public Sesion(LocalDateTime fechaFin, LocalDateTime fechaInicio, String observaciones, Usuario usuarioLogueado) {
+        this.fechaFin = fechaFin;
+        this.fechaInicio = fechaInicio;
+        this.observaciones = observaciones;
+        this.usuarioLogueado = usuarioLogueado;
+    }
+
     public Long getId() {
         return id;
     }

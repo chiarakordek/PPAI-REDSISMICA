@@ -57,8 +57,8 @@ public class DetalleMuestraSismica {
     }
     //Metodos Diag Clases
     public DetalleMuestraSismica getDatosDetalleMuestra(){return this;}
-    
-    public TipoDeDato buscarTipoDeDato(){ return this.TipoDeDato; }
+
+    public String buscarTipoDeDato(){ return this.tipoDeDato.getDenominacion(); }
 
 
 }

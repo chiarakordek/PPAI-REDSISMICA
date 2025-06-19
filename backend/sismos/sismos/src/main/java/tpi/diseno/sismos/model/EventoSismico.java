@@ -3,6 +3,7 @@ package tpi.diseno.sismos.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 public class EventoSismico {
@@ -101,8 +102,13 @@ public class EventoSismico {
         return this.estado.esPendiente();
     }
 
-    public boolean BuscarUltimoCambioEstado(){
-        return this.cambiosEstado.BuscarUltimoCambioEstado();
+    public CambioEstado BuscarUltimoCambioEstado(){
+        for( CambioEstado cambio : cambiosEstado) {
+            if (cambio.esUltimoCambioEstado()){
+                return cambio;
+            }
+        }
+        return null;
     }
 
     public ArrayList<CambioEstado> getCambiosEstado(){

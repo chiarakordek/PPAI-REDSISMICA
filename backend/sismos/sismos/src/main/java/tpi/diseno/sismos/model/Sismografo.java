@@ -23,6 +23,16 @@ public class Sismografo {
     @ManyToOne
     private EstacionSismologica estacionSismologica;
 
+    public Sismografo() {
+    }
+
+    public Sismografo(LocalDate fechaAdquisicion, String identificadorSismografo, Integer nroSerie, EstacionSismologica estacionSismologica) {
+        this.fechaAdquisicion = fechaAdquisicion;
+        this.identificadorSismografo = identificadorSismografo;
+        this.nroSerie = nroSerie;
+        this.estacionSismologica = estacionSismologica;
+    }
+
     public Long getId() {
         return id;
     }

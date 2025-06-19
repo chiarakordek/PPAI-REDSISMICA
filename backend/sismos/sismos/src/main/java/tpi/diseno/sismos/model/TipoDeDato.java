@@ -16,6 +16,15 @@ public class TipoDeDato {
     private String nombreUnidadMedida;
     private Double valorUmbral;
 
+    public TipoDeDato() {
+    }
+
+    public TipoDeDato(String denominacion, String nombreUnidadMedida, Double valorUmbral) {
+        this.denominacion = denominacion;
+        this.nombreUnidadMedida = nombreUnidadMedida;
+        this.valorUmbral = valorUmbral;
+    }
+
     public Long getId() {
         return id;
     }
