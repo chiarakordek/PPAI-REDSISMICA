@@ -15,58 +15,35 @@ public class Estado {
     private String ambito;
     private String nombreEstado;
 
-    public Estado(){
-
+    /**Constructor */
+    public Estado() {
     }
-    public Estado(String ambito, String nombreEstado){
+
+    public Estado(String ambito, String nombreEstado) {
         this.ambito = ambito;
         this.nombreEstado = nombreEstado;
     }
+
+    //////////////// Getters y Setters
     public Long getId() {
-    return this.id;
-    }   
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getAmbito() {
-        return this.ambito;
+        return ambito;
     }
     public void setAmbito(String ambito) {
         this.ambito = ambito;
     }
+
     public String getNombreEstado() {
         return nombreEstado;
     }
     public void setNombreEstado(String nombreEstado) {
         this.nombreEstado = nombreEstado;
     }
-    
-    public boolean esAutodetectado(){
-        if(this.nombreEstado == "Autodetectado"){
-            return true;
-        }
-        return false;
-    }
-    public boolean esPendiente(){
-        if(this.nombreEstado == "Pendiente"){
-            return true;
-        }
-        return false;
-    }
-    public boolean esAmbitoEventoSismico(){
-        if(this.ambito == "EventoSismico"){
-            return true;
-        }
-        return false;
-    }
-    public boolean esBloqueadoEnRevision(){
-        if(this.nombreEstado == "BloqueadoEnRevision"){
-            return true;
-        }
-        return false;
-    }
-    public boolean esRechazado(){
-        if(this.nombreEstado == "Rechazado"){
-            return true;
-        }
-        return false;
-    }
-    
+
 }

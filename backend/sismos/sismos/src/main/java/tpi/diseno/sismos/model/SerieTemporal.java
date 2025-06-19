@@ -21,7 +21,7 @@ public class SerieTemporal {
     private String condicionAlarma;
     private LocalDateTime fechaHoraInicioRegistroMuestra;
     private LocalDateTime fechaHoraRegistro;
-    private LocalDateTime frecuenciaMuestreo;
+    private Integer frecuenciaMuestreo;
 
 /** Evento sísmico al que pertenece esta serie temporal. */
     @ManyToOne
@@ -30,4 +30,70 @@ public class SerieTemporal {
 /** Lista de muestras sísmicas registradas en esta serie temporal. */
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
     private List<MuestraSismica> muestrasSismicas;
+
+/**Constructor */
+    public SerieTemporal() {
+    }
+
+    public SerieTemporal(String condicionAlarma,
+                        LocalDateTime fechaHoraInicioRegistroMuestra,
+                        LocalDateTime fechaHoraRegistro,
+                        Integer frecuenciaMuestreo,
+                        EventoSismico eventoSismico) {
+        this.condicionAlarma = condicionAlarma;
+        this.fechaHoraInicioRegistroMuestra = fechaHoraInicioRegistroMuestra;
+        this.fechaHoraRegistro = fechaHoraRegistro;
+        this.frecuenciaMuestreo = frecuenciaMuestreo;
+        this.eventoSismico = eventoSismico;
+    }
+
+    ///////////// Getters y Setters
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCondicionAlarma() {
+        return condicionAlarma;
+    }
+    public void setCondicionAlarma(String condicionAlarma) {
+        this.condicionAlarma = condicionAlarma;
+    }
+
+    public LocalDateTime getFechaHoraInicioRegistroMuestra() {
+        return fechaHoraInicioRegistroMuestra;
+    }
+    public void setFechaHoraInicioRegistroMuestra(LocalDateTime fechaHoraInicioRegistroMuestra) {
+        this.fechaHoraInicioRegistroMuestra = fechaHoraInicioRegistroMuestra;
+    }
+
+    public LocalDateTime getFechaHoraRegistro() {
+        return fechaHoraRegistro;
+    }
+    public void setFechaHoraRegistro(LocalDateTime fechaHoraRegistro) {
+        this.fechaHoraRegistro = fechaHoraRegistro;
+    }
+
+    public Integer getFrecuenciaMuestreo() {
+        return frecuenciaMuestreo;
+    }
+    public void setFrecuenciaMuestreo(Integer frecuenciaMuestreo) {
+        this.frecuenciaMuestreo = frecuenciaMuestreo;
+    }
+
+    public EventoSismico getEventoSismico() {
+        return eventoSismico;
+    }
+    public void setEventoSismico(EventoSismico eventoSismico) {
+        this.eventoSismico = eventoSismico;
+    }
+
+    public List<MuestraSismica> getMuestrasSismicas() {
+        return muestrasSismicas;
+    }
+    public void setMuestrasSismicas(List<MuestraSismica> muestrasSismicas) {
+        this.muestrasSismicas = muestrasSismicas;
+    }
 }

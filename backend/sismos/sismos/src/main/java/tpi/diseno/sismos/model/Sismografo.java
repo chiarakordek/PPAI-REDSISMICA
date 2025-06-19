@@ -22,4 +22,52 @@ public class Sismografo {
 /** Estación sismológica donde está instalado el sismógrafo. */
     @ManyToOne
     private EstacionSismologica estacionSismologica;
+
+/**Constructor */
+    public Sismografo() {
+    }
+
+    public Sismografo(LocalDate fechaAdquisicion, String identificadorSismografo, Integer nroSerie, EstacionSismologica estacionSismologica) {
+        this.fechaAdquisicion = fechaAdquisicion;
+        this.identificadorSismografo = identificadorSismografo;
+        this.nroSerie = nroSerie;
+        this.estacionSismologica = estacionSismologica;
+    }
+
+    ///////////// Getters y Setters
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getFechaAdquisicion() {
+        return fechaAdquisicion;
+    }
+    public void setFechaAdquisicion(LocalDate fechaAdquisicion) {
+        this.fechaAdquisicion = fechaAdquisicion;
+    }
+
+    public String getIdentificadorSismografo() {
+        return identificadorSismografo;
+    }
+    public void setIdentificadorSismografo(String identificadorSismografo) {
+        this.identificadorSismografo = identificadorSismografo;
+    }
+
+    public Integer getNroSerie() {
+        return nroSerie;
+    }
+    public void setNroSerie(Integer nroSerie) {
+        this.nroSerie = nroSerie;
+    }
+
+    public EstacionSismologica getEstacionSismologica() {
+        return estacionSismologica;
+    }
+    public void setEstacionSismologica(EstacionSismologica estacionSismologica) {
+        this.estacionSismologica = estacionSismologica;
+    }
 }
+

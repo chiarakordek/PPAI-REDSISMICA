@@ -12,6 +12,7 @@ public class DetalleMuestraSismica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Double valor;
 
 /** Muestra sísmica a la que pertenece este detalle. */
@@ -22,20 +23,28 @@ public class DetalleMuestraSismica {
     @ManyToOne
     private TipoDeDato tipoDeDato;
 
-    public DetalleMuestraSismica() {}
+    /**Constructor */
+    public DetalleMuestraSismica() {
+    }
 
     public DetalleMuestraSismica(Double valor, MuestraSismica muestraSismica, TipoDeDato tipoDeDato) {
         this.valor = valor;
         this.muestraSismica = muestraSismica;
         this.tipoDeDato = tipoDeDato;
-    //GETS y SETS
-    }
-    public Long getId(){
-        return this.id;
     }
 
-    public Double getValor() { return this.valor;}
 
+    //////////////// Getters y Setters
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
     public void setValor(Double valor) {
         this.valor = valor;
     }
@@ -43,7 +52,6 @@ public class DetalleMuestraSismica {
     public MuestraSismica getMuestraSismica() {
         return muestraSismica;
     }
-
     public void setMuestraSismica(MuestraSismica muestraSismica) {
         this.muestraSismica = muestraSismica;
     }
@@ -51,14 +59,7 @@ public class DetalleMuestraSismica {
     public TipoDeDato getTipoDeDato() {
         return tipoDeDato;
     }
-
     public void setTipoDeDato(TipoDeDato tipoDeDato) {
         this.tipoDeDato = tipoDeDato;
     }
-    //Metodos Diag Clases
-    public DetalleMuestraSismica getDatosDetalleMuestra(){return this;}
-    
-    public TipoDeDato buscarTipoDeDato(){ return this.TipoDeDato; }
-
-
 }

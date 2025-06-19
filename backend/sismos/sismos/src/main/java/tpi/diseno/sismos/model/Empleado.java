@@ -18,6 +18,10 @@ public class Empleado {
     private String telefono;
     private String mail;
 
+    /**Constructor */
+    public Empleado() {
+    }
+
     public Empleado(Integer cantidadHectareas, String nombre, String apellido, String telefono, String mail) {
         this.cantidadHectareas = cantidadHectareas;
         this.nombre = nombre;
@@ -25,41 +29,47 @@ public class Empleado {
         this.telefono = telefono;
         this.mail = mail;
     }
-    public Empleado() {
+
+    //////////// Getters y Setters
+    public Long getId() {
+        return id;
     }
-    // SETS y GETS
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Integer getCantidadHectareas() {
-        return this.cantidadHectareas;
+        return cantidadHectareas;
     }
     public void setCantidadHectareas(Integer cantidadHectareas) {
         this.cantidadHectareas = cantidadHectareas;
     }
-    public Long getId() {
-        return this.id;
-    }
+
     public String getNombre() {
-        return this.nombre;
+        return nombre;
     }
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
     public String getApellido() {
-        return this.apellido;
+        return apellido;
     }
     public void setApellido(String apellido) {
         this.apellido = apellido;
     }
+
     public String getTelefono() {
-        return this.telefono;
+        return telefono;
     }
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
+
     public String getMail() {
-        return this.mail;
+        return mail;
     }
     public void setMail(String mail) {
         this.mail = mail;
     }
-
 }

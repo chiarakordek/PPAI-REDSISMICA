@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 public class CambioEstado {
 
-    private CambioEstadoRepository repository;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,6 +27,7 @@ public class CambioEstado {
     @ManyToOne
     private Estado estado;
 
+    /**Constructor */
     public CambioEstado() {
     }
 
@@ -39,47 +38,58 @@ public class CambioEstado {
         this.fechaCambioEstado = fechaCambioEstado;
         this.eventoSismico = eventoSismico;
         this.estado = estado;
-
     }
 
+
+/////////////////////////Getters y Setters
     public Long getId() {
-        return this.id;
+        return id;
     }
-    public String getDenominacion() { return this.denominacion; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public void setDenominacion(String denominacion, Long id) { 
+    public String getDenominacion() {
+        return denominacion;
+    }
+    public void setDenominacion(String denominacion) {
         this.denominacion = denominacion;
     }
 
-    public String getNombreUnidadMedida() { return nombreUnidadMedida; }
-
-    public void setNombreUnidadMedida(String nombreUnidadMedida) { 
-        this.nombreUnidadMedida = nombreUnidadMedida;
-    } 
-
-    public Double getValorUmbral() { return valorUmbral; }
-
-    public void setValorUmbral(Double valorUmbral) { this.valorUmbral = valorUmbral; }
-
-    public LocalDateTime getFechaCambioEstado() { return fechaCambioEstado; }
-
-    public void setFechaFin(LocalDateTime fechaCambioEstado) { this.fechaCambioEstado = fechaCambioEstado; }
-
-    public EventoSismico getEventoSismico() { return eventoSismico; }
-
-    public void setEventoSismico(EventoSismico eventoSismico) { this.eventoSismico = eventoSismico; }
-
-    public Estado getEstado() { return estado; }
-
-    public void setEstado(Estado estado) { this.estado = estado; }
-
-    public boolean esUltimoCambioEstado(){
-        cambiosEstado = eventoSismico.getCambiosEstado();
-        for (CambioEstado cambio : cambiosEstado) {
-            if (cambio.getFechaCambioEstado().isAfter(this.fechaCambioEstado)) {
-                return false; // Hay un cambio posterior, por lo tanto no es el último
-            }
-        }
-        return true; // No hay cambios posteriores, por lo tanto es el último
+    public String getNombreUnidadMedida() {
+        return nombreUnidadMedida;
     }
+    
+    public void setNombreUnidadMedida(String nombreUnidadMedida) {
+        this.nombreUnidadMedida = nombreUnidadMedida;
+    }
+
+    public Double getValorUmbral() {
+        return valorUmbral;
+    }
+    public void setValorUmbral(Double valorUmbral) {
+        this.valorUmbral = valorUmbral;
+    }
+
+    public LocalDateTime getFechaCambioEstado() {
+        return fechaCambioEstado;
+    }
+    public void setFechaCambioEstado(LocalDateTime fechaCambioEstado) {
+        this.fechaCambioEstado = fechaCambioEstado;
+    }
+
+    public EventoSismico getEventoSismico() {
+        return eventoSismico;
+    }
+    public void setEventoSismico(EventoSismico eventoSismico) {
+        this.eventoSismico = eventoSismico;
+    }
+
+    public Estado getEstado() {
+        return estado;
+    }
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
+
 }

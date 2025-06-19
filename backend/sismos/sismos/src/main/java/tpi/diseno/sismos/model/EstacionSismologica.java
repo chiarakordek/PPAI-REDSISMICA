@@ -20,8 +20,10 @@ public class EstacionSismologica {
     private Double longitud;
     private String nombre;
 
+    /**Constructor */
     public EstacionSismologica() {
     }
+
     public EstacionSismologica(String codigoEstacion, String documentoCertificacionAdq, LocalDateTime fechaSolicitudCertificacion, Double latitud, Double longitud, String nombre) {
         this.codigoEstacion = codigoEstacion;
         this.documentoCertificacionAdq = documentoCertificacionAdq;
@@ -30,46 +32,54 @@ public class EstacionSismologica {
         this.longitud = longitud;
         this.nombre = nombre;
     }
+
+    ///////////////// Getters y Setters
     public Long getId() {
         return id;
     }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getCodigoEstacion() {
         return codigoEstacion;
     }
     public void setCodigoEstacion(String codigoEstacion) {
         this.codigoEstacion = codigoEstacion;
     }
+
     public String getDocumentoCertificacionAdq() {
         return documentoCertificacionAdq;
     }
     public void setDocumentoCertificacionAdq(String documentoCertificacionAdq) {
         this.documentoCertificacionAdq = documentoCertificacionAdq;
     }
+
     public LocalDateTime getFechaSolicitudCertificacion() {
         return fechaSolicitudCertificacion;
     }
     public void setFechaSolicitudCertificacion(LocalDateTime fechaSolicitudCertificacion) {
         this.fechaSolicitudCertificacion = fechaSolicitudCertificacion;
     }
+
     public Double getLatitud() {
         return latitud;
     }
     public void setLatitud(Double latitud) {
         this.latitud = latitud;
     }
+
     public Double getLongitud() {
         return longitud;
     }
     public void setLongitud(Double longitud) {
         this.longitud = longitud;
     }
+
     public String getNombre() {
         return nombre;
     }
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-    public EstacionSismologica getDatosEstacion() {
-        return this;
     }
 }
