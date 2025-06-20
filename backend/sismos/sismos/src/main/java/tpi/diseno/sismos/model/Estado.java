@@ -46,4 +46,23 @@ public class Estado {
         this.nombreEstado = nombreEstado;
     }
 
+    public boolean esAmbitoEventoSismico(){
+        return "EventoSismico".equalsIgnoreCase(ambito);
+    }
+
+    public boolean esAutodetectado(){
+        return "AutoDetectado".equalsIgnoreCase(nombreEstado); 
+    }
+
+    public boolean esPendienteDeRevision(){
+        return "PendienteDeRevision".equalsIgnoreCase(nombreEstado); 
+    }
+
+    public boolean esRechazado(){
+        return "Rechazado".equalsIgnoreCase(nombreEstado);
+    }
+
+    public boolean esBloqueadoEnRevision(){
+        return "BloqueadoEnRevision".equalsIgnoreCase(ambito);
+    }
 }
