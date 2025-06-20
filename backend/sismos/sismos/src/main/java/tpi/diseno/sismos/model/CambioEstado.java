@@ -17,7 +17,8 @@ public class CambioEstado {
     private String denominacion;
     private String nombreUnidadMedida;
     private Double valorUmbral;
-    private LocalDateTime fechaCambioEstado;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
 
  /** Evento sísmico al que pertenece este cambio de estado. */
     @ManyToOne
@@ -31,28 +32,23 @@ public class CambioEstado {
     public CambioEstado() {
     }
 
-    public CambioEstado(String denominacion, String nombreUnidadMedida, Double valorUmbral, LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado) {
+    public CambioEstado(String denominacion, String nombreUnidadMedida, Double valorUmbral, LocalDateTime fechaInicio, LocalDateTime fechaFin, EventoSismico eventoSismico, Estado estado) {
         this.denominacion = denominacion;
         this.nombreUnidadMedida = nombreUnidadMedida;
         this.valorUmbral = valorUmbral;
-        this.fechaCambioEstado = fechaCambioEstado;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
         this.eventoSismico = eventoSismico;
         this.estado = estado;
     }
 
+    public Long getId() { return this.id; }
 
-/////////////////////////Getters y Setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setId(Long id) { this.id = id; }
 
-    public String getDenominacion() {
-        return denominacion;
-    }
-    public void setDenominacion(String denominacion) {
+    public String getDenominacion() { return this.denominacion; }
+
+    public void setDenominacion(String denominacion, Long id) { 
         this.denominacion = denominacion;
     }
 
@@ -71,12 +67,13 @@ public class CambioEstado {
         this.valorUmbral = valorUmbral;
     }
 
-    public LocalDateTime getFechaCambioEstado() {
-        return fechaCambioEstado;
-    }
-    public void setFechaCambioEstado(LocalDateTime fechaCambioEstado) {
-        this.fechaCambioEstado = fechaCambioEstado;
-    }
+    public LocalDateTime getFechaInicio() { return fechaInicio; }
+
+    public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
+
+    public LocalDateTime getFechaFin() { return fechaFin; }
+
+    public void setFechaFin(LocalDateTime fechaFin) { this.fechaFin = fechaFin; }
 
     public EventoSismico getEventoSismico() {
         return eventoSismico;
@@ -85,11 +82,11 @@ public class CambioEstado {
         this.eventoSismico = eventoSismico;
     }
 
-    public Estado getEstado() {
-        return estado;
-    }
-    public void setEstado(Estado estado) {
-        this.estado = estado;
-    }
+    public Estado getEstado() { return estado; }
 
+    public void setEstado(Estado estado) { this.estado = estado; }
+
+    public boolean esUltimoCambioEstado(){
+        return this.fechaFin == null;
+    }
 }

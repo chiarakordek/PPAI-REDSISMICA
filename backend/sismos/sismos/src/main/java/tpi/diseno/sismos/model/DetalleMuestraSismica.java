@@ -62,4 +62,10 @@ public class DetalleMuestraSismica {
     public void setTipoDeDato(TipoDeDato tipoDeDato) {
         this.tipoDeDato = tipoDeDato;
     }
+    //Metodos Diag Clases
+    public DetalleMuestraSismica getDatosDetalleMuestra(){return this;}
+
+    public String buscarTipoDeDato(){ return this.tipoDeDato.getDenominacion(); }
+
+
 }
