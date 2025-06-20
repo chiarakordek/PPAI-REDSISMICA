@@ -96,4 +96,20 @@ public class SerieTemporal {
     public void setMuestrasSismicas(List<MuestraSismica> muestrasSismicas) {
         this.muestrasSismicas = muestrasSismicas;
     }
+
+/////////////metodos
+    /** 
+     * Devuelve todas las muestras sísmicas asociadas a esta serie temporal. 
+     * (equivale a obtener los datos en orden cronológico).
+     */
+    public List<MuestraSismica> getDatosSerieTemporal() {
+        return this.muestrasSismicas;
+    }
+
+    /** 
+     * Devuelve todas las muestras para búsquedas o visualización. 
+     */
+    public List<MuestraSismica> buscarMuestrasSismicas() {
+        return this.muestrasSismicas;
+    }
 }

@@ -62,4 +62,19 @@ public class DetalleMuestraSismica {
     public void setTipoDeDato(TipoDeDato tipoDeDato) {
         this.tipoDeDato = tipoDeDato;
     }
+
+/////metodos
+/** *
+     * Devuelve el valor registrado en esta muestra. 
+     */
+    public Double getDatosDetalleMuestra() {
+        return this.valor;
+    }
+
+    /**
+     * Devuelve el tipo de dato al que corresponde esta muestra. 
+     */
+    public TipoDeDato buscarTipoDeDato() {
+        return this.tipoDeDato;
+    }
 }

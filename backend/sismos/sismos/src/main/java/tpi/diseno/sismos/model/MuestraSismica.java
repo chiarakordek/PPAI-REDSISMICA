@@ -59,4 +59,24 @@ public class MuestraSismica {
         this.detallesMuestra = detallesMuestra;
     }
 
+//////////// metodos
+/**
+     * Devuelve todos los detalles registrados en esta muestra.
+     */
+    public List<DetalleMuestraSismica> getDatosMuestra() {
+        return this.detallesMuestra;
+    }
+
+    /**
+     * Busca y devuelve un detalle específico según el tipo de dato 
+     * Si no se encuentra, devuelve null.
+     */
+    public DetalleMuestraSismica buscarDetalleMuestra(TipoDeDato tipo) {
+        for (DetalleMuestraSismica detalle : detallesMuestra) {
+            if (detalle.getTipoDeDato().equals(tipo)) {
+                return detalle;
+            }
+        }
+        return null; // No encontrado
+    }
 }
