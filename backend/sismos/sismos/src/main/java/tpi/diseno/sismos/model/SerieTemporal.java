@@ -102,6 +102,7 @@ public class SerieTemporal {
      * Devuelve todas las muestras sísmicas asociadas a esta serie temporal. 
      * (equivale a obtener los datos en orden cronológico).
      */
+    //CREO QUE ACA TIENE QUE DEVOLVER EL SISMOGRAFO Y LA ESTACION SISMOLOGICA TAMBIEN ()
     public List<MuestraSismica> getDatosSerieTemporal() {
         return this.muestrasSismicas;
     }
@@ -109,7 +110,10 @@ public class SerieTemporal {
     /** 
      * Devuelve todas las muestras para búsquedas o visualización. 
      */
+    //ESTO DEBERIA LLAMAR AL METODO GETDATOSMUESTRA DE MUESTRAS SISMICAS
     public List<MuestraSismica> buscarMuestrasSismicas() {
         return this.muestrasSismicas;
     }
+
+    //EL  METODO getDatosSerieTemporal y buscarMuestrasSismicas devuelven hacen lo mismo
 }

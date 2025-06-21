@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -60,8 +62,8 @@ public class CambioEstado {
         return fechaFin; 
     }
 
-    public void setFechaFin(LocalDateTime fechaFin) { 
-        this.fechaFin = fechaFin; 
+    public void setFechaFin() { 
+        this.fechaFin = LocalDateTime.now(); 
     }
 
     public EventoSismico getEventoSismico() {

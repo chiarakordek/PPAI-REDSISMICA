@@ -132,7 +132,7 @@ public class EventoSismico {
         return this.estadoActual.esAutodetectado();
     } 
     public boolean esPendiente(){
-        return this.estadoActual.esPendiente();
+        return this.estadoActual.esPendienteDeRevision();
     }
     //PARA DEVOLVER LOS DATOS UTILIZA UNA CLASE AUXILIAR (DatosEventoSismico), NO SE SI ESTA BIEN
     public DatosEventoSismico getDatos() {
@@ -145,26 +145,26 @@ public class EventoSismico {
             this.getMagnitud()
         );
     }
-    public void revisar(String denominacion, String nombreUnidadMedida, Double valorUmbral, LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado){
+    public void revisar(String denominacion, LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado){
         this.buscarUltimoCambioEstado();
-        this.crearCambioEstado(denominacion, nombreUnidadMedida, valorUmbral, fechaCambioEstado, eventoSismico,estado);
+        this.crearCambioEstado(denominacion, fechaCambioEstado, eventoSismico,estado);
         this.setEstado(estado);
     }
 
     public void buscarUltimoCambioEstado(){
         for(CambioEstado cambio: this.getCambiosEstado()){
             if(cambio.esUltimoCambioEstado()){
-                cambio.setFechaHoraFin();
+                cambio.setFechaFin();
             }
         }
     }
-    public void crearCambioEstado(String denominacion, String nombreUnidadMedida, Double valorUmbral, LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado){
-        new CambioEstado(denominacion, nombreUnidadMedida, valorUmbral, fechaCambioEstado, eventoSismico,estado);
+    public void crearCambioEstado(LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
+        CambioEstado cambio = new CambioEstado(fechaCambioEstado, eventoSismico, estado, empleadoResponsable);
 
     }
 
-    public ArrayList<SerieTemporal> obtenerSeriesTemporales(){
-        return clasificarSeriesTemporales(this.seriesTemporales.getDatosSerieTemporal());
+    public ArrayList<SerieTemporal> obtenerSeriesTemporales(){ 
+        return clasificarSeriesTemporales(this.seriesTemporales.getDatosSerieTemporal()));
     }
 
     //ORDENA LAS SERIES TEMPORALES POR ID DE MENOR A MAYOR, NO SE SI ESTA BIEN
@@ -177,9 +177,9 @@ public class EventoSismico {
         return seriesOrdenadas;
     }
     //BUSCA EL ULTIMO CAMBIO DE ESTADO PERO EL GESTOR YA LO TIENE.
-    public void rechazar(String denominacion, String nombreUnidadMedida, Double valorUmbral, LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado){
+    public void rechazar(LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
         this.buscarUltimoCambioEstado();
-        this.crearCambioEstado(denominacion, nombreUnidadMedida, valorUmbral, fechaCambioEstado, eventoSismico,estado);
+        this.crearCambioEstado(fechaCambioEstado, eventoSismico,estado, empleadoResponsable);
         this.setEstado(estado);
     }
 }
