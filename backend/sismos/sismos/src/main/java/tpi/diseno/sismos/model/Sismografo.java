@@ -70,7 +70,7 @@ public class Sismografo {
     public void setEstacionSismologica(EstacionSismologica estacionSismologica) {
         this.estacionSismologica = estacionSismologica;
     }
-    //Metodos
+    // Metodos
     public boolean sosMiSismografo(Integer nroSerie) {
         return this.nroSerie != null && this.nroSerie.equals(nroSerie);
     }
@@ -78,5 +78,3 @@ public class Sismografo {
         return "Sismógrafo " + identificadorSismografo + " (Nro: " + nroSerie + "), adquirido el " + fechaAdquisicion;
     }
 }
-
-
