@@ -19,7 +19,7 @@ public class Sesion {
     private LocalDateTime fechaInicio;
     private String observaciones;
 
-/** Empleado que inició la sesión. */
+/** Usuario que inició la sesión. */
     @ManyToOne
     private Empleado empleado;
 

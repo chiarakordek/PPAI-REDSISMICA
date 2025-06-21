@@ -14,10 +14,8 @@ public class CambioEstado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String denominacion;
-    private String nombreUnidadMedida;
-    private Double valorUmbral;
-    private LocalDateTime fechaCambioEstado;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
 
  /** Evento sísmico al que pertenece este cambio de estado. */
     @ManyToOne
@@ -27,55 +25,43 @@ public class CambioEstado {
     @ManyToOne
     private Estado estado;
 
+/** Empleado responsable del cambio de estado del Evento Sísmico**/ 
+    @ManyToOne
+    private Empleado empleadoResponsable;
+
     /**Constructor */
     public CambioEstado() {
     }
 
-    public CambioEstado(String denominacion, String nombreUnidadMedida, Double valorUmbral, LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado) {
-        this.denominacion = denominacion;
-        this.nombreUnidadMedida = nombreUnidadMedida;
-        this.valorUmbral = valorUmbral;
-        this.fechaCambioEstado = fechaCambioEstado;
+    public CambioEstado( LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable) {
+        this.fechaInicio = fechaInicio;
         this.eventoSismico = eventoSismico;
         this.estado = estado;
+        this.empleadoResponsable = empleadoResponsable;
     }
 
-
-/////////////////////////Getters y Setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() { 
+        return this.id; 
     }
 
-    public String getDenominacion() {
-        return denominacion;
-    }
-    public void setDenominacion(String denominacion) {
-        this.denominacion = denominacion;
+    public void setId(Long id) { 
+        this.id = id; 
     }
 
-    public String getNombreUnidadMedida() {
-        return nombreUnidadMedida;
-    }
-    
-    public void setNombreUnidadMedida(String nombreUnidadMedida) {
-        this.nombreUnidadMedida = nombreUnidadMedida;
+    public LocalDateTime getFechaInicio() { 
+        return fechaInicio; 
     }
 
-    public Double getValorUmbral() {
-        return valorUmbral;
-    }
-    public void setValorUmbral(Double valorUmbral) {
-        this.valorUmbral = valorUmbral;
+    public void setFechaInicio(LocalDateTime fechaInicio) { 
+        this.fechaInicio = fechaInicio; 
     }
 
-    public LocalDateTime getFechaCambioEstado() {
-        return fechaCambioEstado;
+    public LocalDateTime getFechaFin() { 
+        return fechaFin; 
     }
-    public void setFechaCambioEstado(LocalDateTime fechaCambioEstado) {
-        this.fechaCambioEstado = fechaCambioEstado;
+
+    public void setFechaFin(LocalDateTime fechaFin) { 
+        this.fechaFin = fechaFin; 
     }
 
     public EventoSismico getEventoSismico() {
@@ -85,11 +71,24 @@ public class CambioEstado {
         this.eventoSismico = eventoSismico;
     }
 
-    public Estado getEstado() {
-        return estado;
-    }
-    public void setEstado(Estado estado) {
-        this.estado = estado;
+    public Estado getEstado() { 
+        return estado; 
     }
 
+    public void setEstado(Estado estado) { 
+        this.estado = estado; 
+    }
+
+    public Empleado getEmpleadoResponsable() { 
+        return empleadoResponsable; 
+    }
+
+    public void setEmpleadoResponsable(Empleado empleadoResponsable) { 
+        this.empleadoResponsable = empleadoResponsable; 
+    }
+
+
+    public boolean esUltimoCambioEstado(){
+        return this.fechaFin == null;
+    }
 }
