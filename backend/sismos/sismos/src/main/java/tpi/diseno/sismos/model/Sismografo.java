@@ -1,12 +1,13 @@
 package tpi.diseno.sismos.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-
-import java.time.LocalDate;
+import jakarta.persistence.FetchType;
 
 @Entity
 public class Sismografo {
@@ -20,7 +21,7 @@ public class Sismografo {
     private Integer nroSerie;
 
 /** Estación sismológica donde está instalado el sismógrafo. */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private EstacionSismologica estacionSismologica;
 
 /**Constructor */
@@ -69,5 +70,11 @@ public class Sismografo {
     public void setEstacionSismologica(EstacionSismologica estacionSismologica) {
         this.estacionSismologica = estacionSismologica;
     }
+    // Metodos
+    public boolean sosMiSismografo(Integer nroSerie) {
+        return this.nroSerie != null && this.nroSerie.equals(nroSerie);
+    }
+    public String getDatosSismografo() {
+        return "Sismógrafo " + identificadorSismografo + " (Nro: " + nroSerie + "), adquirido el " + fechaAdquisicion;
+    }
 }
-

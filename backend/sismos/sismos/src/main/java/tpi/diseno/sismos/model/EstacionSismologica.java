@@ -1,10 +1,10 @@
 package tpi.diseno.sismos.model;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
-import java.time.LocalDateTime;
 
 @Entity
 public class EstacionSismologica {
@@ -82,4 +82,15 @@ public class EstacionSismologica {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+    // Metodos
+    public String getDatosEstacion() {
+        return "Nombre: " + nombre +
+            ", Código: " + codigoEstacion +
+            ", Certificado: " + documentoCertificacionAdq +
+            ", Fecha Solicitud: " + fechaSolicitudCertificacion +
+            ", Latitud: " + latitud +
+            ", Longitud: " + longitud;
+    }
 }
+
+
