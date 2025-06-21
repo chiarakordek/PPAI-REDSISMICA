@@ -3,6 +3,7 @@ package tpi.diseno.sismos.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import tpi.diseno.sismos.repository.UsuarioRepository;
 
 @Entity
 public class Usuario {
@@ -37,4 +38,10 @@ public class Usuario {
     public void setEmpleado(Empleado empleado) {
         this.empleado = empleado;
     }
+
+    //metodo
+    public Usuario obtenerUsuarioLogueado(UsuarioRepository usuarioRepo) {
+    return usuarioRepo.findByEmpleado(this.empleado).orElse(null);
+}
+
 }
