@@ -171,7 +171,7 @@ public class EventoSismico {
     public ArrayList<SerieTemporal> clasificarSeriesTemporales(ArrayList<SerieTemporal> seriesTemporales){
         ArrayList<SerieTemporal> seriesOrdenadas = new ArrayList();
         for(SerieTemporal serie: seriesTemporales){
-            Long IdEstacionSismologica = serie.getEstacionSismologica().getId()
+            Long IdEstacionSismologica = serie.getEstacionSismologica().getId();
             seriesOrdenadas.sort(Comparator.comparingLong(SerieTemporal::IdEstacionSismologica));
         }
         return seriesOrdenadas;
