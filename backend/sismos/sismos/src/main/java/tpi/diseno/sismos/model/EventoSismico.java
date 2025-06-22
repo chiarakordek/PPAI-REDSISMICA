@@ -145,9 +145,9 @@ public class EventoSismico {
             this.getMagnitud()
         );
     }
-    public void revisar(String denominacion, LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado){
+    public void revisar(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
         this.buscarUltimoCambioEstado();
-        this.crearCambioEstado(denominacion, fechaCambioEstado, eventoSismico,estado);
+        this.crearCambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable);
         this.setEstado(estado);
     }
 
@@ -158,13 +158,12 @@ public class EventoSismico {
             }
         }
     }
-    public void crearCambioEstado(LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
-        CambioEstado cambio = new CambioEstado(fechaCambioEstado, eventoSismico, estado, empleadoResponsable);
-
+    public void crearCambioEstado(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
+        CambioEstado cambio = new CambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable);
     }
 
     public ArrayList<SerieTemporal> obtenerSeriesTemporales(){ 
-        return clasificarSeriesTemporales(this.seriesTemporales.getDatosSerieTemporal()));
+        return clasificarSeriesTemporales(this.seriesTemporales.getDatosSerieTemporal());
     }
 
     //ORDENA LAS SERIES TEMPORALES POR ID DE MENOR A MAYOR, NO SE SI ESTA BIEN

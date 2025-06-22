@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -89,7 +88,8 @@ public class CambioEstado {
         this.empleadoResponsable = empleadoResponsable; 
     }
 
-
+    //Verifica si el cambio de estado es el último realizado para el evento sísmico.
+    //Si fechaFin es null, significa que el cambio de estado está activo.
     public boolean esUltimoCambioEstado(){
         return this.fechaFin == null;
     }

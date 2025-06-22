@@ -92,5 +92,3 @@ public class EstacionSismologica {
             ", Longitud: " + longitud;
     }
 }
-
-
