@@ -73,9 +73,7 @@ public class MuestraSismica {
      */
     public DetalleMuestraSismica buscarDetalleMuestra(TipoDeDato tipo) {
         for (DetalleMuestraSismica detalle : detallesMuestra) {
-            if (detalle.getTipoDeDato().equals(tipo)) {
-                return detalle;
-            }
+            detalle.getDatosDetalleMuestra();
         }
         return null; // No encontrado
     }

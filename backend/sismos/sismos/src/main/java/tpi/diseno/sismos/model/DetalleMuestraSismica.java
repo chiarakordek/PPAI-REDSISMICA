@@ -67,14 +67,14 @@ public class DetalleMuestraSismica {
 /** *
      * Devuelve el valor registrado en esta muestra. 
      */
-    public Double getDatosDetalleMuestra() {
-        return this.valor;
+    public String getDatosDetalleMuestra() {
+        return this.buscarTipoDeDato();
     }
 
     /**
      * Devuelve el tipo de dato al que corresponde esta muestra. 
      */
-    public TipoDeDato buscarTipoDeDato() {
-        return this.tipoDeDato;
+    public String buscarTipoDeDato() {
+        return this.tipoDeDato.getDenominacion();
     }
 }

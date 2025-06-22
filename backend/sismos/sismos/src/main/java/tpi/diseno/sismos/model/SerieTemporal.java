@@ -9,7 +9,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 public class SerieTemporal {
@@ -29,7 +29,7 @@ public class SerieTemporal {
 
 /** Lista de muestras sísmicas registradas en esta serie temporal. */
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
-    private List<MuestraSismica> muestrasSismicas;
+    private ArrayList<MuestraSismica> muestrasSismicas;
 
 /**Constructor */
     public SerieTemporal() {
@@ -90,10 +90,10 @@ public class SerieTemporal {
         this.eventoSismico = eventoSismico;
     }
 
-    public List<MuestraSismica> getMuestrasSismicas() {
+    public ArrayList<MuestraSismica> getMuestrasSismicas() {
         return muestrasSismicas;
     }
-    public void setMuestrasSismicas(List<MuestraSismica> muestrasSismicas) {
+    public void setMuestrasSismicas(ArrayList<MuestraSismica> muestrasSismicas) {
         this.muestrasSismicas = muestrasSismicas;
     }
 
@@ -103,15 +103,17 @@ public class SerieTemporal {
      * (equivale a obtener los datos en orden cronológico).
      */
     //CREO QUE ACA TIENE QUE DEVOLVER EL SISMOGRAFO Y LA ESTACION SISMOLOGICA TAMBIEN ()
-    public List<MuestraSismica> getDatosSerieTemporal() {
-        return this.muestrasSismicas;
+    public ArrayList<MuestraSismica> getDatosSerieTemporal() {
+        this.muestrasSismicas.buscarMuestrasSismicas();
+        if()
+
     }
 
     /** 
      * Devuelve todas las muestras para búsquedas o visualización. 
      */
     //ESTO DEBERIA LLAMAR AL METODO GETDATOSMUESTRA DE MUESTRAS SISMICAS
-    public List<MuestraSismica> buscarMuestrasSismicas() {
+    public ArrayList<MuestraSismica> buscarMuestrasSismicas() {
         return this.muestrasSismicas;
     }
 

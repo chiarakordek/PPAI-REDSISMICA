@@ -71,8 +71,12 @@ public class Sismografo {
         this.estacionSismologica = estacionSismologica;
     }
     // Metodos
-    public boolean sosMiSismografo(Integer nroSerie) {
-        return this.nroSerie != null && this.nroSerie.equals(nroSerie);
+    public boolean sosMiSismografo(ArrayList<SerieTemporal> series) {
+        for(Sismografo sismografo){
+            if(series.getFechaHoraInicioRegistroMuestra == sismografo.getDatosSerieTemporal().getFechaHoraInicioRegistroMuestra()){
+                return true;
+            }
+            return false;
     }
     public String getDatosSismografo() {
         return "Sismógrafo " + identificadorSismografo + " (Nro: " + nroSerie + "), adquirido el " + fechaAdquisicion;

@@ -23,11 +23,11 @@ public class EventoSismico {
 
 /** Lista de series temporales asociadas al evento. */
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL)
-    private List<SerieTemporal> seriesTemporales;
+    private ArrayList<SerieTemporal> seriesTemporales;
 
 /** Cambios de estado que ha atravesado este evento sísmico. */
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL)
-    private List<CambioEstado> cambiosEstado;
+    private ArrayList<CambioEstado> cambiosEstado;
 
     @ManyToOne()
     private Estado estadoActual;
@@ -112,14 +112,14 @@ public class EventoSismico {
     public List<SerieTemporal> getSeriesTemporales() {
         return seriesTemporales;
     }
-    public void setSeriesTemporales(List<SerieTemporal> seriesTemporales) {
+    public void setSeriesTemporales(ArrayList<SerieTemporal> seriesTemporales) {
         this.seriesTemporales = seriesTemporales;
     }
 
     public List<CambioEstado> getCambiosEstado() {
         return cambiosEstado;
     }
-    public void setCambiosEstado(List<CambioEstado> cambiosEstado) {
+    public void setCambiosEstado(ArrayList<CambioEstado> cambiosEstado) {
         this.cambiosEstado = cambiosEstado;
     }
     public void setEstado(Estado estado){
