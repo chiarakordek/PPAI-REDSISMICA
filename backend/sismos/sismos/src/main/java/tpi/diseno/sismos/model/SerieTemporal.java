@@ -1,15 +1,13 @@
 package tpi.diseno.sismos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
+
+import tpi.diseno.sismos.model.DatosMuestraSismica;
+import tpi.diseno.sismos.model.DatosSerieTemporal;
+
 
 @Entity
 public class SerieTemporal {
@@ -23,23 +21,19 @@ public class SerieTemporal {
     private LocalDateTime fechaHoraRegistro;
     private Integer frecuenciaMuestreo;
 
-/** Evento sísmico al que pertenece esta serie temporal. */
     @ManyToOne
     private EventoSismico eventoSismico;
 
-/** Lista de muestras sísmicas registradas en esta serie temporal. */
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
     private List<MuestraSismica> muestrasSismicas;
 
-/**Constructor */
-    public SerieTemporal() {
-    }
+    public SerieTemporal() {}
 
     public SerieTemporal(String condicionAlarma,
-                        LocalDateTime fechaHoraInicioRegistroMuestra,
-                        LocalDateTime fechaHoraRegistro,
-                        Integer frecuenciaMuestreo,
-                        EventoSismico eventoSismico) {
+                         LocalDateTime fechaHoraInicioRegistroMuestra,
+                         LocalDateTime fechaHoraRegistro,
+                         Integer frecuenciaMuestreo,
+                         EventoSismico eventoSismico) {
         this.condicionAlarma = condicionAlarma;
         this.fechaHoraInicioRegistroMuestra = fechaHoraInicioRegistroMuestra;
         this.fechaHoraRegistro = fechaHoraRegistro;
@@ -47,10 +41,11 @@ public class SerieTemporal {
         this.eventoSismico = eventoSismico;
     }
 
-    ///////////// Getters y Setters
+    // Getters y setters
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -58,6 +53,7 @@ public class SerieTemporal {
     public String getCondicionAlarma() {
         return condicionAlarma;
     }
+
     public void setCondicionAlarma(String condicionAlarma) {
         this.condicionAlarma = condicionAlarma;
     }
@@ -65,6 +61,7 @@ public class SerieTemporal {
     public LocalDateTime getFechaHoraInicioRegistroMuestra() {
         return fechaHoraInicioRegistroMuestra;
     }
+
     public void setFechaHoraInicioRegistroMuestra(LocalDateTime fechaHoraInicioRegistroMuestra) {
         this.fechaHoraInicioRegistroMuestra = fechaHoraInicioRegistroMuestra;
     }
@@ -72,6 +69,7 @@ public class SerieTemporal {
     public LocalDateTime getFechaHoraRegistro() {
         return fechaHoraRegistro;
     }
+
     public void setFechaHoraRegistro(LocalDateTime fechaHoraRegistro) {
         this.fechaHoraRegistro = fechaHoraRegistro;
     }
@@ -79,6 +77,7 @@ public class SerieTemporal {
     public Integer getFrecuenciaMuestreo() {
         return frecuenciaMuestreo;
     }
+
     public void setFrecuenciaMuestreo(Integer frecuenciaMuestreo) {
         this.frecuenciaMuestreo = frecuenciaMuestreo;
     }
@@ -86,6 +85,7 @@ public class SerieTemporal {
     public EventoSismico getEventoSismico() {
         return eventoSismico;
     }
+
     public void setEventoSismico(EventoSismico eventoSismico) {
         this.eventoSismico = eventoSismico;
     }
@@ -93,27 +93,31 @@ public class SerieTemporal {
     public List<MuestraSismica> getMuestrasSismicas() {
         return muestrasSismicas;
     }
+
     public void setMuestrasSismicas(List<MuestraSismica> muestrasSismicas) {
         this.muestrasSismicas = muestrasSismicas;
     }
 
-/////////////metodos
-    /** 
-     * Devuelve todas las muestras sísmicas asociadas a esta serie temporal. 
-     * (equivale a obtener los datos en orden cronológico).
-     */
-    //CREO QUE ACA TIENE QUE DEVOLVER EL SISMOGRAFO Y LA ESTACION SISMOLOGICA TAMBIEN ()
-    public List<MuestraSismica> getDatosSerieTemporal() {
-        return this.muestrasSismicas;
+    // Devuelve los datos agrupados de la serie temporal
+    public DatosSerieTemporal getDatosSerieTemporal(String nombreEstacion, String identificadorSismografo) {
+        List<DatosMuestraSismica> datosMuestras = buscarMuestrasSismicas();
+        return new DatosSerieTemporal(
+            this.condicionAlarma,
+            this.fechaHoraInicioRegistroMuestra,
+            this.fechaHoraRegistro,
+            this.frecuenciaMuestreo,
+            nombreEstacion,
+            identificadorSismografo,
+            datosMuestras
+        );
     }
 
-    /** 
-     * Devuelve todas las muestras para búsquedas o visualización. 
-     */
-    //ESTO DEBERIA LLAMAR AL METODO GETDATOSMUESTRA DE MUESTRAS SISMICAS
-    public List<MuestraSismica> buscarMuestrasSismicas() {
-        return this.muestrasSismicas;
+    // Llama al método correcto en MuestraSismica
+    public List<DatosMuestraSismica> buscarMuestrasSismicas() {
+        List<DatosMuestraSismica> datos = new ArrayList<>();
+        for (MuestraSismica muestra : this.muestrasSismicas) {
+            datos.add(muestra.getDatosMuestra());
+        }
+        return datos;
     }
-
-    //EL  METODO getDatosSerieTemporal y buscarMuestrasSismicas devuelven hacen lo mismo
 }

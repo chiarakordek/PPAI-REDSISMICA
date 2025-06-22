@@ -13,27 +13,27 @@ public class MuestraSismica {
 
     private LocalDateTime fechaHoraMuestra;
 
- /** Serie temporal a la que pertenece esta muestra. */
     @ManyToOne
     private SerieTemporal serieTemporal;
 
-/** Lista de detalles de la muestra, que contienen los valores y tipos de datos. */
     @OneToMany(mappedBy = "muestraSismica", cascade = CascadeType.ALL)
     private List<DetalleMuestraSismica> detallesMuestra;
 
-/**Constructor */
+    // Constructor vacío
     public MuestraSismica() {
     }
 
+    // Constructor completo
     public MuestraSismica(LocalDateTime fechaHoraMuestra, SerieTemporal serieTemporal) {
         this.fechaHoraMuestra = fechaHoraMuestra;
         this.serieTemporal = serieTemporal;
     }
 
-    /////////// Getters y Setters
+    // Getters y Setters
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -41,6 +41,7 @@ public class MuestraSismica {
     public LocalDateTime getFechaHoraMuestra() {
         return fechaHoraMuestra;
     }
+
     public void setFechaHoraMuestra(LocalDateTime fechaHoraMuestra) {
         this.fechaHoraMuestra = fechaHoraMuestra;
     }
@@ -48,6 +49,7 @@ public class MuestraSismica {
     public SerieTemporal getSerieTemporal() {
         return serieTemporal;
     }
+
     public void setSerieTemporal(SerieTemporal serieTemporal) {
         this.serieTemporal = serieTemporal;
     }
@@ -55,28 +57,26 @@ public class MuestraSismica {
     public List<DetalleMuestraSismica> getDetallesMuestra() {
         return detallesMuestra;
     }
+
     public void setDetallesMuestra(List<DetalleMuestraSismica> detallesMuestra) {
         this.detallesMuestra = detallesMuestra;
     }
 
-//////////// metodos
-/**
-     * Devuelve todos los detalles registrados en esta muestra.
-     */
-    public List<DetalleMuestraSismica> getDatosMuestra() {
-        return this.detallesMuestra;
+    // 
+    public DatosMuestraSismica getDatosMuestra() {
+        return new DatosMuestraSismica(
+            this.fechaHoraMuestra,
+            this.detallesMuestra
+        );
     }
 
-    /**
-     * Busca y devuelve un detalle específico según el tipo de dato 
-     * Si no se encuentra, devuelve null.
-     */
+    // Método para buscar un detalle por tipo
     public DetalleMuestraSismica buscarDetalleMuestra(TipoDeDato tipo) {
         for (DetalleMuestraSismica detalle : detallesMuestra) {
             if (detalle.getTipoDeDato().equals(tipo)) {
                 return detalle;
             }
         }
-        return null; // No encontrado
+        return null;
     }
 }

@@ -164,7 +164,7 @@ public class EventoSismico {
     }
 
     public ArrayList<SerieTemporal> obtenerSeriesTemporales(){ 
-        return clasificarSeriesTemporales(this.seriesTemporales.getDatosSerieTemporal()));
+        return clasificarSeriesTemporales(this.seriesTemporales.getDatosSerieTemporal());
     }
 
     //ORDENA LAS SERIES TEMPORALES POR ID DE MENOR A MAYOR, NO SE SI ESTA BIEN
