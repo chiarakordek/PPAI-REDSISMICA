@@ -1,18 +1,14 @@
 package tpi.diseno.sismos.model;
 
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Comparator;
+import java.util.List;
 
-import org.hibernate.annotations.NotFound;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.stereotype.*;
+import org.springframework.stereotype.Service;
 
-import tpi.diseno.sismos.repository.EventoSismicoRepository;
 import tpi.diseno.sismos.repository.EstadoRepository;
+import tpi.diseno.sismos.repository.EventoSismicoRepository;
 
 
 @Service
@@ -31,6 +27,7 @@ public class GestorRegistrarResultadodeinspeccion {
 
     private Sesion sesionActual;
     private Empleado punteroEmpleado;
+    private Sesion sesion;
 
     private enum opcionResultadoRevision {
         RECHAZADO,
@@ -81,8 +78,18 @@ public class GestorRegistrarResultadodeinspeccion {
     public void tomarFechaHoraActual(){
         this.fechaHoraActual = LocalDateTime.now();
     }
+    //Busca el empleado llamando al metodo de la sesion para obtenerlo
+    public Empleado buscarEmpleadoLogueado() {
+        return sesion.obtenerUsuarioLogueado();
+    }
+    //Cambia estado del evento a Bloqueado
+    public void bloquearEvento(EventoSismico evento){
+        evento.revisar(fechaHoraActual, evento, punteroBloqueadoEnRevision, punteroEmpleado);
+        
+    }
+    //Busca datos 
+    public void buscarDatosSismicos(EventoSismico evento){
+        evento.obtenerSeriesTemporales();
 
-    public 
+    }
 }
-
-

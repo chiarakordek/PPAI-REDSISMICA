@@ -39,10 +39,4 @@ public class Usuario {
     public void setEmpleado(Empleado empleado) {
         this.empleado = empleado;
     }
-
-    //metodo
-    public Usuario obtenerUsuarioLogueado(UsuarioRepository usuarioRepo) {
-    return usuarioRepo.findByEmpleado(this.empleado).orElse(null);
-}
-
 }

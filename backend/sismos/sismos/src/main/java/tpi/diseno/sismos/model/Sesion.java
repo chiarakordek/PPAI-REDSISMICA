@@ -1,12 +1,12 @@
 package tpi.diseno.sismos.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-
-import java.time.LocalDateTime;
 
 @Entity
 public class Sesion {
@@ -22,6 +22,7 @@ public class Sesion {
 /** Usuario que inició la sesión. */
     @ManyToOne
     private Empleado empleado;
+    private Usuario usuarioLogueado;
 
 /**Constructor */
     public Sesion() {
@@ -64,10 +65,17 @@ public class Sesion {
         this.observaciones = observaciones;
     }
 
-    public Empleado getEmpleado() {
-        return empleado;
+    //set usuario y obtenerlo
+    public void setUsuarioLogueado(Usuario usuario) {
+        this.usuarioLogueado = usuario;
     }
-    public void setEmpleado(Empleado empleado) {
-        this.empleado = empleado;
+
+    public Empleado obtenerUsuarioLogueado() {
+        if (usuarioLogueado != null) {
+            return usuarioLogueado.getEmpleado();
+        } else {
+            return null; 
+        }
     }
+
 }
