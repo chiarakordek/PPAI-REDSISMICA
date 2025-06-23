@@ -1,15 +1,12 @@
 package tpi.diseno.sismos.model;
 
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Comparator;
 
-import org.hibernate.annotations.NotFound;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.stereotype.*;
+
+import org.springframework.stereotype.Service;
 
 import tpi.diseno.sismos.repository.EventoSismicoRepository;
 import tpi.diseno.sismos.repository.EstadoRepository;
@@ -18,7 +15,6 @@ import tpi.diseno.sismos.repository.EstadoRepository;
 @Service
 public class GestorRegistrarResultadodeinspeccion {
 
-    private LocalDateTime fechayHoraOcurrencia;
     private LocalDateTime fechaHoraActual;
 
     private List<EventoSismico> eventosSismicos;
@@ -31,20 +27,22 @@ public class GestorRegistrarResultadodeinspeccion {
 
     private Sesion sesionActual;
     private Empleado punteroEmpleado;
+    private String mapaUbicacion;
 
     private enum opcionResultadoRevision {
         RECHAZADO,
         CONFIRMADO,
         DERIVADO
-    }
+    };
 
     private List<Estado> estados;
 
     private EventoSismicoRepository eventoSismicoRepository;
     private EstadoRepository estadoRepository;
 
-    public GestorRegistrarResultadodeinspeccion( EventoSismicoRepository eventoSismicoRepository) {
+    public GestorRegistrarResultadodeinspeccion( EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository) {
         this.eventoSismicoRepository = eventoSismicoRepository;
+        this.estadoRepository = estadoRepository;
     }
 
     public void buscarEventosSismicos(){
@@ -67,22 +65,67 @@ public class GestorRegistrarResultadodeinspeccion {
 
     public void tomarSeleccionEventoSismico(EventoSismico evento){
         this.eventoSeleccionado = evento;
+        bloquearEvento();
     }
 
-    public void buscarEstadoBloqueado(){
+    public Estado buscarEstadoBloqueado(){
         this.estados = this.estadoRepository.findAll();
         for (Estado estado : estados) {
             if (estado.esAmbitoEventoSismico() && estado.esBloqueadoEnRevision()){
-                this.punteroBloqueadoEnRevision = estado;
+                return estado;
             }
+        }
+        return null;
+    }
+
+    public LocalDateTime tomarFechaHoraActual(){
+        return LocalDateTime.now();
+    }
+
+    public Estado buscarEstadoRechazado(){
+        this.estados = this.estadoRepository.findAll();
+        for (Estado estado : estados) {
+            if (estado.esAmbitoEventoSismico() && estado.esRechazado()){
+                return estado;
+            }
+        }
+        return null;
+    } 
+
+    public void tomarSeleccionRechazada(String opcion){
+        if (opcionResultadoRevision.RECHAZADO.name().equalsIgnoreCase(opcion)){
+            rechazararEvento();
+        }else{
+            throw new RuntimeException("Opción no reconocida.");
         }
     }
 
-    public void tomarFechaHoraActual(){
-        this.fechaHoraActual = LocalDateTime.now();
+    public Empleado buscarEmpleadoLogueado(){
+        return this.sesionActual.obtenerUsuarioLogueado();
     }
 
-    public 
+    public void bloquearEvento(){
+        this.fechaHoraActual = tomarFechaHoraActual();
+        this.punteroBloqueadoEnRevision = buscarEstadoBloqueado();
+        if (this.punteroBloqueadoEnRevision == null){
+            throw new RuntimeException("No se encontró estado de bloqueo en revisión.");
+        }
+        this.punteroEmpleado = buscarEmpleadoLogueado();
+        this.eventoSeleccionado.revisar(fechaHoraActual, eventoSeleccionado, punteroBloqueadoEnRevision, punteroEmpleado);
+    }
+
+    public void rechazararEvento(){
+        this.punteroRechazado = buscarEstadoRechazado();
+        if (this.punteroRechazado == null){
+            throw new RuntimeException("No se encontró estado de rechazo.");
+        }
+        this.fechaHoraActual = tomarFechaHoraActual();
+        this.eventoSeleccionado.rechazar(fechaHoraActual, eventoSeleccionado, punteroRechazado, punteroEmpleado);
+    }
+
+    public void finCU(){
+        this.sesionActual.setFechaFin(tomarFechaHoraActual());
+    }
 }
 
 

@@ -20,18 +20,17 @@ public class Sesion {
     private String observaciones;
 
 /** Usuario que inició la sesión. */
-    @ManyToOne
-    private Empleado empleado;
+    private Usuario usuario;
 
 /**Constructor */
     public Sesion() {
     }
 
-    public Sesion(LocalDateTime fechaInicio, LocalDateTime fechaFin, String observaciones, Empleado empleado) {
+    public Sesion(LocalDateTime fechaInicio, LocalDateTime fechaFin, String observaciones, Usuario usuario) {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.observaciones = observaciones;
-        this.empleado = empleado;
+        this.usuario = usuario;
     }
 
 
@@ -64,10 +63,15 @@ public class Sesion {
         this.observaciones = observaciones;
     }
 
-    public Empleado getEmpleado() {
-        return empleado;
+    public Usuario getUsuario() {
+        return usuario;
     }
-    public void setEmpleado(Empleado empleado) {
-        this.empleado = empleado;
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public Empleado obtenerUsuarioLogueado(){
+        return this.usuario.getEmpleado();
     }
 }
