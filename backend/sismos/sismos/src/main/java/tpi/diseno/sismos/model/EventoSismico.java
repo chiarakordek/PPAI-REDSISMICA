@@ -74,7 +74,7 @@ public class EventoSismico {
         this.fechaHoraOcurrencia = fechaHoraOcurrencia;
     }
 
-    public Double getLatitud() {
+    public Double getLatitudEpicentro() {
         return latitudEpicentro;
     }
     public void setLatitudEpicentro(Double latitudEpicentro) {
@@ -95,7 +95,7 @@ public class EventoSismico {
         this.longitudHipocentro = longitudHipocentro;
     }
 
-    public Double getLongitud() {
+    public Double getLongitudEpicentro() {
         return longitudEpicentro;
     }
     public void setLongitudEpicentro(Double longitudEpicentro) {
@@ -115,16 +115,19 @@ public class EventoSismico {
     public void setSeriesTemporales(List<SerieTemporal> seriesTemporales) {
         this.seriesTemporales = seriesTemporales;
     }
-
+    
     public List<CambioEstado> getCambiosEstado() {
         return cambiosEstado;
     }
+
     public void setCambiosEstado(List<CambioEstado> cambiosEstado) {
         this.cambiosEstado = cambiosEstado;
     }
+
     public void setEstado(Estado estado){
         this.estadoActual = estado;
     }
+    
     public Estado getEstado(){
         return this.estadoActual;
     }
@@ -134,15 +137,16 @@ public class EventoSismico {
     public boolean esPendiente(){
         return this.estadoActual.esPendienteDeRevision();
     }
-    //PARA DEVOLVER LOS DATOS UTILIZA UNA CLASE AUXILIAR (DatosEventoSismico), NO SE SI ESTA BIEN
-    public DatosEventoSismico getDatos() {
-        return new DatosEventoSismico(
-            this.getFechaHoraOcurrencia(),
-            this.getLatitud(),
-            this.getLongitud(),
-            this.getLatitudHP(),
-            this.getLongitudHP(),
-            this.getMagnitud()
+    //PARA DEVOLVER fecha y hora de ocurrencia del evento,ubicación (coordenadas geográficas del epicentro y del hipocentro), magnitud
+    public String getDatos() {
+        return String.format(
+            "Fecha/Hora: %s | Ubicación Epicentro: (%.4f, %.4f) | Ubicación Hipocentro: (%.4f, %.4f) | Magnitud: %.1f | %s | Estado: %s",
+            getFechaHoraOcurrencia(),
+            getLatitudEpicentro(),
+            getLongitudEpicentro(),
+            getLatitudHP(),
+            getLongitudHP(),
+            getMagnitud()
         );
     }
     public void revisar(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
@@ -152,7 +156,7 @@ public class EventoSismico {
     }
 
     public void buscarUltimoCambioEstado(){
-        for(CambioEstado cambio: this.getCambiosEstado()){
+        for(CambioEstado cambio: cambiosEstado){
             if(cambio.esUltimoCambioEstado()){
                 cambio.setFechaFin();
             }
@@ -160,6 +164,7 @@ public class EventoSismico {
     }
     public void crearCambioEstado(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
         CambioEstado cambio = new CambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable);
+        this.cambiosEstado.add(cambio);
     }
 
     public ArrayList<SerieTemporal> obtenerSeriesTemporales(){ 
