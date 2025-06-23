@@ -98,21 +98,25 @@ public class SerieTemporal {
         this.muestrasSismicas = muestrasSismicas;
     }
 
-    // Devuelve los datos agrupados de la serie temporal
-    public DatosSerieTemporal getDatosSerieTemporal(String nombreEstacion, String identificadorSismografo) {
+ /**
+     * Devuelve los datos agrupados de la serie temporal como DTO,
+     * sin incluir datos de estación ni identificador de sismógrafo.
+     */
+    public DatosSerieTemporal getDatosSerieTemporal() {
         List<DatosMuestraSismica> datosMuestras = buscarMuestrasSismicas();
         return new DatosSerieTemporal(
             this.condicionAlarma,
             this.fechaHoraInicioRegistroMuestra,
             this.fechaHoraRegistro,
             this.frecuenciaMuestreo,
-            nombreEstacion,
-            identificadorSismografo,
             datosMuestras
         );
     }
 
-    // Llama al método correcto en MuestraSismica
+
+/**
+     * Devuelve una lista de DTOs con los datos de cada muestra.
+     */
     public List<DatosMuestraSismica> buscarMuestrasSismicas() {
         List<DatosMuestraSismica> datos = new ArrayList<>();
         for (MuestraSismica muestra : this.muestrasSismicas) {
