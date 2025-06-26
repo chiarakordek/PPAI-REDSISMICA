@@ -65,12 +65,10 @@ public class MuestraSismica {
      * Devuelve todos los detalles registrados en esta muestra.
      */
     public MuestraSismica getDatosMuestra() {
-
         List<DetalleMuestraSismica> detalles = new ArrayList<>();
-        for (DetalleMuestraSismica detalle : this.detallesMuestra) {
-            detalles.add(detalle.getDatosDetalleMuestra());
-        }
-        return new MuestraSismica(this.fechaHoraMuestra, this.serieTemporal, detalles);
+        detalles= this.buscarDetalleMuestra();
+        this.detallesMuestra=detalles;
+        return this;
     }
 
     /**

@@ -159,7 +159,7 @@ public class EventoSismico {
         }
     }
     public void crearCambioEstado(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
-        CambioEstado cambio = new CambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable);
+        new CambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable);
     }
 
     public List<SerieTemporal> obtenerSeriesTemporales(){ 

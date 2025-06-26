@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import tpi.diseno.sismos.repository.SismografoRepository;
 import jakarta.persistence.FetchType;
 import java.util.List;
 
@@ -21,7 +20,6 @@ public class Sismografo {
     private LocalDate fechaAdquisicion;
     private String identificadorSismografo;
     private Integer nroSerie;
-    private SismografoRepository sismografos;
     private List<SerieTemporal> seriesTemporales;
 
 /** Estación sismológica donde está instalado el sismógrafo. */
@@ -83,17 +81,15 @@ public class Sismografo {
     }
     // Metodos
     public boolean sosMiSismografo(Long serieTemporalId) {
-        for(Sismografo sismografo : sismografos.findAll()) {
-            for(SerieTemporal serieTemporal : sismografo.getSeriesTemporales()) {
-                if (serieTemporal.getId().equals(serieTemporalId)) {
-                    return true;
-                }
+        for(SerieTemporal serieTemporal : this.getSeriesTemporales()) {
+            if (serieTemporal.getId().equals(serieTemporalId)) {
+                return true;
             }
+
         }
         return false;
     }
-    public String getDatosSismografo() {
-        return "Sismógrafo " + identificadorSismografo + " (Nro: " + nroSerie + "), adquirido el " + fechaAdquisicion;
-        //return this;??
+    public Sismografo getDatosSismografo() {
+        return this;
     }
 }

@@ -107,22 +107,17 @@ public class SerieTemporal {
      */
     //CREO QUE ACA TIENE QUE DEVOLVER EL SISMOGRAFO Y LA ESTACION SISMOLOGICA TAMBIEN ()
     public List<SerieTemporal> getDatosSerieTemporal() {
-        List<MuestraSismica> muestraSismica = this.buscarMuestrasSismicas();
+        List<MuestraSismica> muestrasSismicas = this.buscarMuestrasSismicas();
         List<SerieTemporal> seriesTemporales = new ArrayList<>();
-        for (MuestraSismica muestra : muestraSismica) {
-            seriesTemporales.add(new SerieTemporal(
-                this.condicionAlarma,
-                this.fechaHoraInicioRegistroMuestra,
-                this.fechaHoraRegistro,
-                this.frecuenciaMuestreo,
-                this.eventoSismico
-            ));
+        for (MuestraSismica muestra : muestrasSismicas) {
+            muestra.getDatosMuestra();
+        }
         for (Sismografo sismografo : sismografos.findAll()) {
             if(sismografo.sosMiSismografo(this.id)){
                 sismografo.getDatosSismografo();
             }
-            }
         }
+        
         return seriesTemporales;
         //return sismografo;
     }

@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import tpi.diseno.sismos.repository.TipoDeDatoRepository;
+import java.util.List;
 
 @Entity
 public class DetalleMuestraSismica {
@@ -14,6 +16,7 @@ public class DetalleMuestraSismica {
     private Long id;
 
     private Double valor;
+    private TipoDeDatoRepository tipoDeDatoRepository;
 
 /** Muestra sísmica a la que pertenece este detalle. */
     @ManyToOne
@@ -79,6 +82,13 @@ public class DetalleMuestraSismica {
      * Devuelve el tipo de dato al que corresponde esta muestra. 
      */
     public String buscarTipoDeDato() {
-        return this.tipoDeDato.getDenominacion();
+        List<TipoDeDato> tiposDeDatos = tipoDeDatoRepository.findAll();
+        for(TipoDeDato tipoDeDato : tiposDeDatos) {
+            if (tipoDeDato.getId().equals(this.tipoDeDato.getId())) {
+                return tipoDeDato.getDenominacion();
+            }
+        }
+        return "Tipo de dato no encontrado";
+    
     }
 }
