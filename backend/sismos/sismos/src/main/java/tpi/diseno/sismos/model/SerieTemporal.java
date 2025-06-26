@@ -7,9 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
-
+import tpi.diseno.sismos.repository.SismografoRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class SerieTemporal {
@@ -29,7 +30,9 @@ public class SerieTemporal {
 
 /** Lista de muestras sísmicas registradas en esta serie temporal. */
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
-    private ArrayList<MuestraSismica> muestrasSismicas;
+    private List<MuestraSismica> muestrasSismicas;
+
+    private SismografoRepository sismografos;
 
 /**Constructor */
     public SerieTemporal() {
@@ -90,10 +93,10 @@ public class SerieTemporal {
         this.eventoSismico = eventoSismico;
     }
 
-    public ArrayList<MuestraSismica> getMuestrasSismicas() {
+    public List<MuestraSismica> getMuestrasSismicas() {
         return muestrasSismicas;
     }
-    public void setMuestrasSismicas(ArrayList<MuestraSismica> muestrasSismicas) {
+    public void setMuestrasSismicas(List<MuestraSismica> muestrasSismicas) {
         this.muestrasSismicas = muestrasSismicas;
     }
 
@@ -103,18 +106,37 @@ public class SerieTemporal {
      * (equivale a obtener los datos en orden cronológico).
      */
     //CREO QUE ACA TIENE QUE DEVOLVER EL SISMOGRAFO Y LA ESTACION SISMOLOGICA TAMBIEN ()
-    public ArrayList<MuestraSismica> getDatosSerieTemporal() {
-        this.muestrasSismicas.buscarMuestrasSismicas();
-        if()
-
+    public List<SerieTemporal> getDatosSerieTemporal() {
+        List<MuestraSismica> muestraSismica = this.buscarMuestrasSismicas();
+        List<SerieTemporal> seriesTemporales = new ArrayList<>();
+        for (MuestraSismica muestra : muestraSismica) {
+            seriesTemporales.add(new SerieTemporal(
+                this.condicionAlarma,
+                this.fechaHoraInicioRegistroMuestra,
+                this.fechaHoraRegistro,
+                this.frecuenciaMuestreo,
+                this.eventoSismico
+            ));
+        for (Sismografo sismografo : sismografos.findAll()) {
+            if(sismografo.sosMiSismografo(this.id)){
+                sismografo.getDatosSismografo();
+            }
+            }
+        }
+        return seriesTemporales;
+        //return sismografo;
     }
 
     /** 
      * Devuelve todas las muestras para búsquedas o visualización. 
      */
     //ESTO DEBERIA LLAMAR AL METODO GETDATOSMUESTRA DE MUESTRAS SISMICAS
-    public ArrayList<MuestraSismica> buscarMuestrasSismicas() {
-        return this.muestrasSismicas;
+    public List<MuestraSismica> buscarMuestrasSismicas() {
+        List<MuestraSismica> muestras = new ArrayList<>();
+        for(MuestraSismica muestra : this.muestrasSismicas) {
+            muestras.add(muestra.getDatosMuestra());
+        }
+        return muestras;
     }
 
     //EL  METODO getDatosSerieTemporal y buscarMuestrasSismicas devuelven hacen lo mismo

@@ -162,17 +162,19 @@ public class EventoSismico {
         CambioEstado cambio = new CambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable);
     }
 
-    public ArrayList<SerieTemporal> obtenerSeriesTemporales(){ 
-        return clasificarSeriesTemporales(this.seriesTemporales.getDatosSerieTemporal());
+    public List<SerieTemporal> obtenerSeriesTemporales(){ 
+        for (SerieTemporal serie : this.seriesTemporales) {
+           seriesTemporales.addAll(serie.getDatosSerieTemporal());
+        }
+         List<SerieTemporal> seriesTemporalesOrdenadas = clasificarSeriesTemporales(seriesTemporales);
+        return seriesTemporalesOrdenadas;
     }
 
     //ORDENA LAS SERIES TEMPORALES POR ID DE MENOR A MAYOR, NO SE SI ESTA BIEN
-    public ArrayList<SerieTemporal> clasificarSeriesTemporales(ArrayList<SerieTemporal> seriesTemporales){
-        ArrayList<SerieTemporal> seriesOrdenadas = new ArrayList();
-        for(SerieTemporal serie: seriesTemporales){
-            Long IdEstacionSismologica = serie.getEstacionSismologica().getId();
-            seriesOrdenadas.sort(Comparator.comparingLong(SerieTemporal::IdEstacionSismologica));
-        }
+    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales){
+        List<SerieTemporal> seriesOrdenadas = new ArrayList<>();
+        seriesOrdenadas.addAll(seriesTemporales);
+        seriesOrdenadas.sort(Comparator.comparingLong(SerieTemporal::getId));
         return seriesOrdenadas;
     }
     //BUSCA EL ULTIMO CAMBIO DE ESTADO PERO EL GESTOR YA LO TIENE.
