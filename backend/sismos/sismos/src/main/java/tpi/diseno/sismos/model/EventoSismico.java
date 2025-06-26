@@ -23,7 +23,7 @@ public class EventoSismico {
 
 /** Lista de series temporales asociadas al evento. */
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL)
-    private List<SerieTemporal> seriesTemporales;
+    private ArrayList<SerieTemporal> seriesTemporales;
 
 /** Cambios de estado que ha atravesado este evento sísmico. */
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL)
@@ -112,7 +112,7 @@ public class EventoSismico {
     public List<SerieTemporal> getSeriesTemporales() {
         return seriesTemporales;
     }
-    public void setSeriesTemporales(List<SerieTemporal> seriesTemporales) {
+    public void setSeriesTemporales(ArrayList<SerieTemporal> seriesTemporales) {
         this.seriesTemporales = seriesTemporales;
     }
     
@@ -167,17 +167,19 @@ public class EventoSismico {
         this.cambiosEstado.add(cambio);
     }
 
-    public ArrayList<SerieTemporal> obtenerSeriesTemporales(){ 
-        return clasificarSeriesTemporales(this.seriesTemporales.getDatosSerieTemporal());
+    public List<SerieTemporal> obtenerSeriesTemporales(){ 
+        for (SerieTemporal serie : this.seriesTemporales) {
+           seriesTemporales.addAll(serie.getDatosSerieTemporal());
+        }
+         List<SerieTemporal> seriesTemporalesOrdenadas = clasificarSeriesTemporales(seriesTemporales);
+        return seriesTemporalesOrdenadas;
     }
 
     //ORDENA LAS SERIES TEMPORALES POR ID DE MENOR A MAYOR, NO SE SI ESTA BIEN
-    public ArrayList<SerieTemporal> clasificarSeriesTemporales(ArrayList<SerieTemporal> seriesTemporales){
-        ArrayList<SerieTemporal> seriesOrdenadas = new ArrayList();
-        for(SerieTemporal serie: seriesTemporales){
-            Long IdEstacionSismologica = serie.getEstacionSismologica().getId();
-            seriesOrdenadas.sort(Comparator.comparingLong(SerieTemporal::IdEstacionSismologica));
-        }
+    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales){
+        List<SerieTemporal> seriesOrdenadas = new ArrayList<>();
+        seriesOrdenadas.addAll(seriesTemporales);
+        seriesOrdenadas.sort(Comparator.comparingLong(SerieTemporal::getId));
         return seriesOrdenadas;
     }
     //BUSCA EL ULTIMO CAMBIO DE ESTADO PERO EL GESTOR YA LO TIENE.

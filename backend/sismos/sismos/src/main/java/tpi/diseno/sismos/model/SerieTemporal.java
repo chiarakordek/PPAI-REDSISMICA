@@ -7,8 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
-
+import tpi.diseno.sismos.repository.SismografoRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,6 +31,8 @@ public class SerieTemporal {
 /** Lista de muestras sísmicas registradas en esta serie temporal. */
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
     private List<MuestraSismica> muestrasSismicas;
+
+    private SismografoRepository sismografos;
 
 /**Constructor */
     public SerieTemporal() {
@@ -103,8 +106,20 @@ public class SerieTemporal {
      * (equivale a obtener los datos en orden cronológico).
      */
     //CREO QUE ACA TIENE QUE DEVOLVER EL SISMOGRAFO Y LA ESTACION SISMOLOGICA TAMBIEN ()
-    public List<MuestraSismica> getDatosSerieTemporal() {
-        return this.muestrasSismicas;
+    public List<SerieTemporal> getDatosSerieTemporal() {
+        List<MuestraSismica> muestrasSismicas = this.buscarMuestrasSismicas();
+        List<SerieTemporal> seriesTemporales = new ArrayList<>();
+        for (MuestraSismica muestra : muestrasSismicas) {
+            muestra.getDatosMuestra();
+        }
+        for (Sismografo sismografo : sismografos.findAll()) {
+            if(sismografo.sosMiSismografo(this.id)){
+                sismografo.getDatosSismografo();
+            }
+        }
+        
+        return seriesTemporales;
+        //return sismografo;
     }
 
     /** 
@@ -112,7 +127,11 @@ public class SerieTemporal {
      */
     //ESTO DEBERIA LLAMAR AL METODO GETDATOSMUESTRA DE MUESTRAS SISMICAS
     public List<MuestraSismica> buscarMuestrasSismicas() {
-        return this.muestrasSismicas;
+        List<MuestraSismica> muestras = new ArrayList<>();
+        for(MuestraSismica muestra : this.muestrasSismicas) {
+            muestras.add(muestra.getDatosMuestra());
+        }
+        return muestras;
     }
 
     //EL  METODO getDatosSerieTemporal y buscarMuestrasSismicas devuelven hacen lo mismo

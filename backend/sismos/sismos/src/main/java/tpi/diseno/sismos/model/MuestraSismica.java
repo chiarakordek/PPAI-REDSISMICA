@@ -3,7 +3,7 @@ package tpi.diseno.sismos.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.ArrayList;
 @Entity
 public class MuestraSismica {
 
@@ -25,9 +25,10 @@ public class MuestraSismica {
     public MuestraSismica() {
     }
 
-    public MuestraSismica(LocalDateTime fechaHoraMuestra, SerieTemporal serieTemporal) {
+    public MuestraSismica(LocalDateTime fechaHoraMuestra, SerieTemporal serieTemporal, List<DetalleMuestraSismica> detallesMuestra) {
         this.fechaHoraMuestra = fechaHoraMuestra;
         this.serieTemporal = serieTemporal;
+        this.detallesMuestra = detallesMuestra;
     }
 
     /////////// Getters y Setters
@@ -63,20 +64,22 @@ public class MuestraSismica {
 /**
      * Devuelve todos los detalles registrados en esta muestra.
      */
-    public List<DetalleMuestraSismica> getDatosMuestra() {
-        return this.detallesMuestra;
+    public MuestraSismica getDatosMuestra() {
+        List<DetalleMuestraSismica> detalles = new ArrayList<>();
+        detalles= this.buscarDetalleMuestra();
+        this.detallesMuestra=detalles;
+        return this;
     }
 
     /**
      * Busca y devuelve un detalle específico según el tipo de dato 
      * Si no se encuentra, devuelve null.
      */
-    public DetalleMuestraSismica buscarDetalleMuestra(TipoDeDato tipo) {
+    public List<DetalleMuestraSismica> buscarDetalleMuestra() {
+        List<DetalleMuestraSismica> detalles = new ArrayList<>();
         for (DetalleMuestraSismica detalle : detallesMuestra) {
-            if (detalle.getTipoDeDato().equals(tipo)) {
-                return detalle;
-            }
+            detalles.add(detalle.getDatosDetalleMuestra());
         }
-        return null; // No encontrado
+        return detalles;
     }
 }

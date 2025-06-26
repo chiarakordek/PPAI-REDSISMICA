@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.FetchType;
+import java.util.List;
 
 @Entity
 public class Sismografo {
@@ -19,10 +20,12 @@ public class Sismografo {
     private LocalDate fechaAdquisicion;
     private String identificadorSismografo;
     private Integer nroSerie;
+    private List<SerieTemporal> seriesTemporales;
 
 /** Estación sismológica donde está instalado el sismógrafo. */
     @ManyToOne(fetch = FetchType.EAGER)
     private EstacionSismologica estacionSismologica;
+
 
 /**Constructor */
     public Sismografo() {
@@ -45,6 +48,12 @@ public class Sismografo {
 
     public LocalDate getFechaAdquisicion() {
         return fechaAdquisicion;
+    }
+    public void setSeriesTemporales(List<SerieTemporal> seriesTemporales) {
+        this.seriesTemporales = seriesTemporales;
+    }
+    public List<SerieTemporal> getSeriesTemporales() {
+        return seriesTemporales;
     }
     public void setFechaAdquisicion(LocalDate fechaAdquisicion) {
         this.fechaAdquisicion = fechaAdquisicion;
@@ -71,10 +80,16 @@ public class Sismografo {
         this.estacionSismologica = estacionSismologica;
     }
     // Metodos
-    public boolean sosMiSismografo(Integer nroSerie) {
-        return this.nroSerie != null && this.nroSerie.equals(nroSerie);
+    public boolean sosMiSismografo(Long serieTemporalId) {
+        for(SerieTemporal serieTemporal : this.getSeriesTemporales()) {
+            if (serieTemporal.getId().equals(serieTemporalId)) {
+                return true;
+            }
+
+        }
+        return false;
     }
-    public String getDatosSismografo() {
-        return "Sismógrafo " + identificadorSismografo + " (Nro: " + nroSerie + "), adquirido el " + fechaAdquisicion;
+    public Sismografo getDatosSismografo() {
+        return this;
     }
 }
