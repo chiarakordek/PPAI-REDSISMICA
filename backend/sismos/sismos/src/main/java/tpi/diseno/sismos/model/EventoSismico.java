@@ -1,6 +1,8 @@
 package tpi.diseno.sismos.model;
 
 import jakarta.persistence.*;
+import tpi.diseno.sismos.repository.SismografoRepository;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ public class EventoSismico {
 
     @ManyToOne()
     private Estado estadoActual;
+
+    private SismografoRepository sismografoRepository;
 
 
 
@@ -186,16 +190,28 @@ public class EventoSismico {
             series.add(serie);  
         }
 
-        List<SerieTemporal> ordenadas = clasificarSeriesTemporales(series);
+        
+
+        
+        List<Sismografo> sismografos = sismografoRepository.findAll();
+        String nombre = "";
+        for (SerieTemporal serie : series) {
+            for(Sismografo sismografo : sismografos) {
+                if(sismografo.sosMiSismografo(serie.getId())) {
+                    nombre = sismografo.getDatosSismografo();
+                    break;
+                }
+            }
+
+        }
+        List<SerieTemporal> ordenadas = clasificarSeriesTemporales(series, nombre);
         return ordenadas;
     }
 
     //ORDENA LAS SERIES TEMPORALES POR ID DE MENOR A MAYOR, NO SE SI ESTA BIEN
-    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales){
-        List<SerieTemporal> seriesOrdenadas = new ArrayList<>();
-        seriesOrdenadas.addAll(seriesTemporales);
-        seriesOrdenadas.sort(Comparator.comparingLong(SerieTemporal::getId));
-        return seriesOrdenadas;
+    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales, String nombreEstacion){
+        seriesTemporales.sort(Comparator.comparing(nombreEstacion));
+        return seriesTemporales;
     }
     //BUSCA EL ULTIMO CAMBIO DE ESTADO PERO EL GESTOR YA LO TIENE.
     public void rechazar(LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
