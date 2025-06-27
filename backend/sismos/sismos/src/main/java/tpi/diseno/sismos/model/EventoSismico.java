@@ -167,12 +167,27 @@ public class EventoSismico {
         this.cambiosEstado.add(cambio);
     }
 
-    public List<SerieTemporal> obtenerSeriesTemporales(){ 
+    public List<SerieTemporal> obtenerSeriesTemporales() {
+        /*Resultados esperados por el gestor:
+         * Estación: Córdoba
+            - Velocidad: 5.6
+            - Frecuencia: 2.1
+            - Longitud: 34.8
+
+           Estación: Mendoza
+            - Velocidad: 6.2
+            - Frecuencia: 1.8
+            - Longitud: 30.4
+         */
+        List<SerieTemporal> series = new ArrayList<>();
+
         for (SerieTemporal serie : this.seriesTemporales) {
-           seriesTemporales.addAll(serie.getDatosSerieTemporal());
+            serie.getDatosSerieTemporal(); 
+            series.add(serie);  
         }
-         List<SerieTemporal> seriesTemporalesOrdenadas = clasificarSeriesTemporales(seriesTemporales);
-        return seriesTemporalesOrdenadas;
+
+        List<SerieTemporal> ordenadas = clasificarSeriesTemporales(series);
+        return ordenadas;
     }
 
     //ORDENA LAS SERIES TEMPORALES POR ID DE MENOR A MAYOR, NO SE SI ESTA BIEN

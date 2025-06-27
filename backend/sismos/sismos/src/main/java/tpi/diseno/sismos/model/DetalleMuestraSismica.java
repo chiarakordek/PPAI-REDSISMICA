@@ -71,24 +71,22 @@ public class DetalleMuestraSismica {
      * Devuelve el valor registrado en esta muestra. 
      */
     public DetalleMuestraSismica getDatosDetalleMuestra() {
-        String tipoDeDato = this.buscarTipoDeDato();
-        Double valor = this.getValor();
-        MuestraSismica muestraSismica = this.getMuestraSismica();
-        return new DetalleMuestraSismica(valor, muestraSismica, this.tipoDeDato);
-        
+        // Evitás buscar en repo si ya tenés el tipo
+        return this;
     }
 
-    /**
-     * Devuelve el tipo de dato al que corresponde esta muestra. 
-     */
     public String buscarTipoDeDato() {
-        List<TipoDeDato> tiposDeDatos = tipoDeDatoRepository.findAll();
-        for(TipoDeDato tipoDeDato : tiposDeDatos) {
-            if (tipoDeDato.getId().equals(this.tipoDeDato.getId())) {
-                return tipoDeDato.getDenominacion();
-            }
+        //Debería ser así ya que detalleMuestra ya conoce su tipo de dato, pero en el diagrama buscar todos
+        //los tipos y valida si es el suyo. Con esta opcion evitamos usar el repositorio
+
+        //return this.tipoDeDato != null ? this.tipoDeDato.getDenominacion() : "Tipo desconocido";
+
+        // Buscamos el tipo de dato en el repositorio
+        for (TipoDeDato tipo : tipoDeDatoRepository.findAll()) {
+        if (tipo.getId().equals(this.tipoDeDato.getId())) {
+            return tipo.getDenominacion();
         }
-        return "Tipo de dato no encontrado";
-    
+        }
+        return "Tipo desconocido";
     }
 }

@@ -85,11 +85,11 @@ public class Sismografo {
             if (serieTemporal.getId().equals(serieTemporalId)) {
                 return true;
             }
-
         }
         return false;
     }
-    public Sismografo getDatosSismografo() {
-        return this;
+
+    public String getDatosSismografo() {
+        return this.estacionSismologica.getDatosEstacion();
     }
 }
