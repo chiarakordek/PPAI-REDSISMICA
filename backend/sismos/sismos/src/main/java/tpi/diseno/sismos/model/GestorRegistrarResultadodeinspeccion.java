@@ -19,7 +19,7 @@ public class GestorRegistrarResultadodeinspeccion {
 
     private List<EventoSismico> eventosSismicos;
     private EventoSismico eventoSeleccionado;
-    private ArrayList<SerieTemporal> SeriesTemporalesEventoSeleccionado;
+    private List<SerieTemporal> SeriesTemporalesEventoSeleccionado;
 
     private List<String> datosEventosSismicos;
     private Estado punteroBloqueadoEnRevision;
@@ -27,6 +27,9 @@ public class GestorRegistrarResultadodeinspeccion {
 
     private Sesion sesionActual;
     private Empleado punteroEmpleado;
+
+    //SIMULA LA INTEGRACIÓN CON OTRO CASO DE USO
+    private final GenerarSismograma generarSismograma;
     private String mapaUbicacion;
 
     private enum opcionResultadoRevision {
@@ -40,9 +43,14 @@ public class GestorRegistrarResultadodeinspeccion {
     private EventoSismicoRepository eventoSismicoRepository;
     private EstadoRepository estadoRepository;
 
-    public GestorRegistrarResultadodeinspeccion( EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository) {
+    public GestorRegistrarResultadodeinspeccion( EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository, GenerarSismograma generarSismograma) {
         this.eventoSismicoRepository = eventoSismicoRepository;
         this.estadoRepository = estadoRepository;
+        this.generarSismograma = generarSismograma;
+    }
+
+    public void RegistrarNuevaRevision(){
+        this.buscarEventosSismicos();
     }
 
     public void buscarEventosSismicos(){
@@ -82,24 +90,6 @@ public class GestorRegistrarResultadodeinspeccion {
         return LocalDateTime.now();
     }
 
-    public Estado buscarEstadoRechazado(){
-        this.estados = this.estadoRepository.findAll();
-        for (Estado estado : estados) {
-            if (estado.esAmbitoEventoSismico() && estado.esRechazado()){
-                return estado;
-            }
-        }
-        return null;
-    } 
-
-    public void tomarSeleccionRechazada(String opcion){
-        if (opcionResultadoRevision.RECHAZADO.name().equalsIgnoreCase(opcion)){
-            rechazararEvento();
-        }else{
-            throw new RuntimeException("Opción no reconocida.");
-        }
-    }
-
     public Empleado buscarEmpleadoLogueado(){
         return this.sesionActual.obtenerUsuarioLogueado();
     }
@@ -112,7 +102,64 @@ public class GestorRegistrarResultadodeinspeccion {
         }
         this.punteroEmpleado = buscarEmpleadoLogueado();
         this.eventoSeleccionado.revisar(fechaHoraActual, eventoSeleccionado, punteroBloqueadoEnRevision, punteroEmpleado);
+        buscarDatosSismicos(eventoSeleccionado);
     }
+
+    public void buscarDatosSismicos(EventoSismico evento){
+        this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales();
+        llamarCasoDeUsoGenerarSismograma();
+    }
+
+    public void llamarCasoDeUsoGenerarSismograma(){
+        this.mapaUbicacion = this.generarSismograma.include(this.eventoSeleccionado.getId());
+        //COMUNICACION CON LA PANTALLA PARA VER MAPA 
+    }
+
+    public String tomarOpcVerMapa(String opcion){
+        if (opcion.equalsIgnoreCase("VER MAPA")){
+            return this.mapaUbicacion;
+        }
+        return null;
+    }
+
+    public void tomarOpcModificarDatos(){
+        //COMUNICACION CON LA PANTALLA
+    }
+
+    public void evaluarResultadoInspeccion(){
+        //COMUNICACION CON LA PANTALLA
+    }
+
+    public void tomarSeleccionRechazada(String opcion){
+        if (opcionResultadoRevision.RECHAZADO.name().equalsIgnoreCase(opcion)){
+            validarExistenciaDatos();
+        }else{
+            throw new RuntimeException("Opción no reconocida.");
+        }
+    }
+
+     private void validarExistenciaDatos(){
+         if (this.SeriesTemporalesEventoSeleccionado.isEmpty()){
+             throw new RuntimeException("No se encontraron datos de las series temporales para el evento seleccionado.");
+         }
+         for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
+             if (serieTemporal.getMuestrasSismicas().isEmpty()){
+                 throw new RuntimeException("No se encontraron datos de las muestras sismicas para la serie temporal seleccionada.");
+             } 
+             
+         }
+         rechazararEvento();
+     }
+
+    public Estado buscarEstadoRechazado(){
+        this.estados = this.estadoRepository.findAll();
+        for (Estado estado : estados) {
+            if (estado.esAmbitoEventoSismico() && estado.esRechazado()){
+                return estado;
+            }
+        }
+        return null;
+    } 
 
     public void rechazararEvento(){
         this.punteroRechazado = buscarEstadoRechazado();
