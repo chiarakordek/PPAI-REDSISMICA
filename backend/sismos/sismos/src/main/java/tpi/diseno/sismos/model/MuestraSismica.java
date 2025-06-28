@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+
 @Entity
 public class MuestraSismica {
 
@@ -64,17 +66,16 @@ public class MuestraSismica {
     /**
      * Devuelve todos los detalles de esta muestra.
      */
-    public MuestraSismica getDatosMuestra() {
-        this.detallesMuestra = this.buscarDetalleMuestra();
-        return this;
+    public List<Map<String, Object>> getDatosMuestra() {
+       return this.buscarDetalleMuestra();
     }
 
     /**
      * Busca y devuelve un detalle específico según el tipo de dato 
      * Si no se encuentra, devuelve null.
      */
-    public List<DetalleMuestraSismica> buscarDetalleMuestra() {
-        List<DetalleMuestraSismica> detalles = new ArrayList<>();
+    public List<Map<String, Object>> buscarDetalleMuestra() {
+        List<Map<String, Object>> detalles = new ArrayList<>();
         for (DetalleMuestraSismica detalle : detallesMuestra) {
             detalles.add(detalle.getDatosDetalleMuestra());
         }

@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -107,6 +108,39 @@ public class GestorRegistrarResultadodeinspeccion {
 
     public void buscarDatosSismicos(EventoSismico evento){
         this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales();
+
+        /*  Esta parte del código es para devolver los datos de las series temporales en un formato 
+            tipo JSON, para que sea más fácil de usar en el frontend. No se como funciona, y creo que 
+            hay una forma más fácil con springboot.
+
+        List<Map<String, Object>> resultado = new ArrayList<>();
+        for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
+             String estacion = serieTemporal.buscarEstacionSismologica();
+            for (MuestraSismica muestra : serieTemporal.buscarMuestrasSismicas()) {
+                Map<String, Object> datos = new HashMap<>();
+                datos.put("estacion", estacion);
+
+                for (Map<String, Object> detalle : muestra.buscarDetalleMuestra()) {
+                    String tipo = detalle.get("Tipo de dato").toString();
+                    String valor = detalle.get("Valor").toString();
+
+                    switch (tipo.toLowerCase()) {
+                    case "velocidad":
+                        datos.put("velocidad", valor);
+                        break;
+                    case "frecuencia":
+                        datos.put("frecuencia", valor);
+                        break;
+                    case "longitud":
+                        datos.put("longitud", valor);
+                        break;
+                    }
+                }
+
+            resultado.add(datos);
+            }
+        }*/
+
         llamarCasoDeUsoGenerarSismograma();
     }
 

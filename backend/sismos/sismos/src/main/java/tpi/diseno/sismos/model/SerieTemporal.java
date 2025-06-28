@@ -106,23 +106,30 @@ public class SerieTemporal {
      * (equivale a obtener los datos en orden cronológico).
      */
     //CREO QUE ACA TIENE QUE DEVOLVER EL SISMOGRAFO Y LA ESTACION SISMOLOGICA TAMBIEN ()
-    public void getDatosSerieTemporal() {
+    public List<MuestraSismica> getDatosSerieTemporal() {
         List<MuestraSismica> muestras = this.buscarMuestrasSismicas();
-        for (MuestraSismica muestra : muestras) {
-            muestra.getDatosMuestra();
-        }
-
-        for (Sismografo sismografo : sismografos.findAll()) {
-            if (sismografo.sosMiSismografo(this.id)) {
-                sismografo.getDatosSismografo();
-            }
-        }
+        return muestras;
     }
 
+    public String buscarEstacionSismologica() {
+        String estacion = "";
+        for (Sismografo sismografo : sismografos.findAll()) {
+            if (sismografo.sosMiSismografo(this.id)) {
+                estacion = sismografo.getDatosSismografo();
+            }
+        }
+        if (estacion.equals("")) {
+            throw new RuntimeException("No se encontró estación sismológica para esta serie temporal.");
+        }
+        return estacion;
+    }
     /** 
      * Devuelve todas las muestras para búsquedas o visualización. 
      */
     public List<MuestraSismica> buscarMuestrasSismicas() {
-    return new ArrayList<>(this.muestrasSismicas);
+        for (MuestraSismica muestra : muestrasSismicas) {
+            muestra.getDatosMuestra();
+        }
+        return muestrasSismicas;
     }
 }

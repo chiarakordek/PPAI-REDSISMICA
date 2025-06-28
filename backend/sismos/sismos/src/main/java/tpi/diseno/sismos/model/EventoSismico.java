@@ -1,12 +1,14 @@
 package tpi.diseno.sismos.model;
 
 import jakarta.persistence.*;
-import tpi.diseno.sismos.repository.SismografoRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.HashMap;
 
 @Entity
 public class EventoSismico {
@@ -34,8 +36,14 @@ public class EventoSismico {
     @ManyToOne()
     private Estado estadoActual;
 
-    private SismografoRepository sismografoRepository;
+    @ManyToOne()
+    private AlcanceSismo alcanceSismo;
 
+    @ManyToOne()
+    private ClasificacionSismo clasificacionSismo;
+
+    @ManyToOne()
+    private OrigenDeGeneracion origenDeGeneracion;
 
 
 /**Constructor */
@@ -45,7 +53,8 @@ public class EventoSismico {
     public EventoSismico(LocalDateTime fechaHoraFin, LocalDateTime fechaHoraOcurrencia,
                         Double latitudEpicentro, Double latitudHipocentro,
                         Double longitudHipocentro, Double longitudEpicentro,
-                        Double valorMagnitud, Estado estado) {
+                        Double valorMagnitud, Estado estado, 
+                        AlcanceSismo alcanceSismo, ClasificacionSismo clasificacionSismo, OrigenDeGeneracion origenDeGeneracion) {
         this.fechaHoraFin = fechaHoraFin;
         this.fechaHoraOcurrencia = fechaHoraOcurrencia;
         this.latitudEpicentro = latitudEpicentro;
@@ -54,6 +63,9 @@ public class EventoSismico {
         this.longitudEpicentro = longitudEpicentro;
         this.valorMagnitud = valorMagnitud;
         this.estadoActual = estado;
+        this.alcanceSismo = alcanceSismo;
+        this.clasificacionSismo = clasificacionSismo;
+        this.origenDeGeneracion = origenDeGeneracion;
     }
 
     //////////// Getters y Setters
@@ -135,6 +147,33 @@ public class EventoSismico {
     public Estado getEstado(){
         return this.estadoActual;
     }
+
+    public AlcanceSismo getAlcanceSismo() {
+        return alcanceSismo;
+    }
+
+    public void setAlcanceSismo(AlcanceSismo alcanceSismo) {
+        this.alcanceSismo = alcanceSismo;
+    }
+
+    public ClasificacionSismo getClasificacionSismo() {
+        return clasificacionSismo;
+    }   
+
+    public void setClasificacionSismo(ClasificacionSismo clasificacionSismo) {
+        this.clasificacionSismo = clasificacionSismo;
+    }
+
+    public OrigenDeGeneracion getOrigenDeGeneracion() {
+        return origenDeGeneracion;
+    }
+
+    public void setOrigenDeGeneracion(OrigenDeGeneracion origenDeGeneracion) {
+        this.origenDeGeneracion = origenDeGeneracion;
+    }
+
+
+
     public boolean esAutodetectado(){
         return this.estadoActual.esAutodetectado();
     } 
@@ -153,6 +192,7 @@ public class EventoSismico {
             getMagnitud()
         );
     }
+    
     public void revisar(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
         this.buscarUltimoCambioEstado();
         this.crearCambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable);
@@ -172,6 +212,8 @@ public class EventoSismico {
     }
 
     public List<SerieTemporal> obtenerSeriesTemporales() {
+
+
         /*Resultados esperados por el gestor:
          * Estación: Córdoba
             - Velocidad: 5.6
@@ -183,35 +225,45 @@ public class EventoSismico {
             - Frecuencia: 1.8
             - Longitud: 30.4
          */
-        List<SerieTemporal> series = new ArrayList<>();
 
+        // Lista de series temporales
+        List<SerieTemporal> series = new ArrayList<>();
+        // Lista de estaciones sismológicas
+        List<String> estaciones = new ArrayList<>();
+
+        // Obtiene todos los datos de las series temporales asociadas al evento 
         for (SerieTemporal serie : this.seriesTemporales) {
             serie.getDatosSerieTemporal(); 
             series.add(serie);  
-        }
+            //Para cada serie temporal, se obtiene su estación sismológica
+            estaciones.add(serie.buscarEstacionSismologica());
+        }   
 
-        
-
-        
-        List<Sismografo> sismografos = sismografoRepository.findAll();
-        String nombre = "";
-        for (SerieTemporal serie : series) {
-            for(Sismografo sismografo : sismografos) {
-                if(sismografo.sosMiSismografo(serie.getId())) {
-                    nombre = sismografo.getDatosSismografo();
-                    break;
-                }
-            }
-
-        }
-        List<SerieTemporal> ordenadas = clasificarSeriesTemporales(series, nombre);
+        // Ordena la lista de series temporales por estación sismológica
+        List<SerieTemporal> ordenadas = clasificarSeriesTemporales(series, estaciones);
+        // Devuelve la lista ordenada de series temporales
         return ordenadas;
     }
 
-    //ORDENA LAS SERIES TEMPORALES POR ID DE MENOR A MAYOR, NO SE SI ESTA BIEN
-    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales, String nombreEstacion){
-        seriesTemporales.sort(Comparator.comparing(nombreEstacion));
-        return seriesTemporales;
+    //Ordena las series temporales por estación sismológica
+    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales, List<String> estaciones){
+        //Ordena las estaciones alfabéticamente
+        estaciones.sort(Comparator.naturalOrder());
+        //Crea un Map (ordenEstaciones) que asigna a cada estación su posición o índice en la lista ordenada.
+        Map<String, Integer> ordenEstaciones = new HashMap<>();
+        for (int i = 0; i < estaciones.size(); i++) {
+            ordenEstaciones.put(estaciones.get(i), i);
+        }
+        
+        //Ordena las series temporales según la posición de su estación asociada en el mapa
+        return seriesTemporales.stream()
+            .sorted(Comparator.comparingInt(
+                s -> ordenEstaciones.getOrDefault(s.buscarEstacionSismologica(), Integer.MAX_VALUE)
+                //Si una serie tiene una estación que no está en la lista estaciones, se le asigna Integer.MAX_VALUE 
+                //(quedará al final).
+            ))
+            //Lo transforma en lista para devolverla
+            .collect(Collectors.toList());
     }
     //BUSCA EL ULTIMO CAMBIO DE ESTADO PERO EL GESTOR YA LO TIENE.
     public void rechazar(LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){

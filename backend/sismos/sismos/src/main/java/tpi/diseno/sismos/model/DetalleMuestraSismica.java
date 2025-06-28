@@ -6,6 +6,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import tpi.diseno.sismos.repository.TipoDeDatoRepository;
+import java.util.Map;
+
+import java.util.HashMap;
 import java.util.List;
 
 @Entity
@@ -16,7 +19,6 @@ public class DetalleMuestraSismica {
     private Long id;
 
     private Double valor;
-    private TipoDeDatoRepository tipoDeDatoRepository;
 
 /** Muestra sísmica a la que pertenece este detalle. */
     @ManyToOne
@@ -70,23 +72,14 @@ public class DetalleMuestraSismica {
 /** *
      * Devuelve el valor registrado en esta muestra. 
      */
-    public DetalleMuestraSismica getDatosDetalleMuestra() {
-        // Evitás buscar en repo si ya tenés el tipo
-        return this;
+    public Map<String, Object> getDatosDetalleMuestra() {
+        return Map.of(
+            "Valor", this.valor,
+            "Tipo de dato", buscarTipoDeDato()
+        );
     }
 
     public String buscarTipoDeDato() {
-        //Debería ser así ya que detalleMuestra ya conoce su tipo de dato, pero en el diagrama buscar todos
-        //los tipos y valida si es el suyo. Con esta opcion evitamos usar el repositorio
-
-        //return this.tipoDeDato != null ? this.tipoDeDato.getDenominacion() : "Tipo desconocido";
-
-        // Buscamos el tipo de dato en el repositorio
-        for (TipoDeDato tipo : tipoDeDatoRepository.findAll()) {
-        if (tipo.getId().equals(this.tipoDeDato.getId())) {
-            return tipo.getDenominacion();
-        }
-        }
-        return "Tipo desconocido";
+        return this.tipoDeDato != null ? this.tipoDeDato.getDenominacion() : "Tipo desconocido";
     }
 }
