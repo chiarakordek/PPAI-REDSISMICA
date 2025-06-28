@@ -145,8 +145,7 @@ public class GestorRegistrarResultadodeinspeccion {
          for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
              if (serieTemporal.getMuestrasSismicas().isEmpty()){
                  throw new RuntimeException("No se encontraron datos de las muestras sismicas para la serie temporal seleccionada.");
-             } 
-             
+             }
          }
          rechazararEvento();
      }
