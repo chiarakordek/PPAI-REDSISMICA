@@ -61,13 +61,11 @@ public class MuestraSismica {
     }
 
 //////////// metodos
-/**
-     * Devuelve todos los detalles registrados en esta muestra.
+    /**
+     * Devuelve todos los detalles de esta muestra.
      */
     public MuestraSismica getDatosMuestra() {
-        List<DetalleMuestraSismica> detalles = new ArrayList<>();
-        detalles= this.buscarDetalleMuestra();
-        this.detallesMuestra=detalles;
+        this.detallesMuestra = this.buscarDetalleMuestra();
         return this;
     }
 

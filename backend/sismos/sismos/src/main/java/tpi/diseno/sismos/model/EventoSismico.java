@@ -1,6 +1,8 @@
 package tpi.diseno.sismos.model;
 
 import jakarta.persistence.*;
+import tpi.diseno.sismos.repository.SismografoRepository;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ public class EventoSismico {
 
     @ManyToOne()
     private Estado estadoActual;
+
+    private SismografoRepository sismografoRepository;
 
 
 
@@ -167,20 +171,47 @@ public class EventoSismico {
         this.cambiosEstado.add(cambio);
     }
 
-    public List<SerieTemporal> obtenerSeriesTemporales(){ 
+    public List<SerieTemporal> obtenerSeriesTemporales() {
+        /*Resultados esperados por el gestor:
+         * Estación: Córdoba
+            - Velocidad: 5.6
+            - Frecuencia: 2.1
+            - Longitud: 34.8
+
+           Estación: Mendoza
+            - Velocidad: 6.2
+            - Frecuencia: 1.8
+            - Longitud: 30.4
+         */
+        List<SerieTemporal> series = new ArrayList<>();
+
         for (SerieTemporal serie : this.seriesTemporales) {
-           seriesTemporales.addAll(serie.getDatosSerieTemporal());
+            serie.getDatosSerieTemporal(); 
+            series.add(serie);  
         }
-         List<SerieTemporal> seriesTemporalesOrdenadas = clasificarSeriesTemporales(seriesTemporales);
-        return seriesTemporalesOrdenadas;
+
+        
+
+        
+        List<Sismografo> sismografos = sismografoRepository.findAll();
+        String nombre = "";
+        for (SerieTemporal serie : series) {
+            for(Sismografo sismografo : sismografos) {
+                if(sismografo.sosMiSismografo(serie.getId())) {
+                    nombre = sismografo.getDatosSismografo();
+                    break;
+                }
+            }
+
+        }
+        List<SerieTemporal> ordenadas = clasificarSeriesTemporales(series, nombre);
+        return ordenadas;
     }
 
     //ORDENA LAS SERIES TEMPORALES POR ID DE MENOR A MAYOR, NO SE SI ESTA BIEN
-    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales){
-        List<SerieTemporal> seriesOrdenadas = new ArrayList<>();
-        seriesOrdenadas.addAll(seriesTemporales);
-        seriesOrdenadas.sort(Comparator.comparingLong(SerieTemporal::getId));
-        return seriesOrdenadas;
+    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales, String nombreEstacion){
+        seriesTemporales.sort(Comparator.comparing(nombreEstacion));
+        return seriesTemporales;
     }
     //BUSCA EL ULTIMO CAMBIO DE ESTADO PERO EL GESTOR YA LO TIENE.
     public void rechazar(LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){

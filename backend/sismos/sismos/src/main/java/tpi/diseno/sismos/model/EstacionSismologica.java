@@ -83,12 +83,9 @@ public class EstacionSismologica {
         this.nombre = nombre;
     }
     // Metodos
+
+    //Esta función es para devolver el nombre de la estación
     public String getDatosEstacion() {
-        return "Nombre: " + nombre +
-            ", Código: " + codigoEstacion +
-            ", Certificado: " + documentoCertificacionAdq +
-            ", Fecha Solicitud: " + fechaSolicitudCertificacion +
-            ", Latitud: " + latitud +
-            ", Longitud: " + longitud;
+        return this.nombre;
     }
 }
