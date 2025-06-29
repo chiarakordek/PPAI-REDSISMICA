@@ -14,7 +14,7 @@ import tpi.diseno.sismos.repository.EstadoRepository;
 
 
 @Service
-public class GestorRegistrarResultadodeinspeccion {
+public class GestorRegistrarResultadoRevisionManual {
 
     private LocalDateTime fechaHoraActual;
 
@@ -33,6 +33,9 @@ public class GestorRegistrarResultadodeinspeccion {
     private final GenerarSismograma generarSismograma;
     private String mapaUbicacion;
 
+    private List<Map<String, Object>> datosParaFrontend;
+
+
     private enum opcionResultadoRevision {
         RECHAZADO,
         CONFIRMADO,
@@ -44,11 +47,27 @@ public class GestorRegistrarResultadodeinspeccion {
     private EventoSismicoRepository eventoSismicoRepository;
     private EstadoRepository estadoRepository;
 
-    public GestorRegistrarResultadodeinspeccion( EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository, GenerarSismograma generarSismograma) {
+    public GestorRegistrarResultadoRevisionManual( EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository, GenerarSismograma generarSismograma) {
         this.eventoSismicoRepository = eventoSismicoRepository;
         this.estadoRepository = estadoRepository;
         this.generarSismograma = generarSismograma;
+
+        // Inicialización de listas para evitar NullPointerException
+        this.eventosSismicos = new ArrayList<>();
+        this.datosEventosSismicos = new ArrayList<>();
+        this.SeriesTemporalesEventoSeleccionado = new ArrayList<>();
     }
+
+        // Getter para datos que mostrás en el frontend
+    public List<String> getDatosEventosSismicos() {
+        return this.datosEventosSismicos;
+    }
+
+    // Getter para las series temporales del evento seleccionado (para el frontend)
+    public List<SerieTemporal> getSeriesTemporalesEventoSeleccionado() {
+        return this.SeriesTemporalesEventoSeleccionado;
+    }
+
 
     public void RegistrarNuevaRevision(){
         this.buscarEventosSismicos();
@@ -59,6 +78,10 @@ public class GestorRegistrarResultadodeinspeccion {
         if (eventos.isEmpty()){
             throw new RuntimeException("No se encontraron eventos sísmicos.");
         }
+                // Limpio listas antes de agregar nuevos elementos
+        this.eventosSismicos.clear();
+        this.datosEventosSismicos.clear();
+
         for (EventoSismico evento : eventos) {
             if (evento.esAutodetectado() && evento.esPendiente()){
                 this.eventosSismicos.add(evento);
@@ -109,9 +132,6 @@ public class GestorRegistrarResultadodeinspeccion {
     public void buscarDatosSismicos(EventoSismico evento){
         this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales();
 
-        /*  Esta parte del código es para devolver los datos de las series temporales en un formato 
-            tipo JSON, para que sea más fácil de usar en el frontend. No se como funciona, y creo que 
-            hay una forma más fácil con springboot.
 
         List<Map<String, Object>> resultado = new ArrayList<>();
         for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
@@ -139,8 +159,9 @@ public class GestorRegistrarResultadodeinspeccion {
 
             resultado.add(datos);
             }
-        }*/
-
+        }
+        // Guardalo en un atributo de la clase si lo querés usar luego
+        this.datosParaFrontend = resultado;
         llamarCasoDeUsoGenerarSismograma();
     }
 
@@ -206,6 +227,11 @@ public class GestorRegistrarResultadodeinspeccion {
     public void finCU(){
         this.sesionActual.setFechaFin(tomarFechaHoraActual());
     }
+
+    public List<Map<String, Object>> getDatosParaFrontend() {
+        return this.datosParaFrontend;
+    }
+
 }
 
 

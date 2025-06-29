@@ -57,9 +57,4 @@ public class SismografoService {
         }
         return "No existe el sismógrafo";
     }
-
-    public boolean sosMiSismografo(Long id, Integer nroSerie) {
-        Optional<Sismografo> s = sismografoRepository.findById(id);
-        return s.map(sismografo -> sismografo.sosMiSismografo(nroSerie)).orElse(false);
-    }
 }
