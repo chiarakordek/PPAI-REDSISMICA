@@ -85,7 +85,7 @@ public class GestorRegistrarResultadoRevisionManual {
         this.datosEventosSismicos.clear();
 
         for (EventoSismico evento : eventos) {
-            if (evento.esAutodetectado() && evento.esPendiente()){
+            if (evento.esAutodetectado() || evento.esPendiente()){
                 this.eventosSismicos.add(evento);
                 this.datosEventosSismicos.add(evento.getDatos());
             } 

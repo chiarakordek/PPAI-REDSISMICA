@@ -183,13 +183,14 @@ public class EventoSismico {
     //PARA DEVOLVER fecha y hora de ocurrencia del evento,ubicación (coordenadas geográficas del epicentro y del hipocentro), magnitud
     public String getDatos() {
         return String.format(
-            "Fecha/Hora: %s | Ubicación Epicentro: (%.4f, %.4f) | Ubicación Hipocentro: (%.4f, %.4f) | Magnitud: %.1f | %s | Estado: %s",
-            getFechaHoraOcurrencia(),
-            getLatitudEpicentro(),
-            getLongitudEpicentro(),
-            getLatitudHP(),
-            getLongitudHP(),
-            getMagnitud()
+            "Fecha/Hora: %s | Ubicación Epicentro: (%.4f, %.4f) | Ubicación Hipocentro: (%.4f, %.4f) | Magnitud: %.1f | Estado: %s",
+            getFechaHoraOcurrencia() != null ? getFechaHoraOcurrencia() : "N/A",
+            getLatitudEpicentro() != null ? getLatitudEpicentro() : 0.0,
+            getLongitudEpicentro() != null ? getLongitudEpicentro() : 0.0,
+            getLatitudHP() != null ? getLatitudHP() : 0.0,
+            getLongitudHP() != null ? getLongitudHP() : 0.0,
+            getMagnitud() != null ? getMagnitud() : 0.0,
+            estadoActual != null ? estadoActual.getNombreEstado() : "N/A"
         );
     }
     
