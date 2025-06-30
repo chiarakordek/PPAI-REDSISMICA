@@ -76,4 +76,10 @@ public class Sesion {
     public Empleado obtenerUsuarioLogueado(){
         return this.usuario.getEmpleado();
     }
+
+       // Constructor para AuthService
+    public Sesion(Usuario usuario) {
+        this.fechaInicio = LocalDateTime.now();
+        this.usuario = usuario;
+    }
 }

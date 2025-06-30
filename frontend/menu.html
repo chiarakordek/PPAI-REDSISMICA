@@ -10,7 +10,14 @@
   <div class="wrapper">
     <div class="contenedor-opaco">
       <img src="img/logo.png" alt="Logo" class="logo" />
-      <h1>Bienvenido, Nombre Analista</h1>
+      <h1>Bienvenido, <span id="nombreUsuario"></span></h1>
+
+    <script>
+     // Muestra el nombre guardado
+     document.getElementById('nombreUsuario').textContent = 
+    localStorage.getItem('usuario') || 'Invitado';
+    </script>
+    
       <div class="botones">
         <a href="pendientes.html" class="btn">Nuevo Registro</a>
         <a href="registrados.html" class="btn">Ver Registros</a>
