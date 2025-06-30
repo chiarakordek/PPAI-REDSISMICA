@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventos Registrados</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="top-bar">
+    <img src="img/logo.png" class="logo-small" alt="Logo">
+    <span class="analyst-name">👤 Analista: Nombre Apellido</span>
+  </div>
+  
+  <div class="main-container">
+    <div class="tabla-card">
+      <h2>Registrados</h2>
+      
+      <div class="filtros-container">
+        <div>
+          <label>Filtros:</label>
+          <select>
+            <option>Últimas 24 h</option>
+            <option>Últimas 48 h</option>
+            <option>Última semana</option>
+          </select>
+        </div>
+        
+        <div>
+          <label>Magnitud:</label>
+          <select>
+            <option>Todas</option>
+            <option>3.0+</option>
+            <option>4.0+</option>
+            <option>5.0+</option>
+          </select>
+        </div>
+        
+        <button class="btn">Aplicar</button>
+      </div>
+      
+      <table class="eventos-table">
+        <thead>
+          <tr>
+            <th>Fecha/Hora</th>
+            <th>Ubicación</th>
+            <th>Magnitud</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>24/04/2025 00:23:10</td>
+            <td>12.34°S, 76.12°W</td>
+            <td>4.2</td>
+            <td><a href="detalleEvento.html?origen=registrados" class="btn">Editar</a></td>
+          </tr>
+          <tr>
+            <td>24/04/2025 00:23:10</td>
+            <td>12.34°S, 76.12°W</td>
+            <td>4.2</td>
+            <td><a href="detalleEvento.html?origen=registrados" class="btn">Editar</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

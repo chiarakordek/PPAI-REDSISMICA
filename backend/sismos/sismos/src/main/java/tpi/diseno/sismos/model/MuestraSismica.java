@@ -16,13 +16,16 @@ public class MuestraSismica {
     private LocalDateTime fechaHoraMuestra;
 
  /** Serie temporal a la que pertenece esta muestra. */
+ /** Serie temporal a la que pertenece esta muestra. */
     @ManyToOne
     private SerieTemporal serieTemporal;
 
 /** Lista de detalles de la muestra, que contienen los valores y tipos de datos. */
+/** Lista de detalles de la muestra, que contienen los valores y tipos de datos. */
     @OneToMany(mappedBy = "muestraSismica", cascade = CascadeType.ALL)
     private List<DetalleMuestraSismica> detallesMuestra;
 
+/**Constructor */
 /**Constructor */
     public MuestraSismica() {
     }
@@ -33,6 +36,7 @@ public class MuestraSismica {
         this.detallesMuestra = detallesMuestra;
     }
 
+    /////////// Getters y Setters
     /////////// Getters y Setters
     public Long getId() {
         return id;

@@ -38,6 +38,7 @@ public class SerieTemporal {
     public SerieTemporal() {
     }
 
+    /** Constructor completo */
     public SerieTemporal(String condicionAlarma,
                         LocalDateTime fechaHoraInicioRegistroMuestra,
                         LocalDateTime fechaHoraRegistro,

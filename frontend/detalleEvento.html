@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle de Evento</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="top-bar">
+    <img src="img/logo.png" class="logo-small" alt="Logo">
+    <span class="analyst-name">👤 Analista: Nombre Apellido</span>
+  </div>
+
+  <div class="main-container">
+    <div class="detalle-evento-card">
+      
+      <div class="evento-header">
+        <h2>Evento #12345</h2>
+        <div class="evento-info">
+          <p><strong>Fecha/Hora:</strong> 24/04/2025 00:23:10</p>
+          <p><strong>Ubicación:</strong> 12.34°S, 76.12°W – Epicentro</p>
+          <p><strong>Magnitud:</strong> 4.2</p>
+          <p><strong>Alcance:</strong> Local</p>
+        </div>
+      </div>
+
+      <div class="estado-section">
+        <p><strong>Estado:</strong> <span id="estado-actual">Bloqueado en Revisión</span></p>
+      </div>
+
+      <div class="graficos-container">
+        <div class="grafico-box">
+          <h3>Gráfico</h3>
+          <div class="imagen-container">
+            <img src="img/grafico.png" alt="Gráfico del evento" class="imagen-evento">
+            <div class="overlay">
+              <button class="btn-ampliar" onclick="ampliarImagen('img/grafico.png')">Ampliar Gráfico</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mapa-box">
+          <h3>Mapa</h3>
+          <div class="imagen-container">
+            <img src="img/mapa.jpg" alt="Mapa del evento" class="imagen-evento">
+            <div class="overlay">
+              <button class="btn-ampliar" onclick="ampliarImagen('img/mapa.jpg')">Ampliar Mapa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="botones-pendientes" class="botones-accion">
+         <button class="btn-editar" onclick="habilitarEdicion()">Editar</button>
+         <button class="btn-registrar" onclick="registrarEvento()" disabled>Registrar</button>
+         <button class="btn-rechazar" onclick="cambiarEstado('Rechazado')">Rechazar</button>
+         <button class="btn-derivar" onclick="cambiarEstado('Derivado')">Derivar</button>
+      </div>
+
+      <div id="botones-registrados" class="botones-accion">
+        <button class="btn-editar" onclick="habilitarEdicion()">Editar</button>
+        <button class="btn-guardar" onclick="guardarCambios()" disabled>Guardar Cambios</button>
+      </div>
+
+<!-- Formulario de edición (común para ambos flujos) -->
+     <div id="formulario-edicion" class="formulario-edicion">
+      <h3>Editar Información del Evento</h3>
+    <div class="form-group">
+      <label for="edit-fecha">Fecha/Hora:</label>
+      <input type="datetime-local" id="edit-fecha" value="2025-04-24T00:23">
+    </div>
+    <div class="form-group">
+     <label for="edit-ubicacion">Ubicación:</label>
+     <input type="text" id="edit-ubicacion" value="12.34°S, 76.12°W – Epicentro">
+    </div>
+    <div class="form-group">
+     <label for="edit-magnitud">Magnitud:</label>
+     <input type="number" step="0.1" id="edit-magnitud" value="4.2">
+    </div>
+    <div class="form-group">
+     <label for="edit-alcance">Alcance:</label>
+     <select id="edit-alcance">
+       <option value="Local">Local</option>
+       <option value="Regional">Regional</option>
+       <option value="Nacional">Nacional</option>
+     </select>
+   </div>
+   <div class="form-group">
+     <label for="edit-comentarios">Comentarios:</label>
+     <textarea id="edit-comentarios" rows="3"></textarea>
+   </div>
+   </div>
+  <!-- Modal para imágenes ampliadas -->
+    <div id="modal-imagen" class="modal">
+      <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
+      <img class="modal-contenido" id="imagen-ampliada">
+     <div id="pie-imagen"></div>
+   </div>
+
+  <script src="js/modal.js"></script>
+  <script src="js/evento.js"></script>
+</body>
+</html>
