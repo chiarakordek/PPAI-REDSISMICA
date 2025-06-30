@@ -25,13 +25,15 @@ public class EventoSismico {
     private Double longitudEpicentro;
     private Double valorMagnitud;
 
+/** Lista de series temporales asociadas al evento. */
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL)
     private ArrayList<SerieTemporal> seriesTemporales;
 
+/** Cambios de estado que ha atravesado este evento sísmico. */
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL)
     private List<CambioEstado> cambiosEstado;
 
-    @ManyToOne
+    @ManyToOne()
     private Estado estadoActual;
 
     @ManyToOne()
@@ -66,30 +68,62 @@ public class EventoSismico {
         this.origenDeGeneracion = origenDeGeneracion;
     }
 
-    // Getters y setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    //////////// Getters y Setters
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public LocalDateTime getFechaHoraFin() { return fechaHoraFin; }
-    public void setFechaHoraFin(LocalDateTime fechaHoraFin) { this.fechaHoraFin = fechaHoraFin; }
+    public LocalDateTime getFechaHoraFin() {
+        return fechaHoraFin;
+    }
+    public void setFechaHoraFin(LocalDateTime fechaHoraFin) {
+        this.fechaHoraFin = fechaHoraFin;
+    }
 
-    public LocalDateTime getFechaHoraOcurrencia() { return fechaHoraOcurrencia; }
-    public void setFechaHoraOcurrencia(LocalDateTime fechaHoraOcurrencia) { this.fechaHoraOcurrencia = fechaHoraOcurrencia; }
+    public LocalDateTime getFechaHoraOcurrencia() {
+        return fechaHoraOcurrencia;
+    }
+    public void setFechaHoraOcurrencia(LocalDateTime fechaHoraOcurrencia) {
+        this.fechaHoraOcurrencia = fechaHoraOcurrencia;
+    }
 
-    public Double getLatitud() { return latitudEpicentro; }
-    public void setLatitudEpicentro(Double latitudEpicentro) { this.latitudEpicentro = latitudEpicentro; }
+    public Double getLatitudEpicentro() {
+        return latitudEpicentro;
+    }
+    public void setLatitudEpicentro(Double latitudEpicentro) {
+        this.latitudEpicentro = latitudEpicentro;
+    }
 
-    public Double getLatitudHP() { return latitudHipocentro; }
-    public void setLatitudHipocentro(Double latitudHipocentro) { this.latitudHipocentro = latitudHipocentro; }
+    public Double getLatitudHP() {
+        return latitudHipocentro;
+    }
+    public void setLatitudHipocentro(Double latitudHipocentro) {
+        this.latitudHipocentro = latitudHipocentro;
+    }
 
-    public Double getLongitudHP() { return longitudHipocentro; }
-    public void setLongitudHipocentro(Double longitudHipocentro) { this.longitudHipocentro = longitudHipocentro; }
+    public Double getLongitudHP() {
+        return longitudHipocentro;
+    }
+    public void setLongitudHipocentro(Double longitudHipocentro) {
+        this.longitudHipocentro = longitudHipocentro;
+    }
 
-    public Double getLongitud() { return longitudEpicentro; }
-    public void setLongitudEpicentro(Double longitudEpicentro) { this.longitudEpicentro = longitudEpicentro; }
+    public Double getLongitudEpicentro() {
+        return longitudEpicentro;
+    }
+    public void setLongitudEpicentro(Double longitudEpicentro) {
+        this.longitudEpicentro = longitudEpicentro;
+    }
 
-    public Double getMagnitud() { return valorMagnitud; }
-    public void setValorMagnitud(Double valorMagnitud) { this.valorMagnitud = valorMagnitud; }
+    public Double getMagnitud() {
+        return valorMagnitud;
+    }
+    public void setValorMagnitud(Double valorMagnitud) {
+        this.valorMagnitud = valorMagnitud;
+    }
 
     public List<SerieTemporal> getSeriesTemporales() {
         return seriesTemporales;
@@ -161,20 +195,19 @@ public class EventoSismico {
     
     public void revisar(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
         this.buscarUltimoCambioEstado();
-        this.crearCambioEstado(fechaCambioEstado, eventoSismico, estado, null); // el Empleado se debería pasar si está disponible
+        this.crearCambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable);
         this.setEstado(estado);
     }
 
-    public void buscarUltimoCambioEstado() {
-        for(CambioEstado cambio : this.getCambiosEstado()) {
-            if(cambio.esUltimoCambioEstado()) {
+    public void buscarUltimoCambioEstado(){
+        for(CambioEstado cambio: cambiosEstado){
+            if(cambio.esUltimoCambioEstado()){
                 cambio.setFechaFin();
             }
         }
     }
-
-    public void crearCambioEstado(LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
-        CambioEstado cambio = new CambioEstado(fechaCambioEstado, eventoSismico, estado, empleadoResponsable);
+    public void crearCambioEstado(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
+        CambioEstado cambio = new CambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable);
         this.cambiosEstado.add(cambio);
     }
 
@@ -232,10 +265,10 @@ public class EventoSismico {
             //Lo transforma en lista para devolverla
             .collect(Collectors.toList());
     }
-
+    //BUSCA EL ULTIMO CAMBIO DE ESTADO PERO EL GESTOR YA LO TIENE.
     public void rechazar(LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
         this.buscarUltimoCambioEstado();
-        this.crearCambioEstado(fechaCambioEstado, eventoSismico, estado, empleadoResponsable);
+        this.crearCambioEstado(fechaCambioEstado, eventoSismico,estado, empleadoResponsable);
         this.setEstado(estado);
     }
 }
