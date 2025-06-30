@@ -26,8 +26,8 @@ public class EventoSismico {
     private Double valorMagnitud;
 
 /** Lista de series temporales asociadas al evento. */
-    @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL)
-    private ArrayList<SerieTemporal> seriesTemporales;
+    @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SerieTemporal> seriesTemporales = new ArrayList<>();
 
 /** Cambios de estado que ha atravesado este evento sísmico. */
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL)

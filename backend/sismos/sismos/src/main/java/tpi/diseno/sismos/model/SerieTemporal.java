@@ -20,12 +20,17 @@ public class SerieTemporal {
 
 /** Evento sísmico al que pertenece esta serie temporal. */
     @ManyToOne
+    @JoinColumn(name = "evento_sismico_id")
     private EventoSismico eventoSismico;
+
 
 /** Lista de muestras sísmicas registradas en esta serie temporal. */
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
     private List<MuestraSismica> muestrasSismicas;
 
+    // Campo para la DEPENDENCIA 
+    @Transient // Indica que no es persistente
+    private transient Long sismografoId; // Solo almacena el ID cuando sea necesario
 
 /**Constructor */
     public SerieTemporal() {
@@ -105,18 +110,15 @@ public class SerieTemporal {
         return muestras;
     }
 
+    // Método modificado para usar lógica externa
     public String buscarEstacionSismologica(List<Sismografo> sismografos) {
-        String estacion = "";
-        for (Sismografo sismografo : sismografos) {
-            if (sismografo.sosMiSismografo(this.id)) {
-                estacion = sismografo.getDatosSismografo();
-            }
-        }
-        if (estacion.equals("")) {
-            throw new RuntimeException("No se encontró estación sismológica para esta serie temporal.");
-        }
-        return estacion;
+        return sismografos.stream()
+            .filter(s -> s.getId().equals(this.sismografoId)) // Compara por ID
+            .findFirst()
+            .map(Sismografo::getDatosSismografo)
+            .orElseThrow(() -> new RuntimeException("Estación no encontrada para sismógrafo ID: " + this.sismografoId));
     }
+
     /** 
      * Devuelve todas las muestras para búsquedas o visualización. 
      */
@@ -125,5 +127,13 @@ public class SerieTemporal {
             muestra.getDatosMuestra();
         }
         return muestrasSismicas;
+    }
+
+    // Getter/Setter para la dependencia
+    public Long getSismografoId() {
+        return this.sismografoId;
+    }
+    public void setSismografoId(Long sismografoId) {
+        this.sismografoId = sismografoId;
     }
 }

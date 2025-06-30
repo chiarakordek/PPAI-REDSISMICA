@@ -20,7 +20,9 @@ public class Sesion {
     private String observaciones;
 
 /** Usuario que inició la sesión. */
+    @ManyToOne
     private Usuario usuario;
+
 
 /**Constructor */
     public Sesion() {

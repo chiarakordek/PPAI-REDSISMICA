@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import tpi.diseno.sismos.repository.EventoSismicoRepository;
 import tpi.diseno.sismos.repository.EstadoRepository;
 import tpi.diseno.sismos.repository.SismografoRepository;
-
+import tpi.diseno.sismos.model.GenerarSismograma;
 
 @Service
 public class GestorRegistrarResultadoRevisionManual {
@@ -33,7 +33,7 @@ public class GestorRegistrarResultadoRevisionManual {
     //SIMULA LA INTEGRACIÓN CON OTRO CASO DE USO
     private final GenerarSismograma generarSismograma;
     private String mapaUbicacion;
-
+    private final SismografoRepository sismografoRepository;
     private List<Map<String, Object>> datosParaFrontend;
 
 
@@ -47,12 +47,12 @@ public class GestorRegistrarResultadoRevisionManual {
 
     private EventoSismicoRepository eventoSismicoRepository;
     private EstadoRepository estadoRepository;
-    private SismografoRepository sismografoRepository;
 
-    public GestorRegistrarResultadoRevisionManual( EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository, GenerarSismograma generarSismograma) {
+    public GestorRegistrarResultadoRevisionManual( EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository, GenerarSismograma generarSismograma, SismografoRepository sismografoRepository) {
         this.eventoSismicoRepository = eventoSismicoRepository;
         this.estadoRepository = estadoRepository;
         this.generarSismograma = generarSismograma;
+        this.sismografoRepository = sismografoRepository;
 
         // Inicialización de listas para evitar NullPointerException
         this.eventosSismicos = new ArrayList<>();
@@ -97,9 +97,10 @@ public class GestorRegistrarResultadoRevisionManual {
         this.eventosSismicos.sort(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia));
     }
 
-    public void tomarSeleccionEventoSismico(EventoSismico evento){
+    public void tomarSeleccionEventoSismico(EventoSismico evento) {
         this.eventoSeleccionado = evento;
-        bloquearEvento();
+        List<Sismografo> sismografos = sismografoRepository.findAll();
+        bloquearEvento(sismografos);
     }
 
     public Estado buscarEstadoBloqueado(){
@@ -120,7 +121,7 @@ public class GestorRegistrarResultadoRevisionManual {
         return this.sesionActual.obtenerUsuarioLogueado();
     }
 
-    public void bloquearEvento(){
+    public void bloquearEvento(List<Sismografo> sismografos){
         this.fechaHoraActual = tomarFechaHoraActual();
         this.punteroBloqueadoEnRevision = buscarEstadoBloqueado();
         if (this.punteroBloqueadoEnRevision == null){
@@ -128,27 +129,24 @@ public class GestorRegistrarResultadoRevisionManual {
         }
         this.punteroEmpleado = buscarEmpleadoLogueado();
         this.eventoSeleccionado.revisar(fechaHoraActual, eventoSeleccionado, punteroBloqueadoEnRevision, punteroEmpleado);
-        buscarDatosSismicos(eventoSeleccionado);
+        buscarDatosSismicos(eventoSeleccionado, sismografos);
     }
 
-    public void buscarDatosSismicos(EventoSismico evento){
+public void buscarDatosSismicos(EventoSismico evento, List<Sismografo> sismografos) {
+    this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales(sismografos);
 
-        List<Sismografo> sismografos = this.sismografoRepository.findAll();
-        this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales(sismografos);
+    List<Map<String, Object>> resultado = new ArrayList<>();
+    for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
+        String estacion = serieTemporal.buscarEstacionSismologica(sismografos);
+        for (MuestraSismica muestra : serieTemporal.buscarMuestrasSismicas()) {
+            Map<String, Object> datos = new HashMap<>();
+            datos.put("estacion", estacion);
 
+            for (Map<String, Object> detalle : muestra.buscarDetalleMuestra()) {
+                String tipo = detalle.get("Tipo de dato").toString();
+                String valor = detalle.get("Valor").toString();
 
-        List<Map<String, Object>> resultado = new ArrayList<>();
-        for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
-             String estacion = serieTemporal.buscarEstacionSismologica(sismografos);
-            for (MuestraSismica muestra : serieTemporal.buscarMuestrasSismicas()) {
-                Map<String, Object> datos = new HashMap<>();
-                datos.put("estacion", estacion);
-
-                for (Map<String, Object> detalle : muestra.buscarDetalleMuestra()) {
-                    String tipo = detalle.get("Tipo de dato").toString();
-                    String valor = detalle.get("Valor").toString();
-
-                    switch (tipo.toLowerCase()) {
+                switch (tipo.toLowerCase()) {
                     case "velocidad":
                         datos.put("velocidad", valor);
                         break;
@@ -158,16 +156,14 @@ public class GestorRegistrarResultadoRevisionManual {
                     case "longitud":
                         datos.put("longitud", valor);
                         break;
-                    }
                 }
-
-            resultado.add(datos);
             }
+            resultado.add(datos);
         }
-        // Guardalo en un atributo de la clase si lo querés usar luego
-        this.datosParaFrontend = resultado;
-        llamarCasoDeUsoGenerarSismograma();
     }
+    this.datosParaFrontend = resultado;
+    llamarCasoDeUsoGenerarSismograma();
+}
 
     public void llamarCasoDeUsoGenerarSismograma(){
         this.mapaUbicacion = this.generarSismograma.include(this.eventoSeleccionado.getId());
