@@ -185,8 +185,8 @@ public class EventoSismico {
         return String.format(
             "Fecha/Hora: %s | Ubicación Epicentro: (%.4f, %.4f) | Ubicación Hipocentro: (%.4f, %.4f) | Magnitud: %.1f | %s | Estado: %s",
             getFechaHoraOcurrencia(),
-            getLatitud(),
-            getLongitud(),
+            getLatitudEpicentro(),
+            getLongitudEpicentro(),
             getLatitudHP(),
             getLongitudHP(),
             getMagnitud()
