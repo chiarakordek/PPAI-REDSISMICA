@@ -1,12 +1,6 @@
 package tpi.diseno.sismos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.*;
 import tpi.diseno.sismos.repository.SismografoRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,7 +26,6 @@ public class SerieTemporal {
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
     private List<MuestraSismica> muestrasSismicas;
 
-    private SismografoRepository sismografos;
 
 /**Constructor */
     public SerieTemporal() {
@@ -112,9 +105,9 @@ public class SerieTemporal {
         return muestras;
     }
 
-    public String buscarEstacionSismologica() {
+    public String buscarEstacionSismologica(List<Sismografo> sismografos) {
         String estacion = "";
-        for (Sismografo sismografo : sismografos.findAll()) {
+        for (Sismografo sismografo : sismografos) {
             if (sismografo.sosMiSismografo(this.id)) {
                 estacion = sismografo.getDatosSismografo();
             }

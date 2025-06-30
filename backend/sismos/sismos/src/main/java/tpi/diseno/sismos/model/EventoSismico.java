@@ -151,8 +151,8 @@ public class EventoSismico {
         return String.format(
             "Fecha/Hora: %s | Ubicación Epicentro: (%.4f, %.4f) | Ubicación Hipocentro: (%.4f, %.4f) | Magnitud: %.1f | %s | Estado: %s",
             getFechaHoraOcurrencia(),
-            getLatitudEpicentro(),
-            getLongitudEpicentro(),
+            getLatitud(),
+            getLongitud(),
             getLatitudHP(),
             getLongitudHP(),
             getMagnitud()
@@ -161,7 +161,7 @@ public class EventoSismico {
     
     public void revisar(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){
         this.buscarUltimoCambioEstado();
-        this.crearCambioEstado(fechaCambioEstado, eventoSismico, estado, null); // el Empleado se debería pasar si está disponible
+        this.crearCambioEstado(fechaInicio, eventoSismico, estado, null); // el Empleado se debería pasar si está disponible
         this.setEstado(estado);
     }
 
@@ -178,7 +178,7 @@ public class EventoSismico {
         this.cambiosEstado.add(cambio);
     }
 
-    public List<SerieTemporal> obtenerSeriesTemporales() {
+    public List<SerieTemporal> obtenerSeriesTemporales(List<Sismografo> sismografos) {
 
 
         /*Resultados esperados por el gestor:
@@ -203,17 +203,17 @@ public class EventoSismico {
             serie.getDatosSerieTemporal(); 
             series.add(serie);  
             //Para cada serie temporal, se obtiene su estación sismológica
-            estaciones.add(serie.buscarEstacionSismologica());
+            estaciones.add(serie.buscarEstacionSismologica(sismografos));
         }   
 
         // Ordena la lista de series temporales por estación sismológica
-        List<SerieTemporal> ordenadas = clasificarSeriesTemporales(series, estaciones);
+        List<SerieTemporal> ordenadas = clasificarSeriesTemporales(series, estaciones, sismografos);
         // Devuelve la lista ordenada de series temporales
         return ordenadas;
     }
 
     //Ordena las series temporales por estación sismológica
-    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales, List<String> estaciones){
+    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales, List<String> estaciones, List<Sismografo> sismografos){
         //Ordena las estaciones alfabéticamente
         estaciones.sort(Comparator.naturalOrder());
         //Crea un Map (ordenEstaciones) que asigna a cada estación su posición o índice en la lista ordenada.
@@ -225,7 +225,7 @@ public class EventoSismico {
         //Ordena las series temporales según la posición de su estación asociada en el mapa
         return seriesTemporales.stream()
             .sorted(Comparator.comparingInt(
-                s -> ordenEstaciones.getOrDefault(s.buscarEstacionSismologica(), Integer.MAX_VALUE)
+                s -> ordenEstaciones.getOrDefault(s.buscarEstacionSismologica(sismografos), Integer.MAX_VALUE)
                 //Si una serie tiene una estación que no está en la lista estaciones, se le asigna Integer.MAX_VALUE 
                 //(quedará al final).
             ))

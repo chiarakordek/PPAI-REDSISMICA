@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import tpi.diseno.sismos.repository.EventoSismicoRepository;
 import tpi.diseno.sismos.repository.EstadoRepository;
+import tpi.diseno.sismos.repository.SismografoRepository;
 
 
 @Service
@@ -46,6 +47,7 @@ public class GestorRegistrarResultadoRevisionManual {
 
     private EventoSismicoRepository eventoSismicoRepository;
     private EstadoRepository estadoRepository;
+    private SismografoRepository sismografoRepository;
 
     public GestorRegistrarResultadoRevisionManual( EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository, GenerarSismograma generarSismograma) {
         this.eventoSismicoRepository = eventoSismicoRepository;
@@ -130,12 +132,14 @@ public class GestorRegistrarResultadoRevisionManual {
     }
 
     public void buscarDatosSismicos(EventoSismico evento){
-        this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales();
+
+        List<Sismografo> sismografos = this.sismografoRepository.findAll();
+        this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales(sismografos);
 
 
         List<Map<String, Object>> resultado = new ArrayList<>();
         for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
-             String estacion = serieTemporal.buscarEstacionSismologica();
+             String estacion = serieTemporal.buscarEstacionSismologica(sismografos);
             for (MuestraSismica muestra : serieTemporal.buscarMuestrasSismicas()) {
                 Map<String, Object> datos = new HashMap<>();
                 datos.put("estacion", estacion);
