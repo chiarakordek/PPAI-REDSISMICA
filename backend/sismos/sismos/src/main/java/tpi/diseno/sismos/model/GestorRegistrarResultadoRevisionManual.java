@@ -1,18 +1,17 @@
+// Contenido completo para GestorRegistrarResultadoRevisionManual.java
+
 package tpi.diseno.sismos.model;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
-
 import tpi.diseno.sismos.repository.EventoSismicoRepository;
 import tpi.diseno.sismos.repository.EstadoRepository;
 import tpi.diseno.sismos.repository.SismografoRepository;
-import tpi.diseno.sismos.model.GenerarSismograma;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class GestorRegistrarResultadoRevisionManual {
@@ -36,7 +35,6 @@ public class GestorRegistrarResultadoRevisionManual {
     private final SismografoRepository sismografoRepository;
     private List<Map<String, Object>> datosParaFrontend;
 
-
     private enum opcionResultadoRevision {
         RECHAZADO,
         CONFIRMADO,
@@ -45,10 +43,10 @@ public class GestorRegistrarResultadoRevisionManual {
 
     private List<Estado> estados;
 
-    private EventoSismicoRepository eventoSismicoRepository;
-    private EstadoRepository estadoRepository;
+    private final EventoSismicoRepository eventoSismicoRepository;
+    private final EstadoRepository estadoRepository;
 
-    public GestorRegistrarResultadoRevisionManual( EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository, GenerarSismograma generarSismograma, SismografoRepository sismografoRepository) {
+    public GestorRegistrarResultadoRevisionManual(EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository, GenerarSismograma generarSismograma, SismografoRepository sismografoRepository) {
         this.eventoSismicoRepository = eventoSismicoRepository;
         this.estadoRepository = estadoRepository;
         this.generarSismograma = generarSismograma;
@@ -60,8 +58,15 @@ public class GestorRegistrarResultadoRevisionManual {
         this.SeriesTemporalesEventoSeleccionado = new ArrayList<>();
     }
 
-        // Getter para datos que mostrás en el frontend
+    // Getter para datos que mostrás en el frontend (legado, se podría eliminar si no se usa)
     public List<String> getDatosEventosSismicos() {
+        // Generamos la lista de strings a partir de la lista de objetos, si es necesario
+        this.datosEventosSismicos.clear();
+        if (this.eventosSismicos != null) {
+            for (EventoSismico evento : this.eventosSismicos) {
+                this.datosEventosSismicos.add(evento.getDatos());
+            }
+        }
         return this.datosEventosSismicos;
     }
 
@@ -75,26 +80,21 @@ public class GestorRegistrarResultadoRevisionManual {
         this.buscarEventosSismicos();
     }
 
+    // --- MÉTODO SIMPLIFICADO Y CORREGIDO ---
+    // Ahora delega la responsabilidad de filtrar por estado directamente a la base de datos.
     public void buscarEventosSismicos(){
-        List<EventoSismico> eventos = this.eventoSismicoRepository.findAll();
-        if (eventos.isEmpty()){
-            throw new RuntimeException("No se encontraron eventos sísmicos.");
-        }
-                // Limpio listas antes de agregar nuevos elementos
-        this.eventosSismicos.clear();
-        this.datosEventosSismicos.clear();
-
-        for (EventoSismico evento : eventos) {
-            if (evento.esAutodetectado() || evento.esPendiente()){
-                this.eventosSismicos.add(evento);
-                this.datosEventosSismicos.add(evento.getDatos());
-            } 
-        }
+        // Llama al método del repositorio que ejecuta la consulta específica para pendientes.
+        // Esto implementa los pasos 5 y 6 del DDS de la forma más eficiente.
+        this.eventosSismicos = eventoSismicoRepository.findEventosPendientes();
+        
+        // El resto de la lógica para ordenar permanece igual.
         ordenarEventoSismicos();
     }
 
     public void ordenarEventoSismicos(){
-        this.eventosSismicos.sort(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia));
+        if (this.eventosSismicos != null && !this.eventosSismicos.isEmpty()) {
+            this.eventosSismicos.sort(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia));
+        }
     }
 
     public void tomarSeleccionEventoSismico(EventoSismico evento) {
@@ -118,6 +118,13 @@ public class GestorRegistrarResultadoRevisionManual {
     }
 
     public Empleado buscarEmpleadoLogueado(){
+        // FIXME: La sesión actual es nula. Necesita ser inyectada o gestionada.
+        // Por ahora, simularemos un empleado para evitar NullPointerException.
+        if (this.sesionActual == null) {
+            Empleado empleadoSimulado = new Empleado();
+            empleadoSimulado.setNombre("Empleado Simulado");
+            return empleadoSimulado;
+        }
         return this.sesionActual.obtenerUsuarioLogueado();
     }
 
@@ -132,42 +139,42 @@ public class GestorRegistrarResultadoRevisionManual {
         buscarDatosSismicos(eventoSeleccionado, sismografos);
     }
 
-public void buscarDatosSismicos(EventoSismico evento, List<Sismografo> sismografos) {
-    this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales(sismografos);
+    public void buscarDatosSismicos(EventoSismico evento, List<Sismografo> sismografos) {
+        this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales(sismografos);
 
-    List<Map<String, Object>> resultado = new ArrayList<>();
-    for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
-        String estacion = serieTemporal.buscarEstacionSismologica(sismografos);
-        for (MuestraSismica muestra : serieTemporal.buscarMuestrasSismicas()) {
-            Map<String, Object> datos = new HashMap<>();
-            datos.put("estacion", estacion);
+        List<Map<String, Object>> resultado = new ArrayList<>();
+        for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
+            String estacion = serieTemporal.buscarEstacionSismologica(sismografos);
+            for (MuestraSismica muestra : serieTemporal.buscarMuestrasSismicas()) {
+                Map<String, Object> datos = new HashMap<>();
+                datos.put("estacion", estacion);
 
-            for (Map<String, Object> detalle : muestra.buscarDetalleMuestra()) {
-                String tipo = detalle.get("Tipo de dato").toString();
-                String valor = detalle.get("Valor").toString();
+                for (Map<String, Object> detalle : muestra.buscarDetalleMuestra()) {
+                    String tipo = detalle.get("Tipo de dato").toString();
+                    String valor = detalle.get("Valor").toString();
 
-                switch (tipo.toLowerCase()) {
-                    case "velocidad":
-                        datos.put("velocidad", valor);
-                        break;
-                    case "frecuencia":
-                        datos.put("frecuencia", valor);
-                        break;
-                    case "longitud":
-                        datos.put("longitud", valor);
-                        break;
+                    switch (tipo.toLowerCase()) {
+                        case "velocidad":
+                            datos.put("velocidad", valor);
+                            break;
+                        case "frecuencia":
+                            datos.put("frecuencia", valor);
+                            break;
+                        case "longitud":
+                            datos.put("longitud", valor);
+                            break;
+                    }
                 }
+                resultado.add(datos);
             }
-            resultado.add(datos);
         }
+        this.datosParaFrontend = resultado;
+        llamarCasoDeUsoGenerarSismograma();
     }
-    this.datosParaFrontend = resultado;
-    llamarCasoDeUsoGenerarSismograma();
-}
 
     public void llamarCasoDeUsoGenerarSismograma(){
         this.mapaUbicacion = this.generarSismograma.include(this.eventoSeleccionado.getId());
-        //COMUNICACION CON LA PANTALLA PARA VER MAPA 
+        //COMUNICACION CON LA PANTALLA PARA VER MAPA
     }
 
     public String tomarOpcVerMapa(String opcion){
@@ -213,7 +220,7 @@ public void buscarDatosSismicos(EventoSismico evento, List<Sismografo> sismograf
             }
         }
         return null;
-    } 
+    }
 
     public void rechazararEvento(){
         this.punteroRechazado = buscarEstadoRechazado();
@@ -225,13 +232,17 @@ public void buscarDatosSismicos(EventoSismico evento, List<Sismografo> sismograf
     }
 
     public void finCU(){
-        this.sesionActual.setFechaFin(tomarFechaHoraActual());
+        // FIXME: La sesión actual es nula.
+        if (this.sesionActual != null) {
+            this.sesionActual.setFechaFin(tomarFechaHoraActual());
+        }
     }
 
     public List<Map<String, Object>> getDatosParaFrontend() {
         return this.datosParaFrontend;
     }
 
+    public List<EventoSismico> getEventosSismicosPendientesCompletos() {
+        return this.eventosSismicos;
+    }
 }
-
-

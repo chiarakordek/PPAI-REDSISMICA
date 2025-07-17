@@ -1,68 +1,46 @@
+<!-- Archivo completo para: frontend/pendientes.html -->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eventos Autodetectados</title>
+  <title>Eventos Pendientes</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <div class="top-bar">
-    <img src="img/logo.png" class="logo-small" alt="Logo">
-    <span class="analyst-name">👤 Analista: Nombre Apellido</span>
-  </div>
+  <header class="top-bar">
+    <a href="menu.html">
+        <img src="img/logo.png" class="logo-small" alt="Logo">
+    </a>
+    <span class="analyst-name">Analista: Nombre Apellido</span>
+  </header>
   
   <div class="main-container">
     <div class="tabla-card">
       <h2>Pendientes</h2>
       
       <div class="filtros-container">
-        <div>
-          <label>Filtros:</label>
-          <select>
-            <option>100mm 32Mts</option>
-            <option>50mm 16Mts</option>
-            <option>200mm 64Mts</option>
-          </select>
-        </div>
-        
-        <div>
-          <label>Magnitud:</label>
-          <select>
-            <option>4.2</option>
-            <option>3.0+</option>
-            <option>5.0+</option>
-          </select>
-        </div>
-        
-        <button class="btn">Aplicar</button>
+        <!-- Puedes añadir tus filtros aquí si los necesitas -->
       </div>
       
       <table class="eventos-table">
         <thead>
           <tr>
             <th>Fecha/Hora</th>
-            <th>Ubicación</th>
+            <th>Ubicación Epicentro</th>
+            <th>Ubicación Hipocentro</th> <!-- ENCABEZADO AÑADIDO -->
             <th>Magnitud</th>
             <th>Acción</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>24/04/2025 00:23:10</td>
-            <td>12.34°S, 76.12°W</td>
-            <td>4.2</td>
-            <td><a href="detalleEvento.html?origen=pendientes" class="btn">Revisar</a></td>
-          </tr>
-          <tr>
-            <td>24/04/2025 00:23:10</td>
-            <td>12.34°S, 76.12°W</td>
-            <td>4.2</td>
-            <td><a href="detalleEvento.html?origen=pendientes" class="btn">Revisar</a></td>
-          </tr>
+        <tbody id="tabla-pendientes-body"> 
+          <!-- El contenido se generará dinámicamente aquí -->
         </tbody>
       </table>
     </div>
   </div>
+
+  <script src="js/pendientes.js"></script>
 </body>
 </html>

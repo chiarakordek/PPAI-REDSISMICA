@@ -85,6 +85,7 @@ input {
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px); /* Compatibilidad con Safari */
   outline: none;
   transition: all 0.3s ease;
 }
@@ -109,6 +110,7 @@ input:focus {
   cursor: pointer;
   text-decoration: none;
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px); /* Compatibilidad con Safari */
   transition: all 0.3s ease;
 }
 
@@ -161,6 +163,7 @@ input:focus {
   color: white;
   font-size: 16px;
   backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px); /* Compatibilidad con Safari */
   outline: none;
   transition: 0.3s;
 }
@@ -439,6 +442,7 @@ button#guardarBtn {
   position: relative;
   z-index: 1;
   backdrop-filter: blur(5px); /* Efecto glassmorphism */
+  -webkit-backdrop-filter: blur(5px); /* Compatibilidad con Safari */
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
@@ -645,6 +649,7 @@ button#guardarBtn {
 .btn-editar, .btn-guardar {
   background: rgba(0, 0, 0, 0.5); /* Fondo más oscuro */
   backdrop-filter: blur(8px); /* Más difuminado */
+  -webkit-backdrop-filter: blur(8px); /* Compatibilidad con Safari */
   border: 1px solid rgba(255, 255, 255, 0.3); /* Borde más visible */
 }
 
@@ -777,4 +782,22 @@ button#guardarBtn {
 .form-group textarea {
   min-height: 80px;
   resize: vertical;
+}
+
+/* --- CÓDIGO AÑADIDO PARA ARREGLAR BOTONES --- */
+
+/* Contenedor de los botones en menu.html */
+.botones {
+  display: flex;         /* Activa Flexbox */
+  flex-wrap: wrap;       /* Permite que los botones pasen a la siguiente línea si no caben */
+  justify-content: center; /* Centra los botones horizontalmente */
+  gap: 15px;             /* Añade un espacio de 15px entre cada botón */
+  margin-top: 20px;      /* Añade un poco de espacio arriba */
+  width: 100%;           /* Asegura que el contenedor ocupe el ancho disponible */
+}
+
+/* Estilo individual de cada botón en el menú para asegurar consistencia */
+.botones .btn {
+  flex-grow: 1;          /* Permite que los botones crezcan para ocupar el espacio */
+  max-width: 300px;      /* Pone un límite al ancho para que no se estiren demasiado */
 }

@@ -13,14 +13,19 @@
       <h1>Bienvenido, <span id="nombreUsuario"></span></h1>
 
     <script>
-     // Muestra el nombre guardado
-     document.getElementById('nombreUsuario').textContent = 
-    localStorage.getItem('usuario') || 'Invitado';
+     const sesionString = localStorage.getItem('sesion');
+     if (sesionString) {
+        const sesionData = JSON.parse(sesionString);
+        document.getElementById('nombreUsuario').textContent = sesionData.usuario;
+     } else {
+        window.location.href = 'login.html';
+     }
     </script>
     
       <div class="botones">
-        <a href="pendientes.html" class="btn">Nuevo Registro</a>
-        <a href="registrados.html" class="btn">Ver Registros</a>
+        <!-- Se ha eliminado el botón de creación manual -->
+        <a href="pendientes.html" class="btn">Revisar Eventos Pendientes</a>
+        <a href="registrados.html" class="btn">Ver Registros Históricos</a>
       </div>
     </div>
   </div>

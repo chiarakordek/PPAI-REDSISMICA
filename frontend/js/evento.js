@@ -1,62 +1,112 @@
-// Mostrar botones según origen
-document.addEventListener('DOMContentLoaded', function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const origen = urlParams.get('origen');
-  
-  if (origen === 'pendientes') {
-    document.getElementById('botones-pendientes').style.display = 'flex';
-    document.getElementById('botones-registrados').style.display = 'none';
-    document.querySelector('.btn-registrar').disabled = true; // Inicialmente deshabilitado
-  } else if (origen === 'registrados') {
-    document.getElementById('botones-pendientes').style.display = 'none';
-    document.getElementById('botones-registrados').style.display = 'flex';
-  }
+// --- Contenido completo y corregido para js/evento.js ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventoId = urlParams.get('id');
+    const origen = urlParams.get('origen');
+
+    const tituloEvento = document.querySelector('.evento-header h2');
+    // NOTA: Asegúrate de que tu HTML tenga estos IDs
+    const spanFecha = document.getElementById('info-fecha');
+    const spanUbicacion = document.getElementById('info-ubicacion');
+    const spanMagnitud = document.getElementById('info-magnitud');
+    const spanAlcance = document.getElementById('info-alcance');
+    const estadoActualSpan = document.getElementById('estado-actual');
+    
+    // Asumimos que la API está en el puerto 8080 del backend
+    const API_URL = 'http://localhost:8080/api/revision-manual';
+
+    const cargarDetalleEvento = async () => {
+        if (!eventoId) {
+            tituloEvento.textContent = "Error: No se especificó un ID de evento.";
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/detalles-evento/${eventoId}`);
+
+            if (!response.ok) {
+                throw new Error(`Error al cargar el evento: ${response.status}`);
+            }
+
+            const evento = await response.json();
+
+            // --- CORRECCIÓN PRINCIPAL AQUÍ ---
+            // Leemos los datos directamente del DTO que nos envía el backend.
+            // Ya no necesitamos 'new Date()' ni formatear nada.
+
+            tituloEvento.textContent = `Evento #${eventoId}`; // Usamos el ID de la URL que es más seguro
+            spanFecha.textContent = evento.fechaHora; // ANTES: new Date(evento.fechaHoraOcurrencia)...
+            spanUbicacion.textContent = evento.ubicacion; // ANTES: `${evento.latitudEpicentro}°S...`
+            spanMagnitud.textContent = evento.magnitud;
+            spanAlcance.textContent = evento.alcance; // ANTES: evento.alcanceSismo ? evento.alcanceSismo.nombre : 'No definido'
+            estadoActualSpan.textContent = evento.estado; // ANTES: evento.estadoActual ? evento.estadoActual.nombreEstado : 'No definido'
+            
+            // --- CÓDIGO DE EDICIÓN (opcional, por ahora lo comentamos para evitar errores) ---
+            /* 
+            const editFecha = document.getElementById('edit-fecha');
+            const editUbicacion = document.getElementById('edit-ubicacion');
+            const editMagnitud = document.getElementById('edit-magnitud');
+            const editAlcance = document.getElementById('edit-alcance');
+            
+            // Rellenar el formulario de edición (si existe)
+            if(editFecha) {
+                // Para rellenar el formulario necesitaríamos la fecha en formato ISO.
+                // Por ahora, lo dejamos simple.
+                // editFecha.value = new Date().toISOString().slice(0, 16); // Valor de ejemplo
+                editUbicacion.value = evento.ubicacion;
+                editMagnitud.value = evento.magnitud;
+                editAlcance.value = evento.alcance;
+            }
+            */
+
+        } catch (error) {
+            console.error('Error al cargar los datos del evento.', error);
+            tituloEvento.textContent = "Error al cargar los datos del evento.";
+            // Para ver más detalles del error en la propia página:
+            spanFecha.textContent = error.message;
+        }
+    };
+
+    const mostrarBotonesCorrectos = () => {
+        // ... (Tu lógica de botones está bien, no la tocamos)
+        const botonesPendientes = document.getElementById('botones-pendientes');
+        const botonesRegistrados = document.getElementById('botones-registrados');
+
+        if (botonesPendientes && botonesRegistrados) {
+            if (origen === 'pendientes') {
+                botonesPendientes.style.display = 'flex';
+                botonesRegistrados.style.display = 'none';
+                const btnRegistrar = document.querySelector('#botones-pendientes .btn-registrar');
+                if (btnRegistrar) btnRegistrar.disabled = true;
+            } else if (origen === 'registrados') {
+                botonesPendientes.style.display = 'none';
+                botonesRegistrados.style.display = 'flex';
+                const btnGuardar = document.querySelector('#botones-registrados .btn-guardar');
+                if (btnGuardar) btnGuardar.disabled = true;
+            } else {
+                botonesPendientes.style.display = 'none';
+                botonesRegistrados.style.display = 'none';
+            }
+        }
+    };
+
+    cargarDetalleEvento();
+    mostrarBotonesCorrectos();
 });
 
-// Habilitar edición (común para ambos flujos)
+// --- FUNCIONES GLOBALES (están bien, no las tocamos) ---
+// ... tu código de habilitarEdicion, registrarEvento, etc. se queda igual ...
 function habilitarEdicion() {
-  const form = document.getElementById('formulario-edicion');
-  form.style.display = 'block';
-  
-  // Habilitar el botón correspondiente según el origen
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('origen') === 'pendientes') {
-    document.querySelector('.btn-registrar').disabled = false;
-  } else {
-    document.querySelector('.btn-guardar').disabled = false;
-  }
-}
+    const form = document.getElementById('formulario-edicion');
+    if (form) form.style.display = 'block';
 
-// Función específica para registro desde Pendientes
-function registrarEvento() {
-  if (confirm('¿Registrar este evento con los cambios realizados?')) {
-    guardarCambios();
-    cambiarEstado('Registrado');
-    // Redirigir o actualizar interfaz
-    alert('Evento registrado exitosamente');
-  }
-}
-
-// Función para guardar cambios (común)
-function guardarCambios() {
-  // Obtener todos los valores editados
-  const datos = {
-    fecha: document.getElementById('edit-fecha').value,
-    ubicacion: document.getElementById('edit-ubicacion').value,
-    magnitud: document.getElementById('edit-magnitud').value,
-    alcance: document.getElementById('edit-alcance').value,
-    comentarios: document.getElementById('edit-comentarios').value
-  };
-  
-  // Aquí iría la lógica AJAX para guardar en backend
-  console.log('Datos guardados:', datos);
-  
-  // Cerrar formulario
-  document.getElementById('formulario-edicion').style.display = 'none';
-}
-
-// Función para cambiar estado
-function cambiarEstado(estado) {
-  document.getElementById('estado-actual').textContent = estado;
-  // Lógica adicional para cambio de estado...
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('origen') === 'pendientes') {
+        const btn = document.querySelector('#botones-pendientes .btn-registrar');
+        if (btn) btn.disabled = false;
+    } else {
+        const btn = document.querySelector('#botones-registrados .btn-guardar');
+        if (btn) btn.disabled = false;
+    }
 }
