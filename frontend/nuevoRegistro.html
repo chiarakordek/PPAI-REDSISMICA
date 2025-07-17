@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EventosSísmicos</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Barra superior -->
+  <div class="top-bar">
+    <img src="img/logo.png" class="logo-small" alt="Logo" />
+    <span class="analyst-name">👤 Analista: Nombre Apellido</span>
+  </div>
+
+  <!-- Contenido -->
+  <div class="tabla-wrapper">
+    <div class="tabla-card">
+      <h2><!-- TITULO A CAMBIAR --></h2>
+
+      <!-- Filtros -->
+      <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <label>Filtros:</label>
+        <select>
+          <option>Últimas 24hs</option>
+          <option>Última semana</option>
+          <option>Último mes</option>
+        </select>
+        <select>
+          <option>Magnitud</option>
+          <option>Mayor a 5.0</option>
+          <option>Mayor a 6.0</option>
+        </select>
+        <button class="btn">Aplicar</button>
+      </div>
+
+      <!-- Tabla simulada con registros -->
+      <div class="detalle-item"><strong>Fecha/Hora:</strong> 24/04/2025 00:23:10</div>
+      <div class="detalle-item"><strong>Ubicación:</strong> 12.34°S, 76.12°W</div>
+      <div class="detalle-item"><strong>Magnitud:</strong> 4.2</div>
+      <div class="acciones">
+        <a href="verRegistro.html" class="btn"><!-- ACCIÓN A CAMBIAR --></a>
+      </div>
+
+      <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.2);" />
+
+      <!-- Segundo registro -->
+      <div class="detalle-item"><strong>Fecha/Hora:</strong> 24/04/2025 00:23:10</div>
+      <div class="detalle-item"><strong>Ubicación:</strong> 12.34°S, 76.12°W</div>
+      <div class="detalle-item"><strong>Magnitud:</strong> 4.2</div>
+      <div class="acciones">
+        <a href="verRegistro.html" class="btn"><!-- ACCIÓN A CAMBIAR --></a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
