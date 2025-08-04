@@ -1,5 +1,3 @@
-// Archivo completo, final y verificado para: frontend/js/pendientes.js
-
 document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-pendientes-body');
     const API_URL = 'http://localhost:8080/api/revision-manual';

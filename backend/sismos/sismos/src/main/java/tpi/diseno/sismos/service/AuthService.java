@@ -1,5 +1,6 @@
 package tpi.diseno.sismos.service;
 
+import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import tpi.diseno.sismos.model.Sesion;
 import tpi.diseno.sismos.model.Usuario;
@@ -17,7 +18,7 @@ public class AuthService {
     }
 
     public Sesion autenticarUsuario(String nombreUsuario) {
-        // Agrega logs para depuración
+        // Agrego logs para depuración
         System.out.println("Buscando usuario: " + nombreUsuario);
         
         Usuario usuario = usuarioRepository.findById(nombreUsuario)
@@ -26,6 +27,7 @@ public class AuthService {
         System.out.println("Usuario encontrado: " + usuario.getNombre());
         
         Sesion sesion = new Sesion(usuario);
+        sesion.setFechaInicio(LocalDateTime.now());
         return sesionRepository.save(sesion);
     }
 }

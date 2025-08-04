@@ -2,7 +2,6 @@ package tpi.diseno.sismos.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import tpi.diseno.sismos.model.DetalleMuestraSismica;
 
 public class DatosMuestraSismica {
 

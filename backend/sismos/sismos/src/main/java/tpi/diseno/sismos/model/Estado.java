@@ -15,10 +15,11 @@ public class Estado {
     private String ambito;
     private String nombreEstado;
 
-    /**Constructor */
+    /**Constructor (Vacío)*/
     public Estado() {
     }
 
+    /**Constructor */
     public Estado(String ambito, String nombreEstado) {
         this.ambito = ambito;
         this.nombreEstado = nombreEstado;
@@ -28,23 +29,39 @@ public class Estado {
     public Long getId() {
         return id;
     }
+
+
     public void setId(Long id) {
         this.id = id;
     }
 
+
     public String getAmbito() {
         return ambito;
     }
+
+
     public void setAmbito(String ambito) {
         this.ambito = ambito;
     }
 
+
     public String getNombreEstado() {
         return nombreEstado;
     }
+
+
     public void setNombreEstado(String nombreEstado) {
         this.nombreEstado = nombreEstado;
     }
+
+
+    /**                 Métodos de validación 
+     * verfican si un estado cumple con un atributo en específico
+     * Retornan true o false.
+     * Case insensitive 
+    */
+
 
     public boolean esAmbitoEventoSismico(){
         return "EventoSismico".equalsIgnoreCase(ambito);
@@ -65,4 +82,6 @@ public class Estado {
     public boolean esBloqueadoEnRevision(){
         return "BloqueadoEnRevision".equalsIgnoreCase(ambito);
     }
+
+    //AGREGAR ESTADOS DE LA MÁQUINA DE ESTADOS
 }

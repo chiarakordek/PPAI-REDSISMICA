@@ -6,13 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tpi.diseno.sismos.repository.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class GestorRegistrarResultadoRevisionManual {
@@ -25,8 +22,6 @@ public class GestorRegistrarResultadoRevisionManual {
     private EventoSismicoRepository eventoSismicoRepository;
     @Autowired
     private EstadoRepository estadoRepository;
-
-    // ... (Puedes tener otros repositorios inyectados si los necesitas)
 
     // Constructor para la inyección de dependencias
     public GestorRegistrarResultadoRevisionManual(EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository) {
@@ -41,7 +36,6 @@ public class GestorRegistrarResultadoRevisionManual {
         return eventoSismicoRepository.findEventosPendientes();
     }
 
-    // --- ¡MÉTODO CORREGIDO! ---
     // Este método ya no le pide a EventoSismico que haga el trabajo.
     // Simplemente devuelve los datos que ya tenemos.
     public List<Map<String, String>> getDatosEventosSismicos() {
@@ -63,7 +57,7 @@ public class GestorRegistrarResultadoRevisionManual {
         this.bloquearEvento(); // Llamamos al método para cambiar el estado
     }
     
-    // --- ¡MÉTODO CORREGIDO! ---
+
     // La lógica de cambiar el estado y guardar está aquí, en el Gestor.
     public void bloquearEvento(){
         if (this.eventoSeleccionado == null) return;
@@ -80,7 +74,7 @@ public class GestorRegistrarResultadoRevisionManual {
         eventoSismicoRepository.save(this.eventoSeleccionado);
     }
     
-    // --- ¡MÉTODO CORREGIDO! ---
+
     // La lógica de rechazar y guardar está aquí.
     public void rechazarEvento(){
         if (this.eventoSeleccionado == null) return;

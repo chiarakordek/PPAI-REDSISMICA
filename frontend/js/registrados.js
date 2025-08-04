@@ -1,14 +1,8 @@
-// Archivo frontend/js/registrados.js
-
 document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-registrados-body');
 
-    // =========== INICIO DE LA MODIFICACIÓN ===========
-    // CAMBIAMOS la URL para que coincida con el endpoint que tienes en tu controlador.
-    // Antes era: /api/eventos-registrados
-    // Ahora es: /api/revision-manual/eventos-todos
+    //La URL coincide con el endpoint del controller
     const API_URL = 'http://localhost:8080/api/revision-manual/eventos-todos'; 
-    // =========== FIN DE LA MODIFICACIÓN ===========
 
     const cargarEventosRegistrados = async () => {
         tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';

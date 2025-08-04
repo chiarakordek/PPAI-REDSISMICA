@@ -5,11 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import tpi.diseno.sismos.repository.TipoDeDatoRepository;
 import java.util.Map;
-
-import java.util.HashMap;
-import java.util.List;
 
 @Entity
 public class DetalleMuestraSismica {
@@ -28,10 +24,10 @@ public class DetalleMuestraSismica {
     @ManyToOne
     private TipoDeDato tipoDeDato;
 
-    /**Constructor */
-    public DetalleMuestraSismica() {
-    }
+    /**Constructor (Vacío)*/
+    public DetalleMuestraSismica() {}
 
+    /**Constructor */
     public DetalleMuestraSismica(Double valor, MuestraSismica muestraSismica, TipoDeDato tipoDeDato) {
         this.valor = valor;
         this.muestraSismica = muestraSismica;
@@ -68,18 +64,19 @@ public class DetalleMuestraSismica {
         this.tipoDeDato = tipoDeDato;
     }
 
-/////metodos
-/** *
-     * Devuelve el valor registrado en esta muestra. 
-     */
+
+    //Devuelve el valor registrado en esta muestra. 
     public Map<String, Object> getDatosDetalleMuestra() {
+        //Para cada detalle se obtiene el valor y el tipo de dato al que pertenece
         return Map.of(
             "Valor", this.valor,
             "Tipo de dato", buscarTipoDeDato()
         );
     }
 
+    //Obtiene el tipo de dato para el valor del detalle
     public String buscarTipoDeDato() {
+        //Si el tipo de dato es null, se informa que no se reconoce el tipo de dato.
         return this.tipoDeDato != null ? this.tipoDeDato.getDenominacion() : "Tipo desconocido";
     }
 }

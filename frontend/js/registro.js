@@ -1,4 +1,6 @@
-document.getElementById("guardarBtn").addEventListener("click", function () {
+guardarBtn = document.getElementById("guardarBtn")
+
+guardarBtn.addEventListener("click", function () {
   const fecha = document.getElementById("fecha").value;
   const ubicacion = document.getElementById("ubicacion").value;
   const magnitud = document.getElementById("magnitud").value;

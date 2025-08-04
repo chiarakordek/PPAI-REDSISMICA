@@ -28,10 +28,8 @@ public class Sesion {
     public Sesion() {
     }
 
-    public Sesion(LocalDateTime fechaInicio, LocalDateTime fechaFin, String observaciones, Usuario usuario) {
+    public Sesion(LocalDateTime fechaInicio, Usuario usuario) {
         this.fechaInicio = fechaInicio;
-        this.fechaFin = fechaFin;
-        this.observaciones = observaciones;
         this.usuario = usuario;
     }
 
