@@ -1,4 +1,4 @@
-// Reemplaza el contenido completo de tu archivo EventoSismicoRepository.java
+// Archivo completo, final y con la consulta SQL nativa para: repository/EventoSismicoRepository.java
 
 package tpi.diseno.sismos.repository;
 
@@ -11,11 +11,17 @@ import java.util.List;
 @Repository
 public interface EventoSismicoRepository extends JpaRepository<EventoSismico, Long> {
 
-    // --- MÉTODO AÑADIDO ---
-    // Esta consulta busca directamente en la base de datos los eventos
-    // cuyo estado actual (`estadoActual`) tiene el campo `nombreEstado` igual a 'PendienteDeRevision'.
-    // Es la forma más eficiente de implementar los pasos 5 y 6 del DDS.
-    @Query("SELECT e FROM EventoSismico e WHERE e.estadoActual.nombreEstado = 'PendienteDeRevision'")
+    /**
+     * Busca todos los eventos sísmicos cuyo estado actual es 'PendienteDeRevision'.
+     * Esta consulta utiliza SQL nativo para asegurar la máxima compatibilidad y precisión,
+     * uniendo la tabla 'evento_sismico' con la tabla 'estado' a través de la clave foránea.
+     * 
+     * @return una lista de objetos EventoSismico que están pendientes de revisión.
+     */
+    @Query(value = "SELECT es.* FROM evento_sismico es " +
+                   "JOIN estado e ON es.estado_actual_id = e.id " +
+                   "WHERE e.nombre_estado = 'PendienteDeRevision'", 
+           nativeQuery = true)
     List<EventoSismico> findEventosPendientes();
     
 }

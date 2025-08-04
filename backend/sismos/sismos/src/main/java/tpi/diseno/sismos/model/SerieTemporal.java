@@ -1,5 +1,9 @@
+// Archivo completo para: SerieTemporal.java
+// Es tu código original con @JsonBackReference añadido para romper el bucle.
+
 package tpi.diseno.sismos.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference; // <-- PASO 1: AÑADIR ESTE IMPORT
 import jakarta.persistence.*;
 import tpi.diseno.sismos.repository.SismografoRepository;
 import java.time.LocalDateTime;
@@ -7,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "serie_temporal") // Buena práctica especificar el nombre de la tabla
 public class SerieTemporal {
 
     @Id
@@ -18,13 +23,14 @@ public class SerieTemporal {
     private LocalDateTime fechaHoraRegistro;
     private Integer frecuenciaMuestreo;
 
-/** Evento sísmico al que pertenece esta serie temporal. */
+    /** Evento sísmico al que pertenece esta serie temporal. */
     @ManyToOne
     @JoinColumn(name = "evento_sismico_id")
+    @JsonBackReference("evento-serie") // <-- PASO 2: AÑADIR ESTA ANOTACIÓN
     private EventoSismico eventoSismico;
 
 
-/** Lista de muestras sísmicas registradas en esta serie temporal. */
+    /** Lista de muestras sísmicas registradas en esta serie temporal. */
     @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
     private List<MuestraSismica> muestrasSismicas;
 
@@ -32,7 +38,7 @@ public class SerieTemporal {
     @Transient // Indica que no es persistente
     private transient Long sismografoId; // Solo almacena el ID cuando sea necesario
 
-/**Constructor */
+    /**Constructor */
     public SerieTemporal() {
     }
 
@@ -99,7 +105,7 @@ public class SerieTemporal {
         this.muestrasSismicas = muestrasSismicas;
     }
 
-/////////////metodos
+    /////////////metodos
     /** 
      * Devuelve todas las muestras sísmicas asociadas a esta serie temporal. 
      * (equivale a obtener los datos en orden cronológico).
