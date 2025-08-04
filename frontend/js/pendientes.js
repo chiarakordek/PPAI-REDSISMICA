@@ -1,63 +1,54 @@
-// Contenido completo y actualizado para js/pendientes.js
+// Archivo completo, final y verificado para: frontend/js/pendientes.js
 
-document.addEventListener('DOMContentLoaded', () => {
-    const tablaBody = document.getElementById('tabla-pendientes-body'); 
+document.addEventListener('DOMContentLoaded', function() {
+    const tablaBody = document.getElementById('tabla-pendientes-body');
     const API_URL = 'http://localhost:8080/api/revision-manual';
 
     const cargarEventosPendientes = async () => {
+        if (tablaBody.dataset.loading === 'true') return;
+        tablaBody.dataset.loading = 'true';
+
+        tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';
+
         try {
             const response = await fetch(`${API_URL}/eventos-pendientes`);
+            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
             
-            if (!response.ok) {
-                throw new Error('No se pudieron cargar los eventos pendientes.');
-            }
-            const eventos = await response.json();
-
-            tablaBody.innerHTML = '';
-
-            if (eventos.length === 0) {
-                // Ajustamos el colspan a 5 porque ahora hay 5 columnas
-                tablaBody.innerHTML = `<tr><td colspan="5">No hay eventos pendientes.</td></tr>`;
-                return;
-            }
+            const data = await response.json();
+            tablaBody.innerHTML = ''; 
             
-            eventos.forEach(evento => {
-                const fila = document.createElement('tr');
-                
-                // Formateamos los datos del objeto de la entidad
-                const fechaFormateada = new Date(evento.fechaHoraOcurrencia).toLocaleString('es-ES', { 
-                    day: '2-digit', month: '2-digit', year: 'numeric', 
-                    hour: '2-digit', minute: '2-digit', second: '2-digit' 
+            if (data.length === 0) {
+                tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay eventos pendientes de revisión.</td></tr>';
+            } else {
+                data.forEach(evento => {
+                    const fila = `
+                        <tr>
+                            <td>${evento.fechaHora || 'N/A'}</td>
+                            <td>${evento.ubicacionEpicentro || 'N/A'}</td>
+                            <td>${evento.ubicacionHipocentro || 'N/A'}</td>
+                            <td>${evento.magnitud !== null ? evento.magnitud : 'N/A'}</td>
+                            <td>
+                                <!-- ¡ESTA ES LA LÍNEA MÁS IMPORTANTE! NOS ASEGURAMOS DE PASAR EL ORIGEN -->
+                                <a href="detalleEvento.html?id=${evento.id}&origen=pendientes" class="btn-revisar">Revisar</a>
+                            </td>
+                        </tr>
+                    `;
+                    tablaBody.innerHTML += fila;
                 });
-                
-                const ubicacionEpicentro = `${evento.latitudEpicentro}°S, ${evento.longitudEpicentro}°W`;
-
-                // --- AQUÍ ESTÁ LA LÓGICA AÑADIDA ---
-                // Verificamos si los datos del hipocentro existen antes de mostrarlos
-                let ubicacionHipocentro = 'No disponible';
-                if (evento.latitudHipocentro != null && evento.longitudHipocentro != null) {
-                    ubicacionHipocentro = `${evento.latitudHipocentro}°S, ${evento.longitudHipocentro}°W`;
-                }
-
-                // Construimos la fila con la nueva celda para el hipocentro
-                fila.innerHTML = `
-                    <td>${fechaFormateada}</td>
-                    <td>${ubicacionEpicentro}</td>
-                    <td>${ubicacionHipocentro}</td>
-                    <td>${evento.magnitud}</td>
-                    <td>
-                        <a href="detalleEvento.html?id=${evento.id}&origen=pendientes" class="btn-revisar">Revisar</a>
-                    </td>
-                `;
-                tablaBody.appendChild(fila);
-            });
-
+            }
         } catch (error) {
-            console.error('Error:', error);
-            // Ajustamos el colspan a 5
-            tablaBody.innerHTML = `<tr><td colspan="5">Error al cargar datos.</td></tr>`;
+            console.error('Error al cargar los eventos pendientes:', error);
+            tablaBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Error al cargar datos.</td></tr>`;
+        } finally {
+            tablaBody.dataset.loading = 'false';
         }
     };
 
     cargarEventosPendientes();
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            cargarEventosPendientes();
+        }
+    });
 });

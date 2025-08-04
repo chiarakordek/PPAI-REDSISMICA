@@ -1,46 +1,52 @@
-// Archivo completo para: frontend/js/registrados.js
+// Archivo frontend/js/registrados.js
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-registrados-body');
-    const API_URL = 'http://localhost:8080/api/revision-manual';
+
+    // =========== INICIO DE LA MODIFICACIÓN ===========
+    // CAMBIAMOS la URL para que coincida con el endpoint que tienes en tu controlador.
+    // Antes era: /api/eventos-registrados
+    // Ahora es: /api/revision-manual/eventos-todos
+    const API_URL = 'http://localhost:8080/api/revision-manual/eventos-todos'; 
+    // =========== FIN DE LA MODIFICACIÓN ===========
 
     const cargarEventosRegistrados = async () => {
-        tablaBody.innerHTML = '<tr><td colspan="5">Cargando eventos...</td></tr>';
+        tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';
 
         try {
-            const response = await fetch(`${API_URL}/eventos-registrados`);
-            if (!response.ok) throw new Error(`Error del servidor: ${response.status}`);
-            
-            const eventos = await response.json();
-            tablaBody.innerHTML = ''; 
-
-            if (eventos.length === 0) {
-                tablaBody.innerHTML = `<tr><td colspan="5">No hay eventos registrados.</td></tr>`;
-                return;
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                // Si la respuesta no es OK, ahora el error de CORS se habrá ido,
+                // pero podría haber otros errores (ej. 404 si la URL estuviera mal).
+                throw new Error(`Error HTTP: ${response.status}`);
             }
             
-            eventos.forEach(evento => {
-                const fila = document.createElement('tr');
-                // --- FILA ACTUALIZADA CON 5 CELDAS ---
-                fila.innerHTML = `
-                    <td>${evento.fechaHora}</td>
-                    <td>${evento.ubicacion}</td>
-                    <td>${evento.ubicacionHipocentro}</td>
-                    <td>${evento.magnitud}</td>
-                    <td>
-                        <a href="detalleEvento.html?id=${evento.id}&origen=registrados" class="btn-editar">Editar</a>
-                    </td>
-                `;
-                tablaBody.appendChild(fila);
-});
-
+            const data = await response.json();
+            tablaBody.innerHTML = ''; 
+            
+            if (data.length === 0) {
+                tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay eventos registrados.</td></tr>';
+            } else {
+                data.forEach(evento => {
+                    const fila = `
+                        <tr>
+                            <td>${evento.fechaHora || 'N/A'}</td>
+                            <td>${evento.ubicacionEpicentro || 'N/A'}</td>
+                            <td>${evento.ubicacionHipocentro || 'N/A'}</td>
+                            <td>${evento.magnitud !== null ? evento.magnitud : 'N/A'}</td>
+                            <td>
+                                <a href="detalleEvento.html?id=${evento.id}&origen=registrados" class="btn-editar">Editar</a>
+                            </td>
+                        </tr>
+                    `;
+                    tablaBody.innerHTML += fila;
+                });
+            }
         } catch (error) {
-            console.error('Error al cargar eventos registrados:', error);
-            tablaBody.innerHTML = `<tr><td colspan="5">Error al cargar los datos. Verifique la consola.</td></tr>`;
+            console.error('Error al cargar los eventos registrados:', error);
+            tablaBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Error al cargar datos. Verifique la consola.</td></tr>`;
         }
     };
 
-    if (tablaBody) {
-        cargarEventosRegistrados();
-    }
+    cargarEventosRegistrados();
 });

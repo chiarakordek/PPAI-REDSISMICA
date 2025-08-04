@@ -1,112 +1,62 @@
+<!-- Archivo completo, final y verificado para: frontend/detalleEvento.html -->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detalle de Evento</title>
-  <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Evento</title>
+    <link rel="stylesheet" href="css/styles.css"> 
 </head>
 <body>
-  <div class="top-bar">
-    <img src="img/logo.png" class="logo-small" alt="Logo">
-    <span class="analyst-name">👤 Analista: Nombre Apellido</span>
-  </div>
-
-  <div class="main-container">
-    <div class="detalle-evento-card">
-      
-      <div class="evento-header">
-        <!-- El ID del evento también se rellenará aquí -->
-        <h2>Evento #<span id="evento-id">...</span></h2>
-        <div class="evento-info">
-          <!-- Spans con ID para ser rellenados por JavaScript -->
-          <p><strong>Fecha/Hora:</strong> <span id="info-fecha">Cargando...</span></p>
-          <p><strong>Ubicación:</strong> <span id="info-ubicacion">Cargando...</span></p>
-          <p><strong>Magnitud:</strong> <span id="info-magnitud">Cargando...</span></p>
-          <p><strong>Alcance:</strong> <span id="info-alcance">Cargando...</span></p>
+    <header class="top-bar">
+        <a href="menu.html">
+            <img src="img/logo.png" alt="Logo" class="logo-small">
+        </a>
+        <div class="analyst-name">
+            Analista: Nombre Apellido
         </div>
-      </div>
+    </header>
 
-      <div class="estado-section">
-        <p><strong>Estado:</strong> <span id="estado-actual">Cargando...</span></p>
-      </div>
-
-      <div class="graficos-container">
-        <div class="grafico-box">
-          <h3>Gráfico</h3>
-          <div class="imagen-container">
-            <img src="img/grafico.png" alt="Gráfico del evento" class="imagen-evento">
-            <div class="overlay">
-              <button class="btn-ampliar" onclick="ampliarImagen('img/grafico.png')">Ampliar Gráfico</button>
+    <div class="evento-container">
+        <div class="detalle-evento-card">
+            
+            <div class="evento-header">
+                <h2 id="evento-id">Cargando evento...</h2>
             </div>
-          </div>
-        </div>
-        
-        <div class="mapa-box">
-          <h3>Mapa</h3>
-          <div class="imagen-container">
-            <img src="img/mapa.jpg" alt="Mapa del evento" class="imagen-evento">
-            <div class="overlay">
-              <button class="btn-ampliar" onclick="ampliarImagen('img/mapa.jpg')">Ampliar Mapa</button>
+            
+            <div class="evento-info">
+                <p id="clasificacion">Clasificación: Cargando...</p>
+                <p id="alcance">Alcance: Cargando...</p>
+                <p id="origen">Origen del evento: Cargando...</p>
             </div>
-          </div>
-        </div>
-      </div>
+            
+            <div class="estado-section">
+                <!-- El JavaScript necesita un elemento hijo para modificar, no el contenedor directamente -->
+                <span id="estado-actual">Estado: Cargando...</span>
+            </div>
+            
+            <div id="acciones-container" class="acciones-evento">
+                <!-- Botones originales -->
+                <div id="botones-pendientes" class="acciones-origen">
+                    <button class="btn-accion btn-editar">Modificar Datos</button>
+                    <button class="btn-accion btn-ver-mapa">Ver Mapa</button>
+                </div>
 
-      <!-- Contenedor para botones de eventos PENDIENTES (oculto por defecto) -->
-      <div id="botones-pendientes" class="botones-accion" style="display: none;">
-         <button class="btn-editar" onclick="habilitarEdicion()">Editar</button>
-         <button class="btn-registrar" onclick="registrarEvento()">Registrar</button>
-         <button class="btn-rechazar" onclick="cambiarEstado('Rechazado')">Rechazar</button>
-         <button class="btn-derivar" onclick="cambiarEstado('Derivado')">Derivar</button>
-      </div>
-
-      <!-- Contenedor para botones de eventos REGISTRADOS (oculto por defecto) -->
-      <div id="botones-registrados" class="botones-accion" style="display: none;">
-        <button class="btn-editar" onclick="habilitarEdicion()">Editar</button>
-        <button class="btn-guardar" onclick="guardarCambios()">Guardar Cambios</button>
-      </div>
-
-      <!-- Formulario de edición (oculto por defecto) -->
-      <div id="formulario-edicion" class="formulario-edicion" style="display: none;">
-        <h3>Editar Información del Evento</h3>
-        <div class="form-group">
-          <label for="edit-fecha">Fecha/Hora:</label>
-          <input type="datetime-local" id="edit-fecha">
+                <!-- =========== INICIO DE LA MODIFICACIÓN =========== -->
+                <!-- Nuevos botones de decisión -->
+                <div id="botones-decision" class="acciones-decision-container">
+                    <button class="btn-accion btn-confirmar">Confirmar</button>
+                    <button class="btn-accion btn-derivar">Derivar</button>
+                    <button class="btn-accion btn-rechazar">Rechazar</button>
+                </div>
+                <!-- =========== FIN DE LA MODIFICACIÓN =========== -->
+            </div>
+            
         </div>
-        <div class="form-group">
-          <label for="edit-ubicacion">Ubicación:</label>
-          <input type="text" id="edit-ubicacion">
-        </div>
-        <div class="form-group">
-          <label for="edit-magnitud">Magnitud:</label>
-          <input type="number" step="0.1" id="edit-magnitud">
-        </div>
-        <div class="form-group">
-          <label for="edit-alcance">Alcance:</label>
-          <select id="edit-alcance">
-            <option value="Local">Local</option>
-            <option value="Regional">Regional</option>
-            <option value="Nacional">Nacional</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="edit-comentarios">Comentarios:</label>
-          <textarea id="edit-comentarios" rows="3"></textarea>
-        </div>
-      </div>
     </div>
-  </div>
-
-  <!-- Modal para imágenes ampliadas -->
-  <div id="modal-imagen" class="modal">
-    <span class="cerrar-modal" onclick="cerrarModal()">×</span>
-    <img class="modal-contenido" id="imagen-ampliada">
-    <div id="pie-imagen"></div>
-  </div>
-
-  <!-- Scripts al final del body -->
-  <script src="js/modal.js"></script>
-  <script src="js/evento.js"></script>
+    
+    <!-- Asegúrate de que está llamando a evento.js -->
+    <script src="js/evento.js"></script>
 </body>
 </html>
