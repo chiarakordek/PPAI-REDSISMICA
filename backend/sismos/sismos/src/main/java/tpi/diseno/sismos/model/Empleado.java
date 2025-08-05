@@ -28,6 +28,7 @@ public class Empleado {
 
 
     //////////// Getters y Setters
+    /// 
     public Long getId() {
         return id;
     }

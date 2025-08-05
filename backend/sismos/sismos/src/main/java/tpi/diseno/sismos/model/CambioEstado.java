@@ -14,16 +14,16 @@ public class CambioEstado {
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
 
-/** Evento sísmico al que pertenece el cambio de estado*/ 
+    /** Evento sísmico al que pertenece el cambio de estado*/ 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference("evento-cambioestado") 
     private EventoSismico eventoSismico;
 
-/** Estado al cual corresponde el cambio de estado*/
+    /** Estado al cual corresponde el cambio de estado*/
     @ManyToOne
     private Estado estado;
 
-/** Empleado que realizó el cambio de estado*/
+    /** Empleado que realizó el cambio de estado*/
     @ManyToOne
     private Empleado empleadoResponsable;
 

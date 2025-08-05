@@ -15,42 +15,60 @@ public class ClasificacionSismo {
     private Double kmProfundidadHasta;
     private String nombre;
 
+
+    /**Eventos sismicos que corresponden a esta clasificación */
     @OneToMany(mappedBy = "clasificacionSismo", cascade = CascadeType.ALL)
     private List<EventoSismico> eventosSismicos;
 
+    /**Constructor (Vacío)*/
     public ClasificacionSismo() {
     }
 
+    /**Constructor*/
     public ClasificacionSismo(Double kmProfundidadDesde, Double kmProfundidadHasta, String nombre) {
         this.kmProfundidadDesde = kmProfundidadDesde;
         this.kmProfundidadHasta = kmProfundidadHasta;
         this.nombre = nombre;
     }
 
+
+    //////////////// Getters y Setters
+    
     public Long getId() {
         return id;
     }
+
+
     public void setId(Long id) {
         this.id = id;
     }
 
+
     public Double getKmProfundidadDesde() {
         return kmProfundidadDesde;
     }
+
+
     public void setKmProfundidadDesde(Double kmProfundidadDesde) {
         this.kmProfundidadDesde = kmProfundidadDesde;
     }
 
+
     public Double getKmProfundidadHasta() {
         return kmProfundidadHasta;
     }
+
+
     public void setKmProfundidadHasta(Double kmProfundidadHasta) {
         this.kmProfundidadHasta = kmProfundidadHasta;
     }
 
+
     public String getNombre() {
         return nombre;
     }
+
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }

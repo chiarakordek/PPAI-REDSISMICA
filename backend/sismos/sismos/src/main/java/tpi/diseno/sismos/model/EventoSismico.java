@@ -21,7 +21,7 @@ public class EventoSismico {
     private Double magnitud;
 
 /** Estado actual del evento sísmico */
-    @ManyToOne(fetch = FetchType.EAGER) // FetchType.EAGER le dice a Hibernate: "Cuando cargues un EventoSismico, SIEMPRE carga su Estado asociado inmediatamente".
+    @ManyToOne(fetch = FetchType.EAGER) // FetchType.EAGER le dice a Hibernate: "Cuando se cargue un EventoSismico, SIEMPRE carga su Estado asociado inmediatamente".
     @JoinColumn(name = "estado_actual_id", referencedColumnName = "id") 
     private Estado estadoActual;
 

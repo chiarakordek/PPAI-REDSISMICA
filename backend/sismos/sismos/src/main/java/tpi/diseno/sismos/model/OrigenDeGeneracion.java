@@ -1,6 +1,3 @@
-// Archivo completo para: OrigenDeGeneracion.java
-// Es tu código original con el método 'esAutodetectado' añadido al final.
-
 package tpi.diseno.sismos.model;
 
 import jakarta.persistence.*;
@@ -8,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "origen_de_generacion") // Es buena práctica especificar el nombre de la tabla
+@Table(name = "origen_de_generacion") 
 public class OrigenDeGeneracion {
 
     @Id
@@ -21,17 +18,17 @@ public class OrigenDeGeneracion {
     @OneToMany(mappedBy = "origenDeGeneracion")
     private List<EventoSismico> eventosSismicos;
 
-    // Constructor vacío (requerido por JPA)
+    /**Constructor (Vacío)*/
     public OrigenDeGeneracion() {
     }
 
-    // Constructor con parámetros que ya tenías
+    /**Constructor*/
     public OrigenDeGeneracion(String descripcion, String nombre) {
         this.descripcion = descripcion;
         this.nombre = nombre;
     }
 
-    // --- Getters y Setters que ya tenías ---
+    //////////////// Getters y Setters
 
     public Long getId(){
         return id;
@@ -57,7 +54,7 @@ public class OrigenDeGeneracion {
         this.nombre = nombre;
     }
 
-    // El getter y setter para la lista de eventos, por si lo necesitas
+
     public List<EventoSismico> getEventosSismicos() {
         return eventosSismicos;
     }
