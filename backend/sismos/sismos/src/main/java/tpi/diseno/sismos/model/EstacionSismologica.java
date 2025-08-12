@@ -1,4 +1,5 @@
 package tpi.diseno.sismos.model;
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -15,12 +16,12 @@ public class EstacionSismologica {
 
     private String codigoEstacion;
     private String documentoCertificacionAdq;
-    private LocalDateTime fechaSolicitudCertificacion; 
+    private LocalDateTime fechaSolicitudCertificacion;
     private Double latitud;
     private Double longitud;
     private String nombre;
 
-    /**Constructor */
+    //CONSTRUCTOR
     public EstacionSismologica() {
     }
 
@@ -33,7 +34,7 @@ public class EstacionSismologica {
         this.nombre = nombre;
     }
 
-    ///////////////// Getters y Setters
+    //METODOS
     public Long getId() {
         return id;
     }
@@ -82,12 +83,9 @@ public class EstacionSismologica {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    // Metodos
 
-    //Esta función es para devolver el nombre de la estación
+   //Devuelve el nombre de la estacion sismologica
     public String getDatosEstacion() {
         return this.nombre;
     }
 }
-
-

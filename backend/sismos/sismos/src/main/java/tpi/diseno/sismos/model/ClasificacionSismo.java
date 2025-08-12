@@ -18,6 +18,7 @@ public class ClasificacionSismo {
     @OneToMany(mappedBy = "clasificacionSismo", cascade = CascadeType.ALL)
     private List<EventoSismico> eventosSismicos;
 
+/////CONSTRUCTORES
     public ClasificacionSismo() {
     }
 
@@ -26,6 +27,8 @@ public class ClasificacionSismo {
         this.kmProfundidadHasta = kmProfundidadHasta;
         this.nombre = nombre;
     }
+
+///MÉTODOS
 
     public Long getId() {
         return id;

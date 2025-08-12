@@ -12,12 +12,15 @@ import java.util.List;
 @Entity
 public class AlcanceSismo {
 
+//////ATRIBUTOS
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
     private String descripcion;
+
+////RELACIONES
 
     @OneToMany(mappedBy = "alcanceSismo")
     private List<EventoSismico> eventosSismicos;

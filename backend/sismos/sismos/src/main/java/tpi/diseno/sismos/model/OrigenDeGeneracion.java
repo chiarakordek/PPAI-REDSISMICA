@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 public class OrigenDeGeneracion {
-
+////ATRIBUTOS
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,6 +17,7 @@ public class OrigenDeGeneracion {
     @OneToMany(mappedBy = "origenDeGeneracion")
     private List<EventoSismico> eventosSismicos;
 
+///////CONSTRUCTORES
     public OrigenDeGeneracion() {
     }
 
@@ -24,6 +25,8 @@ public class OrigenDeGeneracion {
         this.descripcion = descripcion;
         this.nombre = nombre;
     }
+
+////////METODOS
 
     public Long getId(){
         return id;

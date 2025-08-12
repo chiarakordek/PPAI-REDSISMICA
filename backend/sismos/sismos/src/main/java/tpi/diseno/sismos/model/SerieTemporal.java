@@ -1,14 +1,12 @@
 package tpi.diseno.sismos.model;
 
 import jakarta.persistence.*;
-import tpi.diseno.sismos.repository.SismografoRepository;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class SerieTemporal {
-
+   //ATRIBUTOS
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,38 +16,39 @@ public class SerieTemporal {
     private LocalDateTime fechaHoraRegistro;
     private Integer frecuenciaMuestreo;
 
-/** Evento sísmico al que pertenece esta serie temporal. */
-    @ManyToOne
+    //Evento sísmico al que pertenece esta serie temporal. */
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evento_sismico_id")
     private EventoSismico eventoSismico;
 
+    //Sismógrafo que generó esta serie temporal.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sismografo_id")
+    private Sismografo sismografo;
 
-/** Lista de muestras sísmicas registradas en esta serie temporal. */
-    @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL)
+    // Lista de muestras sísmicas registradas en esta serie temporal.
+    @OneToMany(mappedBy = "serieTemporal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MuestraSismica> muestrasSismicas;
 
-    // Campo para la DEPENDENCIA 
-    @Transient // Indica que no es persistente
-    private transient Long sismografoId; // Solo almacena el ID cuando sea necesario
-
-/**Constructor */
+    //CONSTRUCTOR
     public SerieTemporal() {
     }
 
-    /** Constructor completo */
     public SerieTemporal(String condicionAlarma,
-                        LocalDateTime fechaHoraInicioRegistroMuestra,
-                        LocalDateTime fechaHoraRegistro,
-                        Integer frecuenciaMuestreo,
-                        EventoSismico eventoSismico) {
+                         LocalDateTime fechaHoraInicioRegistroMuestra,
+                         LocalDateTime fechaHoraRegistro,
+                         Integer frecuenciaMuestreo,
+                         EventoSismico eventoSismico,
+                         Sismografo sismografo) {
         this.condicionAlarma = condicionAlarma;
         this.fechaHoraInicioRegistroMuestra = fechaHoraInicioRegistroMuestra;
         this.fechaHoraRegistro = fechaHoraRegistro;
         this.frecuenciaMuestreo = frecuenciaMuestreo;
         this.eventoSismico = eventoSismico;
+        this.sismografo = sismografo;
     }
 
-    ///////////// Getters y Setters
+    //METODOS
     public Long getId() {
         return id;
     }
@@ -92,6 +91,13 @@ public class SerieTemporal {
         this.eventoSismico = eventoSismico;
     }
 
+    public Sismografo getSismografo() {
+        return sismografo;
+    }
+    public void setSismografo(Sismografo sismografo) {
+        this.sismografo = sismografo;
+    }
+
     public List<MuestraSismica> getMuestrasSismicas() {
         return muestrasSismicas;
     }
@@ -99,41 +105,13 @@ public class SerieTemporal {
         this.muestrasSismicas = muestrasSismicas;
     }
 
-/////////////metodos
-    /** 
-     * Devuelve todas las muestras sísmicas asociadas a esta serie temporal. 
-     * (equivale a obtener los datos en orden cronológico).
-     */
-    //CREO QUE ACA TIENE QUE DEVOLVER EL SISMOGRAFO Y LA ESTACION SISMOLOGICA TAMBIEN ()
+    //Devuelve los datos de la serie temporal y retorna la lista de muestras sismicas
     public List<MuestraSismica> getDatosSerieTemporal() {
-        List<MuestraSismica> muestras = this.buscarMuestrasSismicas();
-        return muestras;
+        return this.muestrasSismicas;
     }
 
-    // Método modificado para usar lógica externa
-    public String buscarEstacionSismologica(List<Sismografo> sismografos) {
-        return sismografos.stream()
-            .filter(s -> s.getId().equals(this.sismografoId)) // Compara por ID
-            .findFirst()
-            .map(Sismografo::getDatosSismografo)
-            .orElseThrow(() -> new RuntimeException("Estación no encontrada para sismógrafo ID: " + this.sismografoId));
-    }
-
-    /** 
-     * Devuelve todas las muestras para búsquedas o visualización. 
-     */
-    public List<MuestraSismica> buscarMuestrasSismicas() {
-        for (MuestraSismica muestra : muestrasSismicas) {
-            muestra.getDatosMuestra();
-        }
-        return muestrasSismicas;
-    }
-
-    // Getter/Setter para la dependencia
-    public Long getSismografoId() {
-        return this.sismografoId;
-    }
-    public void setSismografoId(Long sismografoId) {
-        this.sismografoId = sismografoId;
+   //Instancia el metodo de buscar a su sismografo, pasandole la relacion como parámetro.
+    public boolean sosMiSismografo(Sismografo sismografo) {
+        return this.sismografo.equals(sismografo);
     }
 }

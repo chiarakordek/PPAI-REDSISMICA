@@ -12,7 +12,7 @@ public class Empleado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer cantidadHectareas;
+
     private String nombre;
     private String apellido;
     private String telefono;
@@ -22,8 +22,7 @@ public class Empleado {
     public Empleado() {
     }
 
-    public Empleado(Integer cantidadHectareas, String nombre, String apellido, String telefono, String mail) {
-        this.cantidadHectareas = cantidadHectareas;
+    public Empleado(String nombre, String apellido, String telefono, String mail) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.telefono = telefono;
@@ -38,12 +37,6 @@ public class Empleado {
         this.id = id;
     }
 
-    public Integer getCantidadHectareas() {
-        return cantidadHectareas;
-    }
-    public void setCantidadHectareas(Integer cantidadHectareas) {
-        this.cantidadHectareas = cantidadHectareas;
-    }
 
     public String getNombre() {
         return nombre;
