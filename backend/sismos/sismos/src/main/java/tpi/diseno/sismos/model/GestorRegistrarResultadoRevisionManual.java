@@ -1,248 +1,216 @@
-// Contenido completo para GestorRegistrarResultadoRevisionManual.java
-
 package tpi.diseno.sismos.model;
 
-import org.springframework.stereotype.Service;
-import tpi.diseno.sismos.repository.EventoSismicoRepository;
+import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
+import tpi.diseno.sismos.dto.SerieTemporalDTO;
 import tpi.diseno.sismos.repository.EstadoRepository;
-import tpi.diseno.sismos.repository.SismografoRepository;
+import tpi.diseno.sismos.repository.EventoSismicoRepository;
+import tpi.diseno.sismos.repository.SesionRepository;
+import tpi.diseno.sismos.service.GenerarSismogramaService;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@Service
 public class GestorRegistrarResultadoRevisionManual {
 
-    private LocalDateTime fechaHoraActual;
-
-    private List<EventoSismico> eventosSismicos;
-    private EventoSismico eventoSeleccionado;
-    private List<SerieTemporal> SeriesTemporalesEventoSeleccionado;
-
-    private List<String> datosEventosSismicos;
-    private Estado punteroBloqueadoEnRevision;
-    private Estado punteroRechazado;
-
-    private Sesion sesionActual;
-    private Empleado punteroEmpleado;
-
-    //SIMULA LA INTEGRACIÓN CON OTRO CASO DE USO
-    private final GenerarSismograma generarSismograma;
-    private String mapaUbicacion;
-    private final SismografoRepository sismografoRepository;
-    private List<Map<String, Object>> datosParaFrontend;
-
-    private enum opcionResultadoRevision {
-        RECHAZADO,
-        CONFIRMADO,
-        DERIVADO
-    };
-
-    private List<Estado> estados;
-
+    // --- Atributos de Colaboración y Estado ---
     private final EventoSismicoRepository eventoSismicoRepository;
     private final EstadoRepository estadoRepository;
+    private final SesionRepository sesionRepository;
+    private final GenerarSismogramaService generarSismogramaService;
 
-    public GestorRegistrarResultadoRevisionManual(EventoSismicoRepository eventoSismicoRepository, EstadoRepository estadoRepository, GenerarSismograma generarSismograma, SismografoRepository sismografoRepository) {
-        this.eventoSismicoRepository = eventoSismicoRepository;
-        this.estadoRepository = estadoRepository;
-        this.generarSismograma = generarSismograma;
-        this.sismografoRepository = sismografoRepository;
+    // --- Atributos del DDC ---
+    private List<EventoSismico> eventosSismicos;
+    private List<EventoSismicoResumenDTO> datosEventosSismicos;
+    private LocalDateTime fechaHoraActual;
+    private Estado punteroBloqueadoEnRevision;
+    private Sesion sesionActual;
+    private Empleado punteroEmpleado;
+    private EventoSismico eventoSeleccionado;
+    private List<SerieTemporalDTO> seriesTemporalesEventoSeleccionado;
+    private Estado punteroRechazado;
+    private Object mapaUbicacion;
+    private String opcionResultadoRevision;
 
-        // Inicialización de listas para evitar NullPointerException
-        this.eventosSismicos = new ArrayList<>();
-        this.datosEventosSismicos = new ArrayList<>();
-        this.SeriesTemporalesEventoSeleccionado = new ArrayList<>();
+    // Atributos para almacenar datos de clasificación y alcance del sismo
+    private String nombreClasificacionSismo;
+    private String nombreAlcanceSismo;
+    private String nombreOrigenGeneracion;
+
+
+    // --- CONSTRUCTOR ---
+    public GestorRegistrarResultadoRevisionManual(EventoSismicoRepository e, EstadoRepository es, SesionRepository s, GenerarSismogramaService gss) {
+        this.eventoSismicoRepository = e;
+        this.estadoRepository = es;
+        this.sesionRepository = s;
+        this.generarSismogramaService = gss;
     }
 
-    // Getter para datos que mostrás en el frontend (legado, se podría eliminar si no se usa)
-    public List<String> getDatosEventosSismicos() {
-        // Generamos la lista de strings a partir de la lista de objetos, si es necesario
-        this.datosEventosSismicos.clear();
-        if (this.eventosSismicos != null) {
-            for (EventoSismico evento : this.eventosSismicos) {
-                this.datosEventosSismicos.add(evento.getDatos());
+    // --- MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
+
+    public List<EventoSismicoResumenDTO> registrarNuevaRevision() { // MSG 3
+        this.sesionActual = sesionRepository.findById(1L).orElseThrow(() -> new RuntimeException("Sesión activa no encontrada."));
+        this.eventosSismicos = this.buscarEventosSismicos(); // MSG 4
+        List<EventoSismicoResumenDTO> eventosParaRevision = new ArrayList<>();
+        for (EventoSismico evento : this.eventosSismicos) {
+            if (evento.esPendienteDeRevision()) { // MSG 5
+                eventosParaRevision.add(evento.getDatos()); // MSG 7
             }
         }
+        this.datosEventosSismicos = this.ordenarEventoSismico(eventosParaRevision); // MSG 15
         return this.datosEventosSismicos;
     }
 
-    // Getter para las series temporales del evento seleccionado (para el frontend)
-    public List<SerieTemporal> getSeriesTemporalesEventoSeleccionado() {
-        return this.SeriesTemporalesEventoSeleccionado;
-    }
-
-
-    public void RegistrarNuevaRevision(){
-        this.buscarEventosSismicos();
-    }
-
-    // --- MÉTODO SIMPLIFICADO Y CORREGIDO ---
-    // Ahora delega la responsabilidad de filtrar por estado directamente a la base de datos.
-    public void buscarEventosSismicos(){
-        // Llama al método del repositorio que ejecuta la consulta específica para pendientes.
-        // Esto implementa los pasos 5 y 6 del DDS de la forma más eficiente.
-        this.eventosSismicos = eventoSismicoRepository.findEventosPendientes();
-        
-        // El resto de la lógica para ordenar permanece igual.
-        ordenarEventoSismicos();
-    }
-
-    public void ordenarEventoSismicos(){
-        if (this.eventosSismicos != null && !this.eventosSismicos.isEmpty()) {
-            this.eventosSismicos.sort(Comparator.comparing(EventoSismico::getFechaHoraOcurrencia));
+    public void tomarSeleccionEventoSismico(int indice) { // MSG 18
+        if (indice < 0 || this.datosEventosSismicos == null || indice >= this.datosEventosSismicos.size()) {
+            throw new IndexOutOfBoundsException("Índice de selección inválido: " + indice);
         }
+        EventoSismicoResumenDTO dtoSeleccionado = this.datosEventosSismicos.get(indice);
+        this.eventoSeleccionado = this.eventosSismicos.stream()
+            .filter(e -> e.getFechaHoraOcurrencia().equals(dtoSeleccionado.getFechaHoraOcurrencia()) &&
+                         e.getLatitudEpicentro() == dtoSeleccionado.getLatitudEpicentro() &&
+                         e.getLongitudEpicentro() == dtoSeleccionado.getLongitudEpicentro() &&
+                         e.getLatitudHipocentro() == dtoSeleccionado.getLatitudHipocentro() &&
+                         e.getLongitudHipocentro() == dtoSeleccionado.getLongitudHipocentro() &&
+                         e.getValorMagnitud() == dtoSeleccionado.getValorMagnitud())
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento original."));
+        this.bloquearEvento(); // MSG 19
     }
 
-    public void tomarSeleccionEventoSismico(EventoSismico evento) {
-        this.eventoSeleccionado = evento;
-        List<Sismografo> sismografos = sismografoRepository.findAll();
-        bloquearEvento(sismografos);
+    public void bloquearEvento() { // MSG 19
+        this.punteroBloqueadoEnRevision = this.buscarEstadoBloqueado(); // MSG 20
+        this.fechaHoraActual = this.tomarFechaHoraActual(); // MSG 23
+        this.punteroEmpleado = this.buscarEmpleadoLogueado(); // MSG 24
+        this.eventoSeleccionado.revisar(this.punteroBloqueadoEnRevision, this.fechaHoraActual, this.punteroEmpleado); // MSG 27 -- Delega Evento Sismico
+        eventoSismicoRepository.save(this.eventoSeleccionado);
+        this.buscarDatosSismicos(); // MSG 34
+    }
+    
+    public void buscarDatosSismicos() { // MSG 34
+        if (this.eventoSeleccionado == null) { throw new IllegalStateException("No hay evento seleccionado para buscar datos."); }
+        this.nombreClasificacionSismo = this.eventoSeleccionado.getClasificacion(); // MSG 35 - Delega a Evento Sismico
+        this.nombreAlcanceSismo = this.eventoSeleccionado.getAlcance(); // MSG 37 - Delega a Evento Sismico
+        this.nombreOrigenGeneracion = this.eventoSeleccionado.getOrigen(); // MSG 39 - Delega a Evento Sismico
+        this.seriesTemporalesEventoSeleccionado = this.eventoSeleccionado.obtenerSeriesTemporales(); // MSG 41
+        this.llamarCasoDeUsoGenerarSismograma(); // MSG 53
     }
 
-    public Estado buscarEstadoBloqueado(){
-        this.estados = this.estadoRepository.findAll();
-        for (Estado estado : estados) {
-            if (estado.esAmbitoEventoSismico() && estado.esBloqueadoEnRevision()){
-                return estado;
+    public void mostrarOpcionVisualizarMapa() { // MSG 54
+        System.out.println("Preparando para mostrar opción 'Ver Mapa'.");
+    }
+
+    public void tomarOpcVerMapa() { // MSG 56
+        System.out.println("Procesando selección 'Ver Mapa'.");
+    }
+
+    public void mostrarOpcModificarDatos() { // MSG 57
+        System.out.println("Preparando para mostrar opción 'Modificar Datos'.");
+    }
+
+    public void tomarOpcModificarDatos() { // MSG 59
+        System.out.println("Procesando selección 'Modificar Datos'.");
+    }
+
+    public void mostrarOpcionesParaSeleccion() { // MSG 60
+        System.out.println("Preparando para mostrar opciones finales (ej: Aprobar/Rechazar).");
+    }
+    
+    public void tomarSeleccionRechazada() { // MSG 62
+        this.evaluarResultadoInspeccion(); // MSG 63
+    }
+
+    public void evaluarResultadoInspeccion() { // MSG 63
+        this.validarExistenciaDatos(); // MSG 64
+    }
+
+    public void validarExistenciaDatos() { // MSG 64
+        if (this.eventoSeleccionado == null) {
+            throw new IllegalStateException("No hay un evento sísmico seleccionado para evaluar.");
+        }
+        this.rechazarEvento(); // MSG 65
+    }
+
+    public void rechazarEvento() { // MSG 65
+        this.buscarEstadoRechazado(); // MSG 66
+    }
+
+    /**
+     * MSG 66: buscarEstadoRechazado()
+     * implementa el bucle literal del diagrama.
+     */
+    public void buscarEstadoRechazado() {
+        List<Estado> todosLosEstados = estadoRepository.findAll();
+        Estado estadoRechazadoEncontrado = null;
+
+        // Inicia el loop [mientras exista estados]
+        for (Estado estado : todosLosEstados) {
+            // MSG 67: esAmbitoEventoSismico() -> Se delega la verificación del ámbito al estado.
+            if (estado.esAmbitoEventoSismico()) {
+                // MSG 68: esRechazado() -> Se delega la verificación del nombre al estado.
+                if (estado.esRechazado()) {
+                    estadoRechazadoEncontrado = estado;
+                    break; // Se encontró el estado, se sale del bucle.
+                }
             }
         }
-        return null;
+
+        if (estadoRechazadoEncontrado == null) {
+             throw new RuntimeException("No se pudo encontrar el estado 'Rechazado' con ámbito 'EventoSismico'.");
+        }
+        
+        this.punteroRechazado = estadoRechazadoEncontrado;
+        this.fechaHoraActual = this.tomarFechaHoraActual(); // MSG 69
+        this.eventoSeleccionado.rechazar(this.punteroRechazado, this.fechaHoraActual, this.punteroEmpleado); // MSG 70
+        eventoSismicoRepository.save(this.eventoSeleccionado);
+        
+        this.finCU(); // MSG 75
     }
 
-    public LocalDateTime tomarFechaHoraActual(){
+    public void finCU() { // MSG 75
+        this.eventosSismicos = null;
+        this.datosEventosSismicos = null;
+        this.fechaHoraActual = null;
+        this.punteroBloqueadoEnRevision = null;
+        this.sesionActual = null;
+        this.punteroEmpleado = null;
+        this.eventoSeleccionado = null;
+        this.seriesTemporalesEventoSeleccionado = null;
+        this.punteroRechazado = null;
+        this.mapaUbicacion = null;
+        this.opcionResultadoRevision = null;
+        this.nombreClasificacionSismo = null;
+        this.nombreAlcanceSismo = null;
+        this.nombreOrigenGeneracion = null;
+    }
+
+    // --- MÉTODOS PRIVADOS (Implementación de auto-mensajes que no son parte de la cadena de rechazo) ---
+
+    private List<EventoSismico> buscarEventosSismicos() { // MSG 4
+        return this.eventoSismicoRepository.findAll();
+    }
+    
+    private List<EventoSismicoResumenDTO> ordenarEventoSismico(List<EventoSismicoResumenDTO> listaEventos) { // MSG 15
+        listaEventos.sort(Comparator.comparing(EventoSismicoResumenDTO::getFechaHoraOcurrencia).reversed());
+        return listaEventos;
+    }
+
+    private Estado buscarEstadoBloqueado() { // MSG 20
+        return estadoRepository.findByNombreEstado("BloqueadoEnRevision").orElseThrow(() -> new RuntimeException("Estado 'BloqueadoEnRevision' no encontrado."));
+    }
+
+    private LocalDateTime tomarFechaHoraActual() { // MSG 23 y 69
         return LocalDateTime.now();
     }
 
-    public Empleado buscarEmpleadoLogueado(){
-        // FIXME: La sesión actual es nula. Necesita ser inyectada o gestionada.
-        // Por ahora, simularemos un empleado para evitar NullPointerException.
-        if (this.sesionActual == null) {
-            Empleado empleadoSimulado = new Empleado();
-            empleadoSimulado.setNombre("Empleado Simulado");
-            return empleadoSimulado;
-        }
-        return this.sesionActual.obtenerUsuarioLogueado();
+    private Empleado buscarEmpleadoLogueado() { // MSG 24
+        if (this.sesionActual == null) { throw new RuntimeException("No hay sesión activa"); }
+        Usuario usuario = this.sesionActual.obtenerUsuarioLogueado(); // MSG 25
+        return usuario.getEmpleado(); // MSG 26
     }
-
-    public void bloquearEvento(List<Sismografo> sismografos){
-        this.fechaHoraActual = tomarFechaHoraActual();
-        this.punteroBloqueadoEnRevision = buscarEstadoBloqueado();
-        if (this.punteroBloqueadoEnRevision == null){
-            throw new RuntimeException("No se encontró estado de bloqueo en revisión.");
-        }
-        this.punteroEmpleado = buscarEmpleadoLogueado();
-        this.eventoSeleccionado.revisar(fechaHoraActual, eventoSeleccionado, punteroBloqueadoEnRevision, punteroEmpleado);
-        buscarDatosSismicos(eventoSeleccionado, sismografos);
-    }
-
-    public void buscarDatosSismicos(EventoSismico evento, List<Sismografo> sismografos) {
-        this.SeriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales(sismografos);
-
-        List<Map<String, Object>> resultado = new ArrayList<>();
-        for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
-            String estacion = serieTemporal.buscarEstacionSismologica(sismografos);
-            for (MuestraSismica muestra : serieTemporal.buscarMuestrasSismicas()) {
-                Map<String, Object> datos = new HashMap<>();
-                datos.put("estacion", estacion);
-
-                for (Map<String, Object> detalle : muestra.buscarDetalleMuestra()) {
-                    String tipo = detalle.get("Tipo de dato").toString();
-                    String valor = detalle.get("Valor").toString();
-
-                    switch (tipo.toLowerCase()) {
-                        case "velocidad":
-                            datos.put("velocidad", valor);
-                            break;
-                        case "frecuencia":
-                            datos.put("frecuencia", valor);
-                            break;
-                        case "longitud":
-                            datos.put("longitud", valor);
-                            break;
-                    }
-                }
-                resultado.add(datos);
-            }
-        }
-        this.datosParaFrontend = resultado;
-        llamarCasoDeUsoGenerarSismograma();
-    }
-
-    public void llamarCasoDeUsoGenerarSismograma(){
-        this.mapaUbicacion = this.generarSismograma.include(this.eventoSeleccionado.getId());
-        //COMUNICACION CON LA PANTALLA PARA VER MAPA
-    }
-
-    public String tomarOpcVerMapa(String opcion){
-        if (opcion.equalsIgnoreCase("VER MAPA")){
-            return this.mapaUbicacion;
-        }
-        return null;
-    }
-
-    public void tomarOpcModificarDatos(){
-        //COMUNICACION CON LA PANTALLA
-    }
-
-    public void evaluarResultadoInspeccion(){
-        //COMUNICACION CON LA PANTALLA
-    }
-
-    public void tomarSeleccionRechazada(String opcion){
-        if (opcionResultadoRevision.RECHAZADO.name().equalsIgnoreCase(opcion)){
-            validarExistenciaDatos();
-        }else{
-            throw new RuntimeException("Opción no reconocida.");
-        }
-    }
-
-     private void validarExistenciaDatos(){
-         if (this.SeriesTemporalesEventoSeleccionado.isEmpty()){
-             throw new RuntimeException("No se encontraron datos de las series temporales para el evento seleccionado.");
-         }
-         for (SerieTemporal serieTemporal : this.SeriesTemporalesEventoSeleccionado) {
-             if (serieTemporal.getMuestrasSismicas().isEmpty()){
-                 throw new RuntimeException("No se encontraron datos de las muestras sismicas para la serie temporal seleccionada.");
-             }
-         }
-         rechazararEvento();
-     }
-
-    public Estado buscarEstadoRechazado(){
-        this.estados = this.estadoRepository.findAll();
-        for (Estado estado : estados) {
-            if (estado.esAmbitoEventoSismico() && estado.esRechazado()){
-                return estado;
-            }
-        }
-        return null;
-    }
-
-    public void rechazararEvento(){
-        this.punteroRechazado = buscarEstadoRechazado();
-        if (this.punteroRechazado == null){
-            throw new RuntimeException("No se encontró estado de rechazo.");
-        }
-        this.fechaHoraActual = tomarFechaHoraActual();
-        this.eventoSeleccionado.rechazar(fechaHoraActual, eventoSeleccionado, punteroRechazado, punteroEmpleado);
-    }
-
-    public void finCU(){
-        // FIXME: La sesión actual es nula.
-        if (this.sesionActual != null) {
-            this.sesionActual.setFechaFin(tomarFechaHoraActual());
-        }
-    }
-
-    public List<Map<String, Object>> getDatosParaFrontend() {
-        return this.datosParaFrontend;
-    }
-
-    public List<EventoSismico> getEventosSismicosPendientesCompletos() {
-        return this.eventosSismicos;
+    
+    private void llamarCasoDeUsoGenerarSismograma() { // MSG 53
+        this.generarSismogramaService.generarSismograma();
     }
 }

@@ -1,3 +1,8 @@
+<!--
+    Menú de opciones
+  * Deriva a la lista de eventos pendientes de revisión 
+    o al historial de eventos registrados (sin importar estados)
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,19 +18,27 @@
       <h1>Bienvenido, <span id="nombreUsuario"></span></h1>
 
     <script>
+      //Consigue el nombre de usuario desde el localStorage
      const sesionString = localStorage.getItem('sesion');
      if (sesionString) {
-        const sesionData = JSON.parse(sesionString);
-        document.getElementById('nombreUsuario').textContent = sesionData.usuario;
+        const sesionData = JSON.parse(sesionString); //Transforma el string en un objeto JSON
+        document.getElementById('nombreUsuario').textContent = sesionData.usuario; //Agrega el nombre al mensaje de bienvenida
+
      } else {
+      //Si no hay datos en el localStorage, redirige al usuario al login
         window.location.href = 'login.html';
      }
+
     </script>
     
       <div class="botones">
-        <!-- Se ha eliminado el botón de creación manual -->
-        <a href="pendientes.html" class="btn">Revisar Eventos Pendientes</a>
+
+        <!-- Deriva a la lista de eventos pendientes de revisión -->
+        <a href="pendientes.html" class="btn">Registrar Nueva Revisión</a> 
+        
+        <!-- Deriva al historial de eventos registrados -->
         <a href="registrados.html" class="btn">Ver Registros Históricos</a>
+
       </div>
     </div>
   </div>

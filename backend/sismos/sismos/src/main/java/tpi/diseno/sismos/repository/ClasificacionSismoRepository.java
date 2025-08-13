@@ -1,4 +1,3 @@
-// Crea este archivo en: src/main/java/tpi/diseno/sismos/repository/ClasificacionSismoRepository.java
 package tpi.diseno.sismos.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;

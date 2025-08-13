@@ -1,5 +1,3 @@
-// Archivo completo para: DatosEventoSismico.java
-
 package tpi.diseno.sismos.model;
 
 import java.time.LocalDateTime;
@@ -11,7 +9,7 @@ public class DatosEventoSismico {
     private Long id;
     private String fechaHora;
     private String ubicacion;
-    private String ubicacionHipocentro; // <-- CAMPO AÑADIDO
+    private String ubicacionHipocentro; 
     private double magnitud;
     private String alcance;
     private String estado;
@@ -38,8 +36,7 @@ public class DatosEventoSismico {
             this.ubicacion = "No definida";
         }
     }
-    
-    // --- NUEVO MÉTODO PARA EL HIPOCENTRO ---
+
     public String getUbicacionHipocentro() { return ubicacionHipocentro; }
     public void setUbicacionHipocentroFromCoordenadas(Double lat, Double lon) {
         if (lat != null && lon != null) {

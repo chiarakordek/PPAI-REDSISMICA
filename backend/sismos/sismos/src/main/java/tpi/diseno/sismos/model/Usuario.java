@@ -1,48 +1,25 @@
 package tpi.diseno.sismos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import tpi.diseno.sismos.repository.UsuarioRepository;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 public class Usuario {
-
     @Id
     private String nombre;
 
-/** Empleado asociado a este usuario. */
     @OneToOne
+    @JoinColumn(name = "empleado_id", referencedColumnName = "id")
     private Empleado empleado;
 
-/**Constructor */
-    public Usuario() {
-    }
-
-    public Usuario(String nombre, Empleado empleado) {
-        this.nombre = nombre;
-        this.empleado = empleado;
-    }
-
-    /////////// Getters y Setters
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
+    /**
+     * MSG 26: getEmpleado()
+     * Devuelve el Empleado asociado a este usuario. Lombok genera este método.
+     */
     public Empleado getEmpleado() {
-        return empleado;
+        return this.empleado;
     }
-    public void setEmpleado(Empleado empleado) {
-        this.empleado = empleado;
-    }
-
-    //metodo
-    public Usuario obtenerUsuarioLogueado(UsuarioRepository usuarioRepo) {
-    return usuarioRepo.findByEmpleado(this.empleado).orElse(null);
-}
-
 }

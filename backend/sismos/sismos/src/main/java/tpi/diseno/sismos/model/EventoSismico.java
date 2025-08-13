@@ -1,101 +1,131 @@
-// Archivo completo para: backend\sismos\sismos\src\main\java\tpi\diseno\sismos\model\EventoSismico.java
-
 package tpi.diseno.sismos.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
+import tpi.diseno.sismos.dto.SerieTemporalDTO;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class EventoSismico {
 
-    @Id
+    // --- 1. ATRIBUTOS Y RELACIONES ---
+    @Id // Habria q agregar id en el diagrama de clase, para evitar incosistencias. Si no esta fechaHoraFin de Primary key, nos da error
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private LocalDateTime fechaHoraFin;
     private LocalDateTime fechaHoraOcurrencia;
-    private Double latitudEpicentro;
-    private Double latitudHipocentro;   // Nombre del campo
-    private Double longitudHipocentro;  // Nombre del campo
-    private Double longitudEpicentro;
-    private Double valorMagnitud;
+    private double latitudEpicentro;
+    private double latitudHipocentro;
+    private double longitudHipocentro;
+    private double longitudEpicentro;
+    private double valorMagnitud;
 
-    @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("evento-serie")
+    @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SerieTemporal> seriesTemporales = new ArrayList<>();
-
-    @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL)
-    @JsonManagedReference("evento-cambioestado")
-    private List<CambioEstado> cambiosEstado;
-
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estado_actual_id")
     private Estado estadoActual;
-
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("fechaInicio ASC")
+    private List<CambioEstado> historialCambioEstado = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ClasificacionSismo clasificacion;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="origen_generacion_id")
+    private OrigenDeGeneracion origenGeneracion;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="alcance_sismo_id")
     private AlcanceSismo alcanceSismo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private ClasificacionSismo clasificacionSismo;
+    // --- 2. MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
+    
+    public boolean esPendienteDeRevision() { // MSG 5
+        if (this.estadoActual != null) {
+            return this.estadoActual.esPendienteDeRevision(); // MSG 6 -> Delega al estado.
+        }
+        return false;
+    }
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private OrigenDeGeneracion origenDeGeneracion;
+    public EventoSismicoResumenDTO getDatos() { // MSG 7
+        return new EventoSismicoResumenDTO(
+            this.getFechaHoraOcurrencia(), // MSG 9
+            this.getLatitudEpicentro(), // MSG 10
+            this.getLongitudEpicentro(), // MSG 11
+            this.getLatitudHipocentro(), // MSG 12
+            this.getLongitudHipocentro(), // MSG 13
+            this.getValorMagnitud() // MSG 14
+        );
+    }
+ 
 
-    public EventoSismico() {}
-    public EventoSismico(LocalDateTime fechaHoraFin, LocalDateTime fechaHoraOcurrencia, Double latitudEpicentro, Double latitudHipocentro, Double longitudHipocentro, Double longitudEpicentro, Double valorMagnitud, Estado estado, AlcanceSismo alcanceSismo, ClasificacionSismo clasificacionSismo, OrigenDeGeneracion origenDeGeneracion) { this.fechaHoraFin = fechaHoraFin; this.fechaHoraOcurrencia = fechaHoraOcurrencia; this.latitudEpicentro = latitudEpicentro; this.latitudHipocentro = latitudHipocentro; this.longitudHipocentro = longitudHipocentro; this.longitudEpicentro = longitudEpicentro; this.valorMagnitud = valorMagnitud; this.estadoActual = estado; this.alcanceSismo = alcanceSismo; this.clasificacionSismo = clasificacionSismo; this.origenDeGeneracion = origenDeGeneracion; }
-    
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public LocalDateTime getFechaHoraFin() { return fechaHoraFin; }
-    public void setFechaHoraFin(LocalDateTime fechaHoraFin) { this.fechaHoraFin = fechaHoraFin; }
-    public LocalDateTime getFechaHoraOcurrencia() { return fechaHoraOcurrencia; }
-    public void setFechaHoraOcurrencia(LocalDateTime fechaHoraOcurrencia) { this.fechaHoraOcurrencia = fechaHoraOcurrencia; }
-    public Double getLatitudEpicentro() { return latitudEpicentro; }
-    public void setLatitudEpicentro(Double latitudEpicentro) { this.latitudEpicentro = latitudEpicentro; }
-    
-    // --- MÉTODOS CORREGIDOS ---
-    // Ahora el nombre del método coincide con el del campo, generando un JSON consistente.
-    public Double getLatitudHipocentro() { return latitudHipocentro; }
-    public void setLatitudHipocentro(Double latitudHipocentro) { this.latitudHipocentro = latitudHipocentro; }
-    public Double getLongitudHipocentro() { return longitudHipocentro; }
-    public void setLongitudHipocentro(Double longitudHipocentro) { this.longitudHipocentro = longitudHipocentro; }
+    public void revisar(Estado nuevoEstado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 27
+        CambioEstado ultimoCambio = this.buscarUltimoCambioEstado(); // MSG 28
+        if (ultimoCambio != null) {
+            ultimoCambio.esUltimoCambioEstado(fechaHoraActual); // MSG 29 -- Delega a CambioEstado
+        }
+        CambioEstado nuevoCambioEstado = this.crearCambioEstado(fechaHoraActual, nuevoEstado, empleadoResponsable); // MSG 31
+        this.historialCambioEstado.add(nuevoCambioEstado);
+        this.setEstado(nuevoEstado); // MSG 33
+    }
 
-    public Double getLongitudEpicentro() { return longitudEpicentro; }
-    public void setLongitudEpicentro(Double longitudEpicentro) { this.longitudEpicentro = longitudEpicentro; }
-    
-    @JsonProperty("magnitud")
-    public Double getMagnitud() { return valorMagnitud; }
-    public void setValorMagnitud(Double valorMagnitud) { this.valorMagnitud = valorMagnitud; }
+    public String getClasificacion() { // MSG 35
+        if (this.clasificacion != null) { return this.clasificacion.getClasificacion(); } // MSG 36
+        return "N/A";
+    }
 
-    public List<SerieTemporal> getSeriesTemporales() { return seriesTemporales; }
-    public void setSeriesTemporales(ArrayList<SerieTemporal> seriesTemporales) { this.seriesTemporales = seriesTemporales; }
-    public List<CambioEstado> getCambiosEstado() { return cambiosEstado; }
-    public void setCambiosEstado(List<CambioEstado> cambiosEstado) { this.cambiosEstado = cambiosEstado; }
-    public void setEstado(Estado estado){ this.estadoActual = estado; }
-    public Estado getEstado(){ return this.estadoActual; }
-    public AlcanceSismo getAlcanceSismo() { return alcanceSismo; }
-    public void setAlcanceSismo(AlcanceSismo alcanceSismo) { this.alcanceSismo = alcanceSismo; }
-    public ClasificacionSismo getClasificacionSismo() { return clasificacionSismo; }
-    public void setClasificacionSismo(ClasificacionSismo clasificacionSismo) { this.clasificacionSismo = clasificacionSismo; }
-    public OrigenDeGeneracion getOrigenDeGeneracion() { return origenDeGeneracion; }
-    public void setOrigenDeGeneracion(OrigenDeGeneracion origenDeGeneracion) { this.origenDeGeneracion = origenDeGeneracion; }
-    public boolean esAutodetectado(){ return this.estadoActual != null && this.estadoActual.esAutodetectado(); }
-    public boolean esPendiente(){ return this.estadoActual != null && this.estadoActual.esPendienteDeRevision(); }
+    public String getAlcance() { // MSG 37
+        if (this.alcanceSismo != null) { return this.alcanceSismo.getAlcance(); } // MSG 38
+        return "N/A";
+    }
+
+    public String getOrigen() { // MSG 39
+        if (this.origenGeneracion != null) { return this.origenGeneracion.getOrigen(); } // MSG 40
+        return "N/A";
+    }
+
+    public List<SerieTemporalDTO> obtenerSeriesTemporales() { // MSG 41
+        List<SerieTemporalDTO> dtos = this.seriesTemporales.stream()
+                .map(serie -> serie.getDatosSerieTemporal()) // MSG 42 - Delega a SerieTemporal
+                .collect(Collectors.toList());
+        this.clasificarSeriesTemporales(dtos); // MSG 52
+        return dtos;
+    }
+
+    public void rechazar(Estado estadoRechazado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 70
+        CambioEstado ultimoCambio = this.buscarUltimoCambioEstado();
+        if (ultimoCambio != null) {
+            ultimoCambio.esUltimoCambioEstado(fechaHoraActual); // MSG 71
+        }
+        CambioEstado nuevoCambioEstadoRechazado = this.crearCambioEstado(fechaHoraActual, estadoRechazado, empleadoResponsable); // MSG 72
+        this.historialCambioEstado.add(nuevoCambioEstadoRechazado);
+        this.setEstado(estadoRechazado); // MSG 74
+    }
+
+    public void setEstado(Estado nuevoEstado) { // MSG 33 y 74
+        this.setEstadoActual(nuevoEstado);
+    }
+
+    // --- 3. MÉTODOS PRIVADOS ---
+    private CambioEstado buscarUltimoCambioEstado() { // MSG 28
+        if (this.historialCambioEstado == null || this.historialCambioEstado.isEmpty()) { return null; }
+        return this.historialCambioEstado.get(this.historialCambioEstado.size() - 1);
+    }
     
-    // El método getDatos() ahora usará los métodos corregidos
-    public String getDatos() { return String.format( "Fecha/Hora: %s | Ubicación Epicentro: (%.4f, %.4f) | Ubicación Hipocentro: (%.4f, %.4f) | Magnitud: %.1f | Estado: %s", getFechaHoraOcurrencia() != null ? getFechaHoraOcurrencia() : "N/A", getLatitudEpicentro() != null ? getLatitudEpicentro() : 0.0, getLongitudEpicentro() != null ? getLongitudEpicentro() : 0.0, getLatitudHipocentro() != null ? getLatitudHipocentro() : 0.0, getLongitudHipocentro() != null ? getLongitudHipocentro() : 0.0, getMagnitud() != null ? getMagnitud() : 0.0, estadoActual != null ? estadoActual.getNombreEstado() : "N/A" ); }
+    private CambioEstado crearCambioEstado(LocalDateTime fecha, Estado estado, Empleado empleado) { // MSG 31 y 72
+        return new CambioEstado(fecha, estado, this, empleado); // MSG 32 y 73
+    }
     
-    public void revisar(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){ this.buscarUltimoCambioEstado(); this.crearCambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable); this.setEstado(estado); }
-    public void buscarUltimoCambioEstado(){ if (this.cambiosEstado != null) { for(CambioEstado cambio: cambiosEstado){ if(cambio.esUltimoCambioEstado()){ cambio.setFechaFin(); } } } }
-    public void crearCambioEstado(LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){ if (this.cambiosEstado == null) { this.cambiosEstado = new ArrayList<>(); } CambioEstado cambio = new CambioEstado(fechaInicio, eventoSismico, estado, empleadoResponsable); this.cambiosEstado.add(cambio); }
-    public List<SerieTemporal> obtenerSeriesTemporales(List<Sismografo> sismografos) { List<SerieTemporal> series = new ArrayList<>(); List<String> estaciones = new ArrayList<>(); if (this.seriesTemporales != null) { for (SerieTemporal serie : this.seriesTemporales) { serie.getDatosSerieTemporal(); series.add(serie); estaciones.add(serie.buscarEstacionSismologica(sismografos)); } } return clasificarSeriesTemporales(series, estaciones, sismografos); }
-    public List<SerieTemporal> clasificarSeriesTemporales(List<SerieTemporal> seriesTemporales, List<String> estaciones, List<Sismografo> sismografos){ estaciones.sort(Comparator.naturalOrder()); Map<String, Integer> ordenEstaciones = new HashMap<>(); for (int i = 0; i < estaciones.size(); i++) { ordenEstaciones.put(estaciones.get(i), i); } return seriesTemporales.stream() .sorted(Comparator.comparingInt( s -> ordenEstaciones.getOrDefault(s.buscarEstacionSismologica(sismografos), Integer.MAX_VALUE) )) .collect(Collectors.toList()); }
-    public void rechazar(LocalDateTime fechaCambioEstado, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable){ this.buscarUltimoCambioEstado(); this.crearCambioEstado(fechaCambioEstado, eventoSismico,estado, empleadoResponsable); this.setEstado(estado); }
+    private void clasificarSeriesTemporales(List<SerieTemporalDTO> series) { // MSG 52
+        System.out.println("Ejecutando MSG 52: ClasificarSeriesTemporales en EventoSismico...");
+    }
 }
