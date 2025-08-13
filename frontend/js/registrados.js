@@ -1,14 +1,8 @@
-// Archivo frontend/js/registrados.js
-
 document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-registrados-body');
 
-    // =========== INICIO DE LA MODIFICACIÓN ===========
-    // CAMBIAMOS la URL para que coincida con el endpoint que tienes en tu controlador.
-    // Antes era: /api/eventos-registrados
-    // Ahora es: /api/revision-manual/eventos-todos
-    const API_URL = 'http://localhost:8080/api/revision-manual/eventos-todos'; 
-    // =========== FIN DE LA MODIFICACIÓN ===========
+    
+    const API_URL = 'http://localhost:8080/api/revision-manual/eventos-todos'; //End-point del controlador
 
     const cargarEventosRegistrados = async () => {
         tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';
@@ -24,9 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             tablaBody.innerHTML = ''; 
             
+            //Valida si no hay eventos registrados aún
             if (data.length === 0) {
                 tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay eventos registrados.</td></tr>';
+
             } else {
+                //Si hay eventos registrados, completa las filas de la tabla con los datos de cada uno
                 data.forEach(evento => {
                     const fila = `
                         <tr>
@@ -38,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <a href="detalleEvento.html?id=${evento.id}&origen=registrados" class="btn-editar">Editar</a>
                             </td>
                         </tr>
-                    `;
+                    `; //La columna de editar deriva a la página del detalle del elemento de la fila
                     tablaBody.innerHTML += fila;
                 });
             }

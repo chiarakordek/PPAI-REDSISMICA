@@ -1,3 +1,7 @@
+<!--
+Historial de eventos registrados
+ - Muestra todos los eventos sísmicos sin importar su estado actual
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,8 +15,22 @@
     <a href="menu.html">
         <img src="img/logo.png" class="logo-small" alt="Logo">
     </a>
-    <span class="analyst-name">Analista: Nombre Apellido</span>
+    <div class="analyst-name">Analista: <span id="nombreUsuario"></span></div>
   </header>
+
+  <script>
+      //Consigue el nombre de usuario desde el localStorage
+     const sesionString = localStorage.getItem('sesion');
+     if (sesionString) {
+        const sesionData = JSON.parse(sesionString); //Transforma el string en un objeto JSON
+        document.getElementById('nombreUsuario').textContent = sesionData.usuario; //Agrega el nombre al mensaje de bienvenida
+
+     } else {
+      //Si no hay datos en el localStorage, redirige al usuario al login
+        window.location.href = 'login.html';
+     }
+
+    </script>
   
   <div class="main-container">
     <div class="tabla-card">
@@ -35,6 +53,7 @@
       </div>
       
       <table class="eventos-table">
+        <!--Encabezado de la tabla-->
         <thead>
           <tr>
             <th>Fecha/Hora</th>
@@ -44,6 +63,7 @@
             <th>Acción</th>
           </tr>
         </thead>
+        
         <tbody id="tabla-registrados-body"> 
           <!-- JavaScript llenará esta tabla -->
         </tbody>
@@ -51,7 +71,7 @@
     </div>
   </div>
 
-  <!-- Este es el nuevo archivo JS que controlará esta página -->
+  <!--Archivo JS que controlará esta página -->
   <script src="js/registrados.js"></script>
 </body>
 </html>

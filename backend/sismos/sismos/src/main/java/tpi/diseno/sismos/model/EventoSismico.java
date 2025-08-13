@@ -71,7 +71,7 @@ public class EventoSismico {
     public void revisar(Estado nuevoEstado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 27
         CambioEstado ultimoCambio = this.buscarUltimoCambioEstado(); // MSG 28
         if (ultimoCambio != null) {
-            ultimoCambio.esUltimoCambioEstado(fechaHoraActual); // MSG 29 -- Delega a CAmbioEstado
+            ultimoCambio.esUltimoCambioEstado(fechaHoraActual); // MSG 29 -- Delega a CambioEstado
         }
         CambioEstado nuevoCambioEstado = this.crearCambioEstado(fechaHoraActual, nuevoEstado, empleadoResponsable); // MSG 31
         this.historialCambioEstado.add(nuevoCambioEstado);

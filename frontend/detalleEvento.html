@@ -1,5 +1,3 @@
-<!-- Archivo completo, final y verificado para: frontend/detalleEvento.html -->
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,9 +12,23 @@
             <img src="img/logo.png" alt="Logo" class="logo-small">
         </a>
         <div class="analyst-name">
-            Analista: Nombre Apellido
+            Analista: <span id="nombreUsuario"></span>
         </div>
     </header>
+
+    <script>
+      //Consigue el nombre de usuario desde el localStorage
+     const sesionString = localStorage.getItem('sesion');
+     if (sesionString) {
+        const sesionData = JSON.parse(sesionString); //Transforma el string en un objeto JSON
+        document.getElementById('nombreUsuario').textContent = sesionData.usuario; //Agrega el nombre al mensaje de bienvenida
+
+     } else {
+      //Si no hay datos en el localStorage, redirige al usuario al login
+        window.location.href = 'login.html';
+     }
+
+    </script>
 
     <div class="evento-container">
         <div class="detalle-evento-card">
@@ -43,20 +55,18 @@
                     <button class="btn-accion btn-ver-mapa">Ver Mapa</button>
                 </div>
 
-                <!-- =========== INICIO DE LA MODIFICACIÓN =========== -->
-                <!-- Nuevos botones de decisión -->
+                <!-- botones de decisión -->
                 <div id="botones-decision" class="acciones-decision-container">
                     <button class="btn-accion btn-confirmar">Confirmar</button>
                     <button class="btn-accion btn-derivar">Derivar</button>
                     <button class="btn-accion btn-rechazar">Rechazar</button>
                 </div>
-                <!-- =========== FIN DE LA MODIFICACIÓN =========== -->
             </div>
             
         </div>
     </div>
     
-    <!-- Asegúrate de que está llamando a evento.js -->
+
     <script src="js/evento.js"></script>
 </body>
 </html>
