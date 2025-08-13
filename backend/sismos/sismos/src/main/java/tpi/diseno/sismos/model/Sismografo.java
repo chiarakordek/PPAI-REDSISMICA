@@ -1,115 +1,56 @@
 package tpi.diseno.sismos.model;
 
-import java.time.LocalDate;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.FetchType;
-// import java.util.List;  // Comentado ya que no se usa la lista en JPA
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import tpi.diseno.sismos.dto.EstacionSismologicaDTO;
+import tpi.diseno.sismos.dto.SismografoDTO;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Sismografo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private LocalDate fechaAdquisicion;
+    
+    private LocalDateTime fechaAdquisicion;
     private String identificadorSismografo;
-    private Integer nroSerie;
+    private String nroSerie;
 
-    /* 
-     * Relación comentada porque no existe en el diagrama de clases.
-     * Se maneja la lógica en el GestorRegistrarResultadoRevisionManual.
-     */
-    // @OneToMany(mappedBy = "sismografo")  
-    // private List<SerieTemporal> seriesTemporales;
-
-    /** Estación sismológica donde está instalado el sismógrafo. */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne
+    @JoinColumn(name = "estacion_sismologica_id")
     private EstacionSismologica estacionSismologica;
 
-    /** Constructor */
-    public Sismografo() {
-    }
+    @OneToMany(mappedBy = "sismografo")
+    private List<SerieTemporal> seriesTemporales;
 
-    public Sismografo(LocalDate fechaAdquisicion, String identificadorSismografo, 
-                     Integer nroSerie, EstacionSismologica estacionSismologica) {
-        this.fechaAdquisicion = fechaAdquisicion;
-        this.identificadorSismografo = identificadorSismografo;
-        this.nroSerie = nroSerie;
-        this.estacionSismologica = estacionSismologica;
-    }
-
-    ///////////// Getters y Setters /////////////
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getFechaAdquisicion() {
-        return fechaAdquisicion;
-    }
-    public void setFechaAdquisicion(LocalDate fechaAdquisicion) {
-        this.fechaAdquisicion = fechaAdquisicion;
-    }
-
-    /*
-     * Getters/Setters de seriesTemporales comentados porque la relación no existe.
-     * La lógica se maneja en el gestor mediante sismografoRepository.
+    /**
+     * MSG 49: sosMiSismografo() -> Invocado por SerieTemporal.
+     * En el diagrama, esto actúa como una condición. En una implementación real, podría
+     * tomar un parámetro para una verificación. Siendo literales, es un método que se llama.
+     * Suponemos que si el objeto existe, es el correcto.
      */
-    // public List<SerieTemporal> getSeriesTemporales() {
-    //     return seriesTemporales;
-    // }
-    // public void setSeriesTemporales(List<SerieTemporal> seriesTemporales) {
-    //     this.seriesTemporales = seriesTemporales;
-    // }
-
-    public String getIdentificadorSismografo() {
-        return identificadorSismografo;
-    }
-    public void setIdentificadorSismografo(String identificadorSismografo) {
-        this.identificadorSismografo = identificadorSismografo;
+    public boolean sosMiSismografo() {
+        return true; 
     }
 
-    public Integer getNroSerie() {
-        return nroSerie;
-    }
-    public void setNroSerie(Integer nroSerie) {
-        this.nroSerie = nroSerie;
-    }
-
-    public EstacionSismologica getEstacionSismologica() {
-        return estacionSismologica;
-    }
-    public void setEstacionSismologica(EstacionSismologica estacionSismologica) {
-        this.estacionSismologica = estacionSismologica;
-    }
-
-    // Métodos /////////////////////////////////
-    /*
-     * Método comentado porque la verificación de relación ahora se hace en el gestor.
-     * Si necesitas mantener esta función, implementala en el GestorRegistrarResultadoRevisionManual.
+    /**
+     * MSG 50: getDatosSismografo() -> Invocado por SerieTemporal.
+     * Orquesta la recolección de sus propios datos y los de su estación.
      */
-    // public boolean sosMiSismografo(Long serieTemporalId) {
-    //     if (this.seriesTemporales != null) {
-    //         for(SerieTemporal serieTemporal : this.seriesTemporales) {
-    //             if (serieTemporal.getId().equals(serieTemporalId)) {
-    //                 return true;
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    /** Devuelve el nombre de la estación asociada */
-    public String getDatosSismografo() {
-        return this.estacionSismologica != null ? 
-            this.estacionSismologica.getDatosEstacion() : 
-            "Estación no asignada";
+    public SismografoDTO getDatosSismografo() {
+        EstacionSismologicaDTO estacionDTO = null;
+        if (this.estacionSismologica != null) {
+            // MSG 51: getDatosEstacion() -> Delega la obtención de datos a EstacionSismologica.
+            estacionDTO = this.estacionSismologica.getDatosEstacion();
+        }
+        return new SismografoDTO(this.getIdentificadorSismografo(), this.getNroSerie(), estacionDTO);
     }
 }
