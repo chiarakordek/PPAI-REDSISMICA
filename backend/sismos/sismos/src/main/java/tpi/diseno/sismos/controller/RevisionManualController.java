@@ -14,16 +14,15 @@ import tpi.diseno.sismos.service.GenerarSismogramaService;
 import java.util.List;
 import java.util.Map;
 
-// Esta clase es PantallaRegistrarResultadoRevisionManual.
 @RestController
 @RequestMapping("/revision-manual")
 @SessionScope
-public class PantallaRegistrarResultadoRevisionManual {
+public class RevisionManualController {
 
     private final GestorRegistrarResultadoRevisionManual gestor;
 
     @Autowired
-    public PantallaRegistrarResultadoRevisionManual(EventoSismicoRepository eventoRepo, EstadoRepository estadoRepo, SesionRepository sesionRepo, GenerarSismogramaService sismogramaService) {
+    public RevisionManualController(EventoSismicoRepository eventoRepo, EstadoRepository estadoRepo, SesionRepository sesionRepo, GenerarSismogramaService sismogramaService) {
         // La Pantalla es responsable de crear la instancia del Gestor.
         this.gestor = new GestorRegistrarResultadoRevisionManual(eventoRepo, estadoRepo, sesionRepo, sismogramaService);
     }

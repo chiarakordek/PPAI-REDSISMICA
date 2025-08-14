@@ -31,4 +31,13 @@
 </body>
 </html>
 
-<script src="js/pantallaRegistrarResultadoRevisionManual.js"></script>
+<script>
+  const btnRegistrarResult = document.getElementById('btnRegistrarRes');
+  
+  function opcionRegistrarNuevaRevision(){
+    window.location.href = 'eventosPendientes.html';
+  }
+  if (btnRegistrarResult) {
+    btnRegistrarResult.addEventListener('click', opcionRegistrarNuevaRevision);
+  }
+</script>
