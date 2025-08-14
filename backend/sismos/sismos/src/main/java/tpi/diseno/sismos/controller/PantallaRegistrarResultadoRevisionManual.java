@@ -18,12 +18,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/revision-manual")
 @SessionScope
-public class RevisionManualController {
+public class PantallaRegistrarResultadoRevisionManual {
 
     private final GestorRegistrarResultadoRevisionManual gestor;
 
     @Autowired
-    public RevisionManualController(EventoSismicoRepository eventoRepo, EstadoRepository estadoRepo, SesionRepository sesionRepo, GenerarSismogramaService sismogramaService) {
+    public PantallaRegistrarResultadoRevisionManual(EventoSismicoRepository eventoRepo, EstadoRepository estadoRepo, SesionRepository sesionRepo, GenerarSismogramaService sismogramaService) {
         // La Pantalla es responsable de crear la instancia del Gestor.
         this.gestor = new GestorRegistrarResultadoRevisionManual(eventoRepo, estadoRepo, sesionRepo, sismogramaService);
     }
