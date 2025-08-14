@@ -18,7 +18,7 @@ public class Empleado {
     
     @OneToOne(mappedBy = "empleado")
     private Usuario usuario;
-}
+
 
     /**Constructor (Vacío)*/
     public Empleado() {
