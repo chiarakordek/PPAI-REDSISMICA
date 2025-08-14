@@ -1,3 +1,5 @@
+<!--Página de logueo del usuario-->
+<!--En caso de éxito redirige al manú de opciones-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,12 +13,16 @@
     <div class="contenedor-opaco">
       <img src="img/logo.png" alt="Logo" class="logo" />
       <p>Introduce tu nombre de usuario para acceder a los datos sísmicos en tiempo real.</p>
+
+      <!--FORMULARIO DE INICIO DE SESIÓN-->
       <form id="login-form">
        <input type="text" id="usuario" placeholder="Nombre de usuario" required />
        <button type="submit" class="btn">Entrar</button>
       </form>
+
     </div>
   </div>
+  <!--Lógica del login-->
   <script src="js/login.js"></script>
 </body>
 </html>

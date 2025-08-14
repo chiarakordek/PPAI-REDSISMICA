@@ -36,8 +36,7 @@ public class DatosEventoSismico {
             this.ubicacion = "No definida";
         }
     }
-    
-    // --- NUEVO MÉTODO PARA EL HIPOCENTRO ---
+
     public String getUbicacionHipocentro() { return ubicacionHipocentro; }
     public void setUbicacionHipocentroFromCoordenadas(Double lat, Double lon) {
         if (lat != null && lon != null) {

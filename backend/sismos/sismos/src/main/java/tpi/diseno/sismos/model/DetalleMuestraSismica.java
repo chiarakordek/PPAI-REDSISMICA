@@ -1,82 +1,39 @@
 package tpi.diseno.sismos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import java.util.Map;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import tpi.diseno.sismos.dto.DetalleMuestraSismicaDTO;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class DetalleMuestraSismica {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double valor;
+    private double valor;
 
-/** Muestra sísmica a la que pertenece este detalle. */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "muestra_sismica_id")
     private MuestraSismica muestraSismica;
 
- /** Tipo de dato al que corresponde el valor registrado. */
-    @ManyToOne
-    private TipoDeDato tipoDeDato;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tipo_dato_id")
+    private TipoDeDato tipoDato;
 
-    /**Constructor (Vacío)*/
-    public DetalleMuestraSismica() {}
-
-    /**Constructor */
-    public DetalleMuestraSismica(Double valor, MuestraSismica muestraSismica, TipoDeDato tipoDeDato) {
-        this.valor = valor;
-        this.muestraSismica = muestraSismica;
-        this.tipoDeDato = tipoDeDato;
-    }
-
-
-    //////////////// Getters y Setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Double getValor() {
-        return valor;
-    }
-    public void setValor(Double valor) {
-        this.valor = valor;
-    }
-
-    public MuestraSismica getMuestraSismica() {
-        return muestraSismica;
-    }
-    public void setMuestraSismica(MuestraSismica muestraSismica) {
-        this.muestraSismica = muestraSismica;
-    }
-
-    public TipoDeDato getTipoDeDato() {
-        return tipoDeDato;
-    }
-    public void setTipoDeDato(TipoDeDato tipoDeDato) {
-        this.tipoDeDato = tipoDeDato;
-    }
-
-
-    //Devuelve el valor registrado en esta muestra. 
-    public Map<String, Object> getDatosDetalleMuestra() {
-        //Para cada detalle se obtiene el valor y el tipo de dato al que pertenece
-        return Map.of(
-            "Valor", this.valor,
-            "Tipo de dato", buscarTipoDeDato()
-        );
+    public DetalleMuestraSismicaDTO getDatosDetalleMuestra() { // MSG 46
+        String denominacionTipoDato = this.buscarTipoDeDato(); // MSG 47
+        return new DetalleMuestraSismicaDTO(denominacionTipoDato, this.valor);
     }
 
     //Obtiene el tipo de dato para el valor del detalle
-    public String buscarTipoDeDato() {
+    private String buscarTipoDeDato() { // MSG 47
         //Si el tipo de dato es null, se informa que no se reconoce el tipo de dato.
-        return this.tipoDeDato != null ? this.tipoDeDato.getDenominacion() : "Tipo desconocido";
+        return this.tipoDato.getDenominacion(); // MSG 48
     }
 }

@@ -1,10 +1,16 @@
 package tpi.diseno.sismos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference; 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class CambioEstado {
 
     @Id
@@ -14,96 +20,39 @@ public class CambioEstado {
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
 
-    /** Evento sísmico al que pertenece el cambio de estado*/ 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference("evento-cambioestado") 
-    private EventoSismico eventoSismico;
-
-    /** Estado al cual corresponde el cambio de estado*/
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "estado_id")
     private Estado estado;
 
-    /** Empleado que realizó el cambio de estado*/
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "evento_sismico_id")
+    private EventoSismico eventoSismico;
+
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "empleado_responsable_id")
     private Empleado empleadoResponsable;
 
-
-    /**Constructor (Vacío)*/
-    public CambioEstado() {
-
+    /**
+     * MSG 29: esUltimoCambioEstado() -> Este método es invocado por EventoSismico.
+     * Es responsable de ejecutar la lógica de los mensajes 29 y 30 
+     * tambien mas adelante lo reutilizamos con el MSJ 71.
+     * Verifica si es el último estado y, si lo es, establece la fecha de fin.
+     */
+    public void esUltimoCambioEstado(LocalDateTime fecha) { // MSG 29 (verificación)
+        if (this.fechaFin == null) {
+            // MSG 30 (setea fecha de fin en caso de ser el último cambio)
+            this.setFechaFin(fecha);
+        }
     }
 
-    /**Constructor */
-    public CambioEstado( LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable) { 
-        this.fechaInicio = fechaInicio; 
-        this.eventoSismico = eventoSismico; 
-        this.estado = estado; 
-        this.empleadoResponsable = empleadoResponsable; 
-    }
-
-    //////////////// Getters y Setters
-
-    public Long getId() { 
-        return this.id; 
-    }
-
-
-    public void setId(Long id) { 
-        this.id = id; 
-    }
-
-
-    public LocalDateTime getFechaInicio() { 
-        return fechaInicio; 
-    }
-
-
-    public void setFechaInicio(LocalDateTime fechaInicio) { 
-        this.fechaInicio = fechaInicio; 
-    }
-
-
-    public LocalDateTime getFechaFin() { 
-        return fechaFin; 
-    }
-
-
-    public void setFechaFin() { 
-        this.fechaFin = LocalDateTime.now(); //Obtiene la fecha actual y la usa como fechaFin del cambioEstado
-    }
-
-    public EventoSismico getEventoSismico() { 
-        return eventoSismico; 
-    }
-    
-    
-    public void setEventoSismico(EventoSismico eventoSismico) { 
-        this.eventoSismico = eventoSismico; 
-    }
-
-
-    public Estado getEstado() { 
-        return estado; 
-    }
-
-
-    public void setEstado(Estado estado) { 
-        this.estado = estado; 
-    }
-
-
-    public Empleado getEmpleadoResponsable() { 
-        return empleadoResponsable; 
-    }
-
-
-    public void setEmpleadoResponsable(Empleado empleadoResponsable) { 
-        this.empleadoResponsable = empleadoResponsable; 
-    }
-
-
-    public boolean esUltimoCambioEstado(){ 
-        //Valida si el atributo fechaFin del cambioEstado es null, lo que significa que aún no terminó
-        return this.fechaFin == null; 
+    /**
+     * MSG 32: new() -> Este constructor es invocado por EventoSismico.
+     * Representa la creación de una nueva instancia de CambioEstado, en este caso,
+     * para el estado 'BloqueadoEnRevision' 
+     * posterior con el MSJ 73: para el estado 'Rechazado'.
+     */
+    public CambioEstado(LocalDateTime fechaInicio, Estado estado, EventoSismico eventoSismico, Empleado empleadoResponsable) {
+        this.fechaInicio = fechaInicio;
+        this.estado = estado;
+        this.eventoSismico = eventoSismico;
+        this.empleadoResponsable = empleadoResponsable;
+        this.fechaFin = null; // Un nuevo estado siempre se crea sin fecha de fin.
     }
 }

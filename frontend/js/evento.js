@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         // =========== FIN DE LA MODIFICACIÓN DE TEXTOS ===========
 
-        // Lógica para el botón RECHAZAR (esta se mantiene intacta)
+        // Lógica para el botón RECHAZAR 
         const manejarDecisionRechazar = async () => {
             if (confirm("¿Está seguro de que desea RECHAZAR este evento?")) {
                 window.removeEventListener('beforeunload', handleBeforeUnload);

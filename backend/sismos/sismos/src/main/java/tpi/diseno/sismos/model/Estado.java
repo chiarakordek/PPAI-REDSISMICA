@@ -4,84 +4,45 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 public class Estado {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     private String ambito;
     private String nombreEstado;
 
-    /**Constructor (Vacío)*/
-    public Estado() {
-    }
-
-    /**Constructor */
-    public Estado(String ambito, String nombreEstado) {
-        this.ambito = ambito;
-        this.nombreEstado = nombreEstado;
-    }
-
-    //////////////// Getters y Setters
-    public Long getId() {
-        return id;
+    /**
+     * MSG 6: esPendienteDeRevision() -> Responde al mensaje que le envía el EventoSismico.
+     */
+    public boolean esPendienteDeRevision() {
+        return "PendienteDeRevision".equals(this.nombreEstado);
     }
 
 
-    public void setId(Long id) {
-        this.id = id;
+    /**
+     * MSG 21: esAmbitoEventoSismico() -> Responde al Gestor para verificar el ámbito.
+     * Este mensaje es reutilizado en MSG 67 secuencias del diagrama.
+     */
+    public boolean esAmbitoEventoSismico() {
+        return "EventoSismico".equals(this.ambito);
     }
 
-
-    public String getAmbito() {
-        return ambito;
+    /**
+     * MSG 22: esBloqueadoEnRevision() -> Responde al Gestor para verificar si es el estado de bloqueo.
+     */
+    public boolean esBloqueadoEnRevision() {
+        return "BloqueadoEnRevision".equals(this.nombreEstado);
     }
 
-
-    public void setAmbito(String ambito) {
-        this.ambito = ambito;
+    /**
+     * MSG 68: esRechazado() -> Responde al Gestor para verificar si es el estado de rechazo.
+     */
+    public boolean esRechazado() {
+        return "Rechazado".equals(this.nombreEstado);
     }
-
-
-    public String getNombreEstado() {
-        return nombreEstado;
-    }
-
-
-    public void setNombreEstado(String nombreEstado) {
-        this.nombreEstado = nombreEstado;
-    }
-
-
-    /**                 Métodos de validación 
-     * verfican si un estado cumple con un atributo en específico
-     * Retornan true o false.
-     * Case insensitive 
-    */
-
-
-    public boolean esAmbitoEventoSismico(){
-        return "EventoSismico".equalsIgnoreCase(ambito);
-    }
-
-    public boolean esAutodetectado(){
-        return "AutoDetectado".equalsIgnoreCase(nombreEstado); 
-    }
-
-    public boolean esPendienteDeRevision(){
-        return "PendienteDeRevision".equalsIgnoreCase(nombreEstado); 
-    }
-
-    public boolean esRechazado(){
-        return "Rechazado".equalsIgnoreCase(nombreEstado);
-    }
-
-    public boolean esBloqueadoEnRevision(){
-        return "BloqueadoEnRevision".equalsIgnoreCase(ambito);
-    }
-
-    //AGREGAR ESTADOS DE LA MÁQUINA DE ESTADOS
 }
