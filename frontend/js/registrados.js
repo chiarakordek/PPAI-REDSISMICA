@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-registrados-body');
 
     
-    const API_URL = 'http://localhost:8080/api/revision-manual/eventos-todos'; //End-point del controlador
+    const API_URL = 'http://localhost:8080/revision-manual/eventos-todos'; //End-point del controlador
 
     const cargarEventosRegistrados = async () => {
         tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';

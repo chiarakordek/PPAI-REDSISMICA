@@ -11,30 +11,16 @@
   <title>Menú Principal</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body>
+<body id="menuPrincipal">
   <div class="wrapper">
     <div class="contenedor-opaco">
       <img src="img/logo.png" alt="Logo" class="logo" />
       <h1>Bienvenido, <span id="nombreUsuario"></span></h1>
-
-    <script>
-      //Consigue el nombre de usuario desde el localStorage
-     const sesionString = localStorage.getItem('sesion');
-     if (sesionString) {
-        const sesionData = JSON.parse(sesionString); //Transforma el string en un objeto JSON
-        document.getElementById('nombreUsuario').textContent = sesionData.usuario; //Agrega el nombre al mensaje de bienvenida
-
-     } else {
-      //Si no hay datos en el localStorage, redirige al usuario al login
-        window.location.href = 'login.html';
-     }
-
-    </script>
     
       <div class="botones">
 
         <!-- Deriva a la lista de eventos pendientes de revisión -->
-        <a href="pendientes.html" class="btn">Registrar Resultado de Revisión Manual</a> 
+        <button class="btn" id="btnRegistrarRes">Registrar Resultado de Revisión Manual</button> 
         
         <!-- Deriva al historial de eventos registrados -->
         <a href="registrados.html" class="btn">Ver Historial de Eventos</a>
@@ -44,3 +30,5 @@
   </div>
 </body>
 </html>
+
+<script src="js/pantallaRegistrarResultadoRevisionManual.js"></script>

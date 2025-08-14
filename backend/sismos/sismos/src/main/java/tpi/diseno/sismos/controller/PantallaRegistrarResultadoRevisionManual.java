@@ -43,6 +43,8 @@ public class PantallaRegistrarResultadoRevisionManual {
      */
     private ResponseEntity<List<EventoSismicoResumenDTO>> abrir() {
         // MSG 3: registrarNuevaRevision() -> La Pantalla delega la responsabilidad al Gestor.
+
+        System.out.println("Iniciando la revisión manual...");
         List<EventoSismicoResumenDTO> eventos = gestor.registrarNuevaRevision();
         
         // MSG 16: mostrarEventoSismicoParaSeleccion() -> La Pantalla devuelve la lista al front-end.

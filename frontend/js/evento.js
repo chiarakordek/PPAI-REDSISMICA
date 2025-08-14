@@ -1,7 +1,7 @@
 // Archivo completo, final y con la solución A PRUEBA DE TODO para: frontend/js/evento.js
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_URL = 'http://localhost:8080/api/revision-manual';
+    const API_URL = 'http://localhost:8080/revision-manual';
     const params = new URLSearchParams(window.location.search);
     const eventoId = params.get('id');
     const origen = params.get('origen');
