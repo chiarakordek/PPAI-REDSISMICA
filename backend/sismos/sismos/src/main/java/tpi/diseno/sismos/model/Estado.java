@@ -1,10 +1,10 @@
 package tpi.diseno.sismos.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +18,14 @@ public class Estado {
     private String ambito;
     @Column(name="nombre_estado")
     private String nombreEstado;
+
+    /**
+    * Getter manual para nombreEstado
+    */
+    public String getNombreEstado() {
+        return this.nombreEstado;
+    }
+
 
     /**
      * MSG 6: esPendienteDeRevision() -> Responde al mensaje que le envía el EventoSismico.

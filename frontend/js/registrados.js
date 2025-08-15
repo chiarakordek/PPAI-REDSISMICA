@@ -29,10 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('evento.id:', evento.id);     // ← Y ESTA TAMBIÉN
                     const fila = `
                         <tr>
-                            <td>${evento.fechaHora || 'N/A'}</td>
-                            <td>${evento.ubicacionEpicentro || 'N/A'}</td>
-                            <td>${evento.ubicacionHipocentro || 'N/A'}</td>
-                            <td>${evento.magnitud !== null ? evento.magnitud : 'N/A'}</td>
+                            <td>${evento.fechaHoraOcurrencia || 'N/A'}</td>
+                            <td>${evento.latitudEpicentro || 'N/A'}</td>
+                            <td>${evento.latitudHipocentro || 'N/A'}</td>
+                            <td>${evento.longitudEpicentro || 'N/A'}</td>
+                            <td>${evento.longitudHipocentro || 'N/A'}</td>
+                            <td>${evento.valorMagnitud !== null ? evento.valorMagnitud : 'N/A'}</td>
                             <td>
                                 <a href="detalleEvento.html?id=${evento.id}&origen=registrados" class="btn-editar">Editar</a>
                             </td>

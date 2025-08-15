@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SismosApplication<sismos>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "tpi.diseno.sismos.SismosApplication",
+            "projectName": "sismos",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

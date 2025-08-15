@@ -11,4 +11,5 @@ public interface EstadoRepository extends JpaRepository<Estado, Long> {
     
     // El método para buscar por nombre sigue siendo muy útil.
     Optional<Estado> findByNombreEstado(String nombreEstado);
+    
 }

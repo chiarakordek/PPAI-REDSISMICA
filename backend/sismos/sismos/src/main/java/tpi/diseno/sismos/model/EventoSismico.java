@@ -1,17 +1,26 @@
 package tpi.diseno.sismos.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
-import tpi.diseno.sismos.dto.EventoSismicoDetalleDTO;
-import tpi.diseno.sismos.dto.SerieTemporalDTO;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
+import tpi.diseno.sismos.dto.SerieTemporalDTO;
+import tpi.diseno.sismos.model.Estado;
 
 @Entity
 @Getter
@@ -25,11 +34,11 @@ public class EventoSismico {
     private Long id;
     private LocalDateTime fechaHoraFin;
     private LocalDateTime fechaHoraOcurrencia;
-    private double latitudEpicentro;
-    private double latitudHipocentro;
-    private double longitudHipocentro;
-    private double longitudEpicentro;
-    private double valorMagnitud;
+    private Double latitudEpicentro;
+    private Double latitudHipocentro;
+    private Double longitudHipocentro;
+    private Double longitudEpicentro;
+    private Double valorMagnitud;
 
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SerieTemporal> seriesTemporales = new ArrayList<>();
@@ -58,16 +67,16 @@ public class EventoSismico {
     }
 
     public EventoSismicoResumenDTO getDatos() { // MSG 7
-        return new EventoSismicoResumenDTO(
-            this.getId(), 
-            this.getFechaHoraOcurrencia(), // MSG 9
-            this.getLatitudEpicentro(), // MSG 10
-            this.getLongitudEpicentro(), // MSG 11
-            this.getLatitudHipocentro(), // MSG 12
-            this.getLongitudHipocentro(), // MSG 13
-            this.getValorMagnitud() // MSG 14
-        );
-    }
+    return new EventoSismicoResumenDTO(
+        this.id,                    // Acceso directo al campo
+        this.fechaHoraOcurrencia,   // Acceso directo al campo  
+        this.latitudEpicentro,      // Acceso directo al campo
+        this.longitudEpicentro,     // Acceso directo al campo
+        this.latitudHipocentro,     // Acceso directo al campo
+        this.longitudHipocentro,    // Acceso directo al campo
+        this.valorMagnitud          // Acceso directo al campo
+    );
+}
  
 
     public void revisar(Estado nuevoEstado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 27
@@ -94,6 +103,14 @@ public class EventoSismico {
         if (this.origenGeneracion != null) { return this.origenGeneracion.getOrigen(); } // MSG 40
         return "N/A";
     }
+
+    public String getEstado() { 
+    if (this.estadoActual != null) { 
+        return this.estadoActual.getNombreEstado(); 
+    }
+    return "N/A";
+}
+
 
     public List<SerieTemporalDTO> obtenerSeriesTemporales() { // MSG 41
         List<SerieTemporalDTO> dtos = this.seriesTemporales.stream()

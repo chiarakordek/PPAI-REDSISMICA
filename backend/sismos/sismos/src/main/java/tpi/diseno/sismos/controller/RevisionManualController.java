@@ -1,18 +1,29 @@
 package tpi.diseno.sismos.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.SessionScope;
+
 import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
+import tpi.diseno.sismos.model.EventoSismico;
 import tpi.diseno.sismos.model.GestorRegistrarResultadoRevisionManual;
 import tpi.diseno.sismos.repository.EstadoRepository;
 import tpi.diseno.sismos.repository.EventoSismicoRepository;
 import tpi.diseno.sismos.repository.SesionRepository;
 import tpi.diseno.sismos.service.GenerarSismogramaService;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/revision-manual")
@@ -20,11 +31,13 @@ import java.util.Map;
 public class RevisionManualController {
 
     private final GestorRegistrarResultadoRevisionManual gestor;
+    private final EventoSismicoRepository eventoRepo;
 
     @Autowired
     public RevisionManualController(EventoSismicoRepository eventoRepo, EstadoRepository estadoRepo, SesionRepository sesionRepo, GenerarSismogramaService sismogramaService) {
         // La Pantalla es responsable de crear la instancia del Gestor.
         this.gestor = new GestorRegistrarResultadoRevisionManual(eventoRepo, estadoRepo, sesionRepo, sismogramaService);
+        this.eventoRepo = eventoRepo;
     }
 
     /**
@@ -75,12 +88,23 @@ public class RevisionManualController {
     @GetMapping("/detalles-evento")
     public ResponseEntity<Map<String, Object>> obtenerDetallesEvento(@RequestParam Long id) {
     try {
-        // Obtener detalles del evento por ID
-        Map<String, Object> detalles = gestor.buscarDatosSismicos(id);
+        EventoSismico evento = eventoRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Evento no encontrado con ID: " + id));
+        
+        // Usar los métodos que ya tienes en la entidad
+        Map<String, Object> detalles = new HashMap<>();
+        detalles.put("clasificacion", evento.getClasificacion());
+        detalles.put("alcance", evento.getAlcance());
+        detalles.put("origen_evento", evento.getOrigen());
+        detalles.put("estado", evento.getEstado()); // ← Usa el nuevo método
+        
+        System.out.println("Detalles enviados: " + detalles);
         
         return ResponseEntity.ok(detalles);
         
     } catch (Exception e) {
+        System.err.println("Error al obtener detalles: " + e.getMessage());
+        e.printStackTrace();
         return ResponseEntity.badRequest().body(Map.of("error", "Error al obtener detalles: " + e.getMessage()));
     }
 }
@@ -129,5 +153,22 @@ public class RevisionManualController {
         }
         return ResponseEntity.badRequest().body("Decisión no válida.");
     }
-
+    
+    // Endpoint para que tu JS pueda obtener todos los eventos
+    @GetMapping("/eventos-todos")
+public ResponseEntity<List<EventoSismicoResumenDTO>> obtenerEventosTodos() {
+    try {
+        List<EventoSismicoResumenDTO> eventos = eventoRepo.findAll()
+                .stream()
+                .map(evento -> evento.getDatos())  // Usa el método que ya tienes en la entidad
+                .collect(Collectors.toList());
+        
+        return ResponseEntity.ok(eventos);
+        
+    } catch (Exception e) {
+        System.err.println("Error al obtener eventos: " + e.getMessage());
+        e.printStackTrace();
+        return ResponseEntity.internalServerError().body(null);
+    }
+    }
 }
