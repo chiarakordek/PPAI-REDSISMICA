@@ -16,7 +16,7 @@ public class Estado {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     private String ambito;
-    @Column(name = "nombre_estado")
+    @Column(name="nombre_estado")
     private String nombreEstado;
 
     /**

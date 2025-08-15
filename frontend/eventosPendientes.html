@@ -1,5 +1,3 @@
-<!-- Archivo completo para: frontend/pendientes.html -->
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,31 +7,17 @@
   <!-- Esta línea carga tus estilos -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body id="eventosPendientes">
   <header class="top-bar">
     <a href="menu.html">
         <img src="img/logo.png" class="logo-small" alt="Logo">
     </a>  
     <div class="analyst-name">Analista: <span id="nombreUsuario"></span></div>
   </header>
-  
-  <script>
-      //Consigue el nombre de usuario desde el localStorage
-     const sesionString = localStorage.getItem('sesion');
-     if (sesionString) {
-        const sesionData = JSON.parse(sesionString); //Transforma el string en un objeto JSON
-        document.getElementById('nombreUsuario').textContent = sesionData.usuario; //Agrega el nombre al mensaje de bienvenida
-
-     } else {
-      //Si no hay datos en el localStorage, redirige al usuario al login
-        window.location.href = 'login.html';
-     }
-
-    </script>
 
   <div class="main-container">
     <div class="tabla-card">
-      <h2>Eventos con estado: Pendiente de Revision</h2>
+      <h2>Eventos Pendientes De Revision</h2>
       
       <div class="filtros-container">
         <!-- Puedes añadir tus filtros aquí si los necesitas -->
@@ -57,6 +41,6 @@
   </div>
 
   <!-- Esta línea carga tu lógica de JavaScript -->
-  <script src="js/pendientes.js"></script>
+  <script src="js/pantallaRegistrarResultadoRevisionManual.js"></script>
 </body>
 </html>

@@ -14,7 +14,6 @@ import tpi.diseno.sismos.service.GenerarSismogramaService;
 import java.util.List;
 import java.util.Map;
 
-// Esta clase es PantallaRegistrarResultadoRevisionManual.
 @RestController
 @RequestMapping("/revision-manual")
 @SessionScope
@@ -46,6 +45,8 @@ public class RevisionManualController {
 
     private ResponseEntity<List<EventoSismicoResumenDTO>> abrir() {
         // MSG 3: registrarNuevaRevision() -> La Pantalla delega la responsabilidad al Gestor.
+
+        System.out.println("Iniciando la revisión manual...");
         List<EventoSismicoResumenDTO> eventos = gestor.registrarNuevaRevision();
         eventos.forEach(evento -> {
         System.out.println("Evento DTO - ID: " + evento.getId() + 
