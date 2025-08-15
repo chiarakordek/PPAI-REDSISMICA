@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-pendientes-body');
-    const API_URL = 'http://localhost:8080/api/revision-manual';
+    const API_URL = 'http://localhost:8080/revision-manual';
 
     const cargarEventosPendientes = async () => {
         if (tablaBody.dataset.loading === 'true') return;
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';
 
         try {
-            const response = await fetch(`${API_URL}/eventos-pendientes`);
+            const response = await fetch(`${API_URL}/iniciar`);
             if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
             
             const data = await response.json();
@@ -18,21 +18,26 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.length === 0) {
                 tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay eventos pendientes de revisión.</td></tr>';
             } else {
+                console.log('Entrando al forEach...'); 
                 data.forEach(evento => {
-                    const fila = `
-                        <tr>
-                            <td>${evento.fechaHora || 'N/A'}</td>
-                            <td>${evento.ubicacionEpicentro || 'N/A'}</td>
-                            <td>${evento.ubicacionHipocentro || 'N/A'}</td>
-                            <td>${evento.magnitud !== null ? evento.magnitud : 'N/A'}</td>
-                            <td>
-                                <!-- ¡ESTA ES LA LÍNEA MÁS IMPORTANTE! NOS ASEGURAMOS DE PASAR EL ORIGEN -->
-                                <a href="detalleEvento.html?id=${evento.id}&origen=pendientes" class="btn-revisar">Revisar</a>
-                            </td>
-                        </tr>
-                    `;
-                    tablaBody.innerHTML += fila;
-                });
+                    console.log('ID del evento:', evento.id);           // ← AGREGA ESTA LÍNEA
+                    console.log('¿ID es null?:', evento.id === null);   // ← Y ESTA
+                    console.log('¿ID es undefined?:', evento.id === undefined); // ← Y ESTA
+    
+                const fila = `
+                    <tr>
+                        <td>${evento.fechaHoraOcurrencia || 'N/A'}</td>
+                        <td>${evento.latitudEpicentro && evento.longitudEpicentro ? 
+                            `${evento.latitudEpicentro}, ${evento.longitudEpicentro}` : 'N/A'}</td>
+                        <td>${evento.latitudHipocentro && evento.longitudHipocentro ? 
+                            `${evento.latitudHipocentro}, ${evento.longitudHipocentro}` : 'N/A'}</td>
+                        <td>${evento.valorMagnitud !== null ? evento.valorMagnitud : 'N/A'}</td>
+                        <td>
+                        <a href="detalleEvento.html?id=${evento.id}&origen=pendientes" class="btn-revisar">Revisar</a>                        </td>
+                    </tr>
+                `;
+                tablaBody.innerHTML += fila;
+            });
             }
         } catch (error) {
             console.error('Error al cargar los eventos pendientes:', error);

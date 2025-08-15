@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-registrados-body');
 
     
-    const API_URL = 'http://localhost:8080/api/revision-manual/eventos-todos'; //End-point del controlador
+    const API_URL = 'http://localhost:8080/revision-manual/eventos-todos'; //End-point del controlador
 
     const cargarEventosRegistrados = async () => {
         tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(`Error HTTP: ${response.status}`);
             }
             
-            const data = await response.json();
+            const data = await response.json(); 
             tablaBody.innerHTML = ''; 
             
             //Valida si no hay eventos registrados aún
@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 //Si hay eventos registrados, completa las filas de la tabla con los datos de cada uno
                 data.forEach(evento => {
+                    console.log('Evento completo:', evento); // ← AGREGA ESTA LÍNEA
+                    console.log('evento.id:', evento.id);     // ← Y ESTA TAMBIÉN
                     const fila = `
                         <tr>
                             <td>${evento.fechaHora || 'N/A'}</td>

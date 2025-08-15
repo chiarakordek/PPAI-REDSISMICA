@@ -35,28 +35,62 @@ public class RevisionManualController {
     @GetMapping("/iniciar")
     public ResponseEntity<List<EventoSismicoResumenDTO>> opcionRegistrarNuevaRevision() {
         // MSG 2: abrir() -> Como resultado de la opción, la Pantalla se "abre".
+        
+        
         return this.abrir();
     }
 
     /**
      * MSG 2: abrir() -> Método de la pantalla que orquesta el inicio.
      */
+
     private ResponseEntity<List<EventoSismicoResumenDTO>> abrir() {
         // MSG 3: registrarNuevaRevision() -> La Pantalla delega la responsabilidad al Gestor.
         List<EventoSismicoResumenDTO> eventos = gestor.registrarNuevaRevision();
+        eventos.forEach(evento -> {
+        System.out.println("Evento DTO - ID: " + evento.getId() + 
+                          ", Fecha: " + evento.getFechaHoraOcurrencia());
+    });
         
         // MSG 16: mostrarEventoSismicoParaSeleccion() -> La Pantalla devuelve la lista al front-end.
         return ResponseEntity.ok(eventos);
     }
+    @PatchMapping("/eventos/{id}/cambiar-estado")
+        public ResponseEntity<String> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+    try {
+        String nuevoEstado = payload.get("nuevoEstado");
+        
+        // Delegar al gestor para cambiar el estado del evento
+        gestor.tomarSeleccionEventoSismico(id);
 
+        return ResponseEntity.ok("Estado cambiado exitosamente");
+        
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Error al cambiar estado: " + e.getMessage());
+    }
+}
+
+    
+    @GetMapping("/detalles-evento")
+    public ResponseEntity<Map<String, Object>> obtenerDetallesEvento(@RequestParam Long id) {
+    try {
+        // Obtener detalles del evento por ID
+        Map<String, Object> detalles = gestor.buscarDatosSismicos(id);
+        
+        return ResponseEntity.ok(detalles);
+        
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(Map.of("error", "Error al obtener detalles: " + e.getMessage()));
+    }
+}
     /**
      * MSG 17: tomarSeleccionEvento() -> El Analista selecciona un evento por su índice.
      */
     @PostMapping("/seleccionar-evento")
-    public ResponseEntity<String> tomarSeleccionEvento(@RequestBody Map<String, Integer> payload) {
-        int indiceSeleccionado = payload.get("indice");
+    public ResponseEntity<String> tomarSeleccionEvento(@RequestBody Map<String, Long> payload) {
+        Long idSeleccionado = payload.get("id");
         // MSG 18: tomarSeleccionEventoSismico() -> La Pantalla informa al Gestor la selección.
-        gestor.tomarSeleccionEventoSismico(indiceSeleccionado);
+        gestor.tomarSeleccionEventoSismico(idSeleccionado);
         return ResponseEntity.ok("Evento seleccionado y bloqueado. Datos detallados listos para consultar.");
     }
     
@@ -94,4 +128,5 @@ public class RevisionManualController {
         }
         return ResponseEntity.badRequest().body("Decisión no válida.");
     }
+
 }

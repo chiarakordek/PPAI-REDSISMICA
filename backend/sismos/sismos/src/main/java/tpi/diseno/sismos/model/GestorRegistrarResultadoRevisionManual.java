@@ -1,21 +1,24 @@
 package tpi.diseno.sismos.model;
 
+import tpi.diseno.sismos.dto.EventoSismicoDetalleDTO;
 import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
 import tpi.diseno.sismos.dto.SerieTemporalDTO;
 import tpi.diseno.sismos.repository.EstadoRepository;
 import tpi.diseno.sismos.repository.EventoSismicoRepository;
 import tpi.diseno.sismos.repository.SesionRepository;
 import tpi.diseno.sismos.service.GenerarSismogramaService;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GestorRegistrarResultadoRevisionManual {
 
     // --- Atributos de Colaboración y Estado ---
-    private final EventoSismicoRepository eventoSismicoRepository;
+    private final EventoSismicoRepository 
+    eventoSismicoRepository;
     private final EstadoRepository estadoRepository;
     private final SesionRepository sesionRepository;
     private final GenerarSismogramaService generarSismogramaService;
@@ -62,13 +65,13 @@ public class GestorRegistrarResultadoRevisionManual {
         return this.datosEventosSismicos;
     }
 
-    public void tomarSeleccionEventoSismico(int indice) { // MSG 18
-        if (indice < 0 || this.datosEventosSismicos == null || indice >= this.datosEventosSismicos.size()) {
-            throw new IndexOutOfBoundsException("Índice de selección inválido: " + indice);
-        }
-        EventoSismicoResumenDTO dtoSeleccionado = this.datosEventosSismicos.get(indice);
-        this.eventoSeleccionado = this.eventosSismicos.stream()
-            .filter(e -> e.getFechaHoraOcurrencia().equals(dtoSeleccionado.getFechaHoraOcurrencia()) &&
+        public void tomarSeleccionEventoSismico(Long id) { // MSG 18
+            /*if (id == null || this.datosEventosSismicos == null || id >= this.datosEventosSismicos.size()) {
+                throw new IndexOutOfBoundsException("Índice de selección inválido: " + id);
+            }*/
+            System.out.println("ID del evento seleccionado: " + id);
+            EventoSismicoResumenDTO dtoSeleccionado = this.datosEventosSismicos.get(id.intValue());
+        this.eventoSeleccionado = this.eventosSismicos.stream().filter(e -> e.getFechaHoraOcurrencia().equals(dtoSeleccionado.getFechaHoraOcurrencia()) &&
                          e.getLatitudEpicentro() == dtoSeleccionado.getLatitudEpicentro() &&
                          e.getLongitudEpicentro() == dtoSeleccionado.getLongitudEpicentro() &&
                          e.getLatitudHipocentro() == dtoSeleccionado.getLatitudHipocentro() &&
@@ -78,24 +81,39 @@ public class GestorRegistrarResultadoRevisionManual {
             .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento original."));
         this.bloquearEvento(); // MSG 19
     }
-
+  
     public void bloquearEvento() { // MSG 19
         this.punteroBloqueadoEnRevision = this.buscarEstadoBloqueado(); // MSG 20
         this.fechaHoraActual = this.tomarFechaHoraActual(); // MSG 23
         this.punteroEmpleado = this.buscarEmpleadoLogueado(); // MSG 24
         this.eventoSeleccionado.revisar(this.punteroBloqueadoEnRevision, this.fechaHoraActual, this.punteroEmpleado); // MSG 27 -- Delega Evento Sismico
         eventoSismicoRepository.save(this.eventoSeleccionado);
-        this.buscarDatosSismicos(); // MSG 34
+        this.buscarDatosSismicos(this.eventoSeleccionado.getId()); // MSG 34
+    }
+
+   public Map<String, Object> buscarDatosSismicos(Long id) { // MSG 34
+    if (id == null) { 
+        throw new IllegalArgumentException("ID de evento no puede ser nulo."); 
     }
     
-    public void buscarDatosSismicos() { // MSG 34
-        if (this.eventoSeleccionado == null) { throw new IllegalStateException("No hay evento seleccionado para buscar datos."); }
-        this.nombreClasificacionSismo = this.eventoSeleccionado.getClasificacion(); // MSG 35 - Delega a Evento Sismico
-        this.nombreAlcanceSismo = this.eventoSeleccionado.getAlcance(); // MSG 37 - Delega a Evento Sismico
-        this.nombreOrigenGeneracion = this.eventoSeleccionado.getOrigen(); // MSG 39 - Delega a Evento Sismico
-        this.seriesTemporalesEventoSeleccionado = this.eventoSeleccionado.obtenerSeriesTemporales(); // MSG 41
-        this.llamarCasoDeUsoGenerarSismograma(); // MSG 53
-    }
+    // AGREGAR: Buscar el evento por ID
+    EventoSismico evento = eventoSismicoRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Evento no encontrado con ID: " + id));
+    
+    // Usar el evento encontrado en lugar de this.eventoSeleccionado
+    String clasificacion = evento.getClasificacion(); // MSG 35
+    String alcance = evento.getAlcance(); // MSG 37
+    String origen = evento.getOrigen(); // MSG 39
+
+    Map<String, Object> detalles = new HashMap<>();
+    detalles.put("clasificacion", clasificacion);
+    detalles.put("alcance", alcance);
+    detalles.put("origen_evento", origen); // ← Nota: usar "origen_evento" para que coincida con el frontend
+    
+    return detalles;
+}
+    /*  this.seriesTemporalesEventoSeleccionado = this.eventoSeleccionado.obtenerSeriesTemporales(); // MSG 41
+        this.llamarCasoDeUsoGenerarSismograma(); // MSG 53 */
 
     public void mostrarOpcionVisualizarMapa() { // MSG 54
         System.out.println("Preparando para mostrar opción 'Ver Mapa'.");

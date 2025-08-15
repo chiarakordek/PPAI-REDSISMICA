@@ -1,10 +1,16 @@
 // Archivo completo, final y con la solución A PRUEBA DE TODO para: frontend/js/evento.js
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_URL = 'http://localhost:8080/api/revision-manual';
+    const API_URL = 'http://localhost:8080/revision-manual';
     const params = new URLSearchParams(window.location.search);
     const eventoId = params.get('id');
     const origen = params.get('origen');
+        // ← AGREGA ESTAS LÍNEAS PARA DEBUGGEAR
+    console.log('URL completa:', window.location.href);
+    console.log('Query string:', window.location.search);
+    console.log('Parámetros parseados:', Array.from(params.entries()));
+    console.log('eventoId obtenido:', eventoId);
+    console.log('origen obtenido:', origen);
 
     if (!eventoId) {
         document.body.innerHTML = '<h1>Error: No se especificó un ID de evento.</h1>';
@@ -16,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const response = await fetch(`${API_URL}/eventos/${id}/cambiar-estado`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nuevoEstado: nuevoEstado })
+                body: JSON.stringify({ nuevoEstado: nuevoEstado })      
             });
             if (!response.ok) throw new Error(await response.text());
             return true;
@@ -26,13 +32,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const cargarDetalles = async (id) => {
-        try {
-            const response = await fetch(`${API_URL}/detalles-evento?id=${id}`);
-            if (!response.ok) throw new Error(`El servidor respondió con error ${response.status}.`);
-            
-            const detalles = await response.json();
-            
+            const cargarDetalles = async (id) => {
+            try {
+                const response = await fetch(`${API_URL}/detalles-evento?id=${id}`);
+                if (!response.ok) throw new Error(`El servidor respondió con error ${response.status}.`);
+                
+                const detalles = await response.json();
+                console.log('Detalles recibidos:', detalles); // ← AGREGA ESTA LÍNEA
+        
             document.getElementById('evento-id').textContent = `Evento #${id}`;
             document.getElementById('clasificacion').textContent = `Clasificación: ${detalles.clasificacion}`;
             document.getElementById('alcance').textContent = `Alcance: ${detalles.alcance}`;

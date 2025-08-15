@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
+import tpi.diseno.sismos.dto.EventoSismicoDetalleDTO;
 import tpi.diseno.sismos.dto.SerieTemporalDTO;
 
 import java.time.LocalDateTime;
@@ -58,6 +59,7 @@ public class EventoSismico {
 
     public EventoSismicoResumenDTO getDatos() { // MSG 7
         return new EventoSismicoResumenDTO(
+            this.getId(), 
             this.getFechaHoraOcurrencia(), // MSG 9
             this.getLatitudEpicentro(), // MSG 10
             this.getLongitudEpicentro(), // MSG 11
