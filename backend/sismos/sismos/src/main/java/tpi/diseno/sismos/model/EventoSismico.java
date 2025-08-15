@@ -50,9 +50,9 @@ public class EventoSismico {
 
     // --- 2. MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
     
-    public boolean esPendienteDeRevision() { // MSG 5
+    public boolean esAutoDetectado() { // MSG 5
         if (this.estadoActual != null) {
-            return this.estadoActual.esPendienteDeRevision(); // MSG 6 -> Delega al estado.
+            return this.estadoActual.esAutoDetectado(); // MSG 6 -> Delega al estado.
         }
         return false;
     }

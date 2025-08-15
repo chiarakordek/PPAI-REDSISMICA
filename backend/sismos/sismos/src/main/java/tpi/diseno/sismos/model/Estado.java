@@ -20,10 +20,10 @@ public class Estado {
     private String nombreEstado;
 
     /**
-     * MSG 6: esPendienteDeRevision() -> Responde al mensaje que le envía el EventoSismico.
+     * MSG 6: esAutoDetectado() -> Responde al mensaje que le envía el EventoSismico.
      */
-    public boolean  esPendienteDeRevision() {
-        return "PendienteDeRevision".equals(this.nombreEstado);
+    public boolean  esAutoDetectado() {
+        return "AutoDetectado".equals(this.nombreEstado);
     }
 
 

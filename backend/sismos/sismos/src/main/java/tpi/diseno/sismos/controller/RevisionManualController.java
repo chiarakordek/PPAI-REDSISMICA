@@ -60,16 +60,19 @@ public class RevisionManualController {
         public ResponseEntity<String> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> payload) {
     try {
         String nuevoEstado = payload.get("nuevoEstado");
-        
+    
+        if ("BloqueadoEnRevision".equals(nuevoEstado)){
         // Delegar al gestor para cambiar el estado del evento
         gestor.tomarSeleccionEventoSismico(id);
 
-        return ResponseEntity.ok("Estado cambiado exitosamente");
-        
-    } catch (Exception e) {
+        return ResponseEntity.ok("Estado cambiado exitosamente a bloqueado en revision");
+        }  
+        return ResponseEntity.badRequest().body("Transición de estado no manejada: " + nuevoEstado);       
+        } catch (Exception e) {
         return ResponseEntity.badRequest().body("Error al cambiar estado: " + e.getMessage());
+        }
     }
-}
+
 
     
     @GetMapping("/detalles-evento")

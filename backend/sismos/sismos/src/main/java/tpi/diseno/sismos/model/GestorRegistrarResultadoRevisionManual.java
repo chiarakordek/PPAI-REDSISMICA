@@ -57,7 +57,7 @@ public class GestorRegistrarResultadoRevisionManual {
         this.eventosSismicos = this.buscarEventosSismicos(); // MSG 4
         List<EventoSismicoResumenDTO> eventosParaRevision = new ArrayList<>();
         for (EventoSismico evento : this.eventosSismicos) {
-            if (evento.esPendienteDeRevision()) { // MSG 5
+            if (evento.esAutoDetectado()) { // MSG 5
                 eventosParaRevision.add(evento.getDatos()); // MSG 7
             }
         }
@@ -65,23 +65,21 @@ public class GestorRegistrarResultadoRevisionManual {
         return this.datosEventosSismicos;
     }
 
-        public void tomarSeleccionEventoSismico(Long id) { // MSG 18
-            /*if (id == null || this.datosEventosSismicos == null || id >= this.datosEventosSismicos.size()) {
-                throw new IndexOutOfBoundsException("Índice de selección inválido: " + id);
-            }*/
-            System.out.println("ID del evento seleccionado: " + id);
-            EventoSismicoResumenDTO dtoSeleccionado = this.datosEventosSismicos.get(id.intValue());
-        this.eventoSeleccionado = this.eventosSismicos.stream().filter(e -> e.getFechaHoraOcurrencia().equals(dtoSeleccionado.getFechaHoraOcurrencia()) &&
-                         e.getLatitudEpicentro() == dtoSeleccionado.getLatitudEpicentro() &&
-                         e.getLongitudEpicentro() == dtoSeleccionado.getLongitudEpicentro() &&
-                         e.getLatitudHipocentro() == dtoSeleccionado.getLatitudHipocentro() &&
-                         e.getLongitudHipocentro() == dtoSeleccionado.getLongitudHipocentro() &&
-                         e.getValorMagnitud() == dtoSeleccionado.getValorMagnitud())
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento original."));
+    public void tomarSeleccionEventoSismico(Long id) { // MSG 18 ACA MODIFICAMOS
+        if (id == null) {
+            throw new IllegalArgumentException("El ID del evento no puede ser nulo.");
+        }
+        System.out.println("ID del evento seleccionado para actuar: " + id);
+
+        this.sesionActual = sesionRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Sesión activa no encontrada para esta operación."));
+                
+        this.eventoSeleccionado = eventoSismicoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento con ID: " + id));
+        
         this.bloquearEvento(); // MSG 19
     }
-  
+
     public void bloquearEvento() { // MSG 19
         this.punteroBloqueadoEnRevision = this.buscarEstadoBloqueado(); // MSG 20
         this.fechaHoraActual = this.tomarFechaHoraActual(); // MSG 23

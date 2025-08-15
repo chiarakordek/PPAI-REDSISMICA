@@ -14,13 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = 'login.html';
         return; // Evita que el resto del script se ejecute
     }
+    
+    const tablaBody = document.getElementById('tabla-pendientes-body');
 
     //MÉTODO ABRIR - MSG 2
     async function abrir(){
         
         const API_URL = 'http://localhost:8080/revision-manual'; //End-point del controlador
-        
-        const tablaBody = document.getElementById('tabla-pendientes-body');
         tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';
 
         try {   
