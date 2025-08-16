@@ -1,54 +1,26 @@
 package tpi.diseno.sismos.model;
 
 import jakarta.persistence.*;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class OrigenDeGeneracion {
-////ATRIBUTOS
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String descripcion;
     private String nombre;
 
-    @OneToMany(mappedBy = "origenDeGeneracion")
-    private List<EventoSismico> eventosSismicos;
-
-///////CONSTRUCTORES
-    public OrigenDeGeneracion() {
-    }
-
-    public OrigenDeGeneracion(String descripcion, String nombre) {
-        this.descripcion = descripcion;
-        this.nombre = nombre;
-    }
-
-////////METODOS
-
-    public Long getId(){
-        return id;
-    }
-
-    public void setId(Long id){
-        this.id = id;
-    }
-
-    public String getDescripcion(){
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion){
-        this.descripcion = descripcion;
-    }
-
-    public String getNombre(){
-        return nombre;
-    }
-
-    public void setNombre(String nombre){
-        this.nombre = nombre;
+    /**
+     * MSG 40: getOrigen() -> Invocado por EventoSismico.
+     * Devuelve los datos relevantes del origen, en este caso, su nombre.
+     */
+    public String getOrigen() {
+        return this.getNombre();
     }
 }

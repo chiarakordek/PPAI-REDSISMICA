@@ -1,11 +1,14 @@
 package tpi.diseno.sismos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class TipoDeDato {
 
     @Id
@@ -14,45 +17,16 @@ public class TipoDeDato {
 
     private String denominacion;
     private String nombreUnidadMedida;
-    private Double valorUmbral;
+    private double valorUmbral;
 
-/**Constructor */
-    public TipoDeDato() {
-    }
-
-    public TipoDeDato(String denominacion, String nombreUnidadMedida, Double valorUmbral) {
-        this.denominacion = denominacion;
-        this.nombreUnidadMedida = nombreUnidadMedida;
-        this.valorUmbral = valorUmbral;
-    }
-
-
-    ////////// Getters y Setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    // Aunque Lombok @Getter proporciona este método, lo escribimos explícitamente
+    // para poder adjuntar el comentario obligatorio del diagrama de secuencia.
+    /**
+     * MSG 48: getDenominacion() -> Invocado por DetalleMuestraSismica.
+     * Devuelve la denominación de este tipo de dato.
+     */
     public String getDenominacion() {
-        return denominacion;
-    }
-    public void setDenominacion(String denominacion) {
-        this.denominacion = denominacion;
+        return this.denominacion;
     }
 
-    public String getNombreUnidadMedida() {
-        return nombreUnidadMedida;
-    }
-    public void setNombreUnidadMedida(String nombreUnidadMedida) {
-        this.nombreUnidadMedida = nombreUnidadMedida;
-    }
-
-    public Double getValorUmbral() {
-        return valorUmbral;
-    }
-    public void setValorUmbral(Double valorUmbral) {
-        this.valorUmbral = valorUmbral;
-    }
 }

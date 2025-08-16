@@ -1,56 +1,26 @@
 package tpi.diseno.sismos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-
-import java.util.List;
-
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class AlcanceSismo {
-
-//////ATRIBUTOS
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String nombre;
     private String descripcion;
+    private String nombre;
 
-////RELACIONES
-
-    @OneToMany(mappedBy = "alcanceSismo")
-    private List<EventoSismico> eventosSismicos;
-
-    public AlcanceSismo() {
-    }
-
-    public AlcanceSismo(String nombre, String descripcion) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-    }
-
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    /**
+     * MSG 38: getAlcance() -> Invocado por EventoSismico.
+     * Devuelve los datos relevantes del alcance, en este caso, su nombre.
+     */
+    public String getAlcance() {
+        return this.getNombre();
     }
 }

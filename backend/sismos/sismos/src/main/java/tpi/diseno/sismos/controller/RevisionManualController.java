@@ -1,137 +1,136 @@
-// Archivo completo para: RevisionManualController.java
-
 package tpi.diseno.sismos.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tpi.diseno.sismos.model.*;
-import tpi.diseno.sismos.repository.*;
+import org.springframework.web.context.annotation.SessionScope;
+import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
+import tpi.diseno.sismos.model.GestorRegistrarResultadoRevisionManual;
+import tpi.diseno.sismos.repository.EstadoRepository;
+import tpi.diseno.sismos.repository.EventoSismicoRepository;
+import tpi.diseno.sismos.repository.SesionRepository;
+import tpi.diseno.sismos.service.GenerarSismogramaService;
 
-import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-@CrossOrigin(origins = {"http://localhost:5500", "http://127.0.0.1:5500"})
 @RestController
-@RequestMapping("/api/revision-manual")
+@RequestMapping("/revision-manual")
+@SessionScope
 public class RevisionManualController {
 
-    @Autowired private GestorRegistrarResultadoRevisionManual gestor;
-    @Autowired private EventoSismicoRepository eventoSismicoRepository;
-    @Autowired private EstadoRepository estadoRepository;
-    @Autowired private AlcanceSismoRepository alcanceSismoRepository;
-    @Autowired private ClasificacionSismoRepository clasificacionSismoRepository;
-    @Autowired private OrigenDeGeneracionRepository origenDeGeneracionRepository;
-    @Autowired private CambioEstadoRepository cambioEstadoRepository;
+    private final GestorRegistrarResultadoRevisionManual gestor;
 
-    @GetMapping("/eventos-pendientes")
-    public ResponseEntity<List<EventoSismico>> obtenerEventosPendientes() {
-        gestor.RegistrarNuevaRevision();
-        List<EventoSismico> eventos = gestor.getEventosSismicosPendientesCompletos();
+    @Autowired
+    public RevisionManualController(EventoSismicoRepository eventoRepo, EstadoRepository estadoRepo, SesionRepository sesionRepo, GenerarSismogramaService sismogramaService) {
+        // La Pantalla es responsable de crear la instancia del Gestor.
+        this.gestor = new GestorRegistrarResultadoRevisionManual(eventoRepo, estadoRepo, sesionRepo, sismogramaService);
+    }
+
+    /**
+     * MSG 1: opcionRegistrarNuevaRevision() -> El Analista inicia el caso de uso a través de este endpoint.
+     * Este es el método público que recibe la solicitud inicial.
+     */
+    @GetMapping("/iniciar")
+    public ResponseEntity<List<EventoSismicoResumenDTO>> opcionRegistrarNuevaRevision() {
+        // MSG 2: abrir() -> Como resultado de la opción, la Pantalla se "abre".
+        
+        
+        return this.abrir();
+    }
+
+    /**
+     * MSG 2: abrir() -> Método de la pantalla que orquesta el inicio.
+     */
+
+    private ResponseEntity<List<EventoSismicoResumenDTO>> abrir() {
+        // MSG 3: registrarNuevaRevision() -> La Pantalla delega la responsabilidad al Gestor.
+
+        System.out.println("Iniciando la revisión manual...");
+        List<EventoSismicoResumenDTO> eventos = gestor.registrarNuevaRevision();
+        eventos.forEach(evento -> {
+        System.out.println("Evento DTO - ID: " + evento.getId() + 
+                          ", Fecha: " + evento.getFechaHoraOcurrencia());
+    });
+        
+        // MSG 16: mostrarEventoSismicoParaSeleccion() -> La Pantalla devuelve la lista al front-end.
         return ResponseEntity.ok(eventos);
     }
-
-    @GetMapping("/eventos-registrados")
-    public ResponseEntity<List<DatosEventoSismico>> obtenerEventosRegistrados() {
-        List<EventoSismico> todosLosEventos = eventoSismicoRepository.findAll();
-
-        List<DatosEventoSismico> listaDtos = todosLosEventos.stream().map(evento -> {
-            DatosEventoSismico dto = new DatosEventoSismico();
-            dto.setId(evento.getId());
-            dto.setFechaHoraFromLocalDateTime(evento.getFechaHoraOcurrencia());
-            dto.setUbicacionFromCoordenadas(evento.getLatitudEpicentro(), evento.getLongitudEpicentro());
-            // --- LÍNEA AÑADIDA PARA EL HIPOCENTRO ---
-            dto.setUbicacionHipocentroFromCoordenadas(evento.getLatitudHipocentro(), evento.getLongitudHipocentro());
-            dto.setMagnitud(evento.getMagnitud());
-            return dto;
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(listaDtos);
-    }
+    @PatchMapping("/eventos/{id}/cambiar-estado")
+        public ResponseEntity<String> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+    try {
+        String nuevoEstado = payload.get("nuevoEstado");
     
-    @PostMapping("/eventos")
-    @Transactional
-    public ResponseEntity<?> crearNuevoEvento(@RequestBody Map<String, String> payload) {
-        try {
-            Estado estadoPendiente = estadoRepository.findByNombreEstado("PendienteDeRevision").orElseThrow(() -> new RuntimeException("Estado 'PendienteDeRevision' no encontrado."));
-            AlcanceSismo alcanceDefault = alcanceSismoRepository.findById(1L).orElseThrow(() -> new RuntimeException("AlcanceSismo con ID=1 no encontrado."));
-            ClasificacionSismo clasificacionDefault = clasificacionSismoRepository.findById(1L).orElseThrow(() -> new RuntimeException("ClasificacionSismo con ID=1 no encontrada."));
-            OrigenDeGeneracion origenDefault = origenDeGeneracionRepository.findById(1L).orElseThrow(() -> new RuntimeException("OrigenDeGeneracion con ID=1 no encontrado."));
-            EventoSismico nuevoEvento = new EventoSismico();
-            nuevoEvento.setFechaHoraOcurrencia(LocalDateTime.now());
-            nuevoEvento.setValorMagnitud(Double.parseDouble(payload.get("magnitud")));
-            nuevoEvento.setLatitudEpicentro(Double.parseDouble(payload.get("latitud")));
-            nuevoEvento.setLongitudEpicentro(Double.parseDouble(payload.get("longitud")));
-            nuevoEvento.setEstado(estadoPendiente);
-            nuevoEvento.setAlcanceSismo(alcanceDefault);
-            nuevoEvento.setClasificacionSismo(clasificacionDefault);
-            nuevoEvento.setOrigenDeGeneracion(origenDefault);
-            EventoSismico eventoGuardado = eventoSismicoRepository.save(nuevoEvento);
-            CambioEstado estadoInicial = new CambioEstado();
-            estadoInicial.setEstado(estadoPendiente);
-            estadoInicial.setFechaInicio(LocalDateTime.now());
-            estadoInicial.setEventoSismico(eventoGuardado);
-            cambioEstadoRepository.save(estadoInicial);
-            List<CambioEstado> cambios = new ArrayList<>();
-            cambios.add(estadoInicial);
-            eventoGuardado.setCambiosEstado(cambios);
-            return ResponseEntity.status(HttpStatus.CREATED).body(eventoGuardado);
+        if ("BloqueadoEnRevision".equals(nuevoEstado)){
+        // Delegar al gestor para cambiar el estado del evento
+        gestor.tomarSeleccionEventoSismico(id);
+
+        return ResponseEntity.ok("Estado cambiado exitosamente a bloqueado en revision");
+        }  
+        return ResponseEntity.badRequest().body("Transición de estado no manejada: " + nuevoEstado);       
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(Map.of("message", "Error al crear el evento: " + e.getMessage()));
+        return ResponseEntity.badRequest().body("Error al cambiar estado: " + e.getMessage());
         }
     }
+
+
     
-    @PostMapping("/seleccionar-evento/{idEvento}")
-    public ResponseEntity<List<SerieTemporal>> seleccionarEvento(@PathVariable Long idEvento) {
-        EventoSismico evento = eventoSismicoRepository.findById(idEvento).orElseThrow(() -> new RuntimeException("Evento sísmico no encontrado"));
-        gestor.tomarSeleccionEventoSismico(evento);
-        return ResponseEntity.ok(gestor.getSeriesTemporalesEventoSeleccionado());
+    @GetMapping("/detalles-evento")
+    public ResponseEntity<Map<String, Object>> obtenerDetallesEvento(@RequestParam Long id) {
+    try {
+        // Obtener detalles del evento por ID
+        Map<String, Object> detalles = gestor.buscarDatosSismicos(id);
+        
+        return ResponseEntity.ok(detalles);
+        
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(Map.of("error", "Error al obtener detalles: " + e.getMessage()));
+    }
+}
+    /**
+     * MSG 17: tomarSeleccionEvento() -> El Analista selecciona un evento por su índice.
+     */
+    @PostMapping("/seleccionar-evento")
+    public ResponseEntity<String> tomarSeleccionEvento(@RequestBody Map<String, Long> payload) {
+        Long idSeleccionado = payload.get("id");
+        // MSG 18: tomarSeleccionEventoSismico() -> La Pantalla informa al Gestor la selección.
+        gestor.tomarSeleccionEventoSismico(idSeleccionado);
+        return ResponseEntity.ok("Evento seleccionado y bloqueado. Datos detallados listos para consultar.");
+    }
+    
+    /**
+     * MSG 55: tomarOpcVerMapa() -> El Analista selecciona la opción para ver el mapa.
+     */
+    @PostMapping("/ver-mapa")
+    public ResponseEntity<String> tomarOpcVerMapa() {
+        // MSG 56: tomarOpcVerMapa() -> La Pantalla informa al Gestor.
+        gestor.tomarOpcVerMapa();
+        return ResponseEntity.ok("Opción 'Ver Mapa' procesada.");
+    }
+    
+    /**
+     * MSG 58: tomarOpcModificarDatos() -> El Analista selecciona la opción para modificar datos.
+     */
+    @PostMapping("/modificar-datos")
+    public ResponseEntity<String> tomarOpcModificarDatos() {
+        // MSG 59: tomarOpcModificarDatos() -> La Pantalla informa al Gestor.
+        gestor.tomarOpcModificarDatos();
+        return ResponseEntity.ok("Opción 'Modificar Datos' procesada.");
     }
 
-    @GetMapping("/detalles-evento/{idEvento}")
-    public ResponseEntity<?> obtenerDetallesEvento(@PathVariable Long idEvento) {
-        return eventoSismicoRepository.findById(idEvento)
-                .map(evento -> {
-                    DatosEventoSismico dto = new DatosEventoSismico();
-                    dto.setId(evento.getId());
-                    dto.setFechaHoraFromLocalDateTime(evento.getFechaHoraOcurrencia());
-                    dto.setUbicacionFromCoordenadas(evento.getLatitudEpicentro(), evento.getLongitudEpicentro());
-                    dto.setMagnitud(evento.getMagnitud());
-                    if (evento.getEstado() != null) {
-                        dto.setEstado(evento.getEstado().getNombreEstado());
-                    } else {
-                        dto.setEstado("No definido");
-                    }
-                    if (evento.getAlcanceSismo() != null) {
-                        dto.setAlcance(evento.getAlcanceSismo().getNombre());
-                    } else {
-                        dto.setAlcance("No definido");
-                    }
-                    return ResponseEntity.ok(dto);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
+    /**
+     * MSG 61: tomarSeleccion() -> El Analista toma una decisión final (ej: Rechazar).
+     */
+    @PostMapping("/finalizar-revision")
+    public ResponseEntity<String> tomarSeleccion(@RequestBody Map<String, String> payload) {
+        String decision = payload.get("decision");
 
-    @PutMapping("/modificar-datos/{idEvento}")
-    public ResponseEntity<String> modificarDatosEvento(@PathVariable Long idEvento, @RequestBody Map<String, String> datosActualizados) {
-        EventoSismico evento = eventoSismicoRepository.findById(idEvento).orElseThrow(() -> new RuntimeException("Evento no encontrado"));
-        if (datosActualizados.containsKey("magnitud")) {
-            evento.setValorMagnitud(Double.parseDouble(datosActualizados.get("magnitud")));
+        if ("rechazar".equalsIgnoreCase(decision)) {
+            // MSG 62: tomarSeleccionRechazada() -> La Pantalla invoca al Gestor con la decisión de rechazar.
+            gestor.tomarSeleccionRechazada();
+            return ResponseEntity.ok("El evento ha sido RECHAZADO. Caso de uso finalizado.");
         }
-        eventoSismicoRepository.save(evento);
-        return ResponseEntity.ok("Datos actualizados exitosamente");
+        return ResponseEntity.badRequest().body("Decisión no válida.");
     }
-    
-    @GetMapping("/opciones-accion")
-    public ResponseEntity<List<String>> obtenerOpcionesAccion() { return ResponseEntity.ok(List.of("CONFIRMAR", "RECHAZAR", "DERIVAR")); }
-    @PostMapping("/rechazar-evento")
-    public ResponseEntity<String> rechazarEvento() { gestor.tomarSeleccionRechazada("RECHAZADO"); gestor.finCU(); return ResponseEntity.ok("Evento rechazado exitosamente"); }
-    @GetMapping("/datos-series")
-    public List<Map<String, Object>> obtenerDatos() { return gestor.getDatosParaFrontend(); }
+
 }

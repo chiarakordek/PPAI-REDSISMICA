@@ -1,3 +1,8 @@
+<!--
+    Menú de opciones
+  * Deriva a la lista de eventos pendientes de revisión 
+    o al historial de eventos registrados (sin importar estados)
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,28 +11,33 @@
   <title>Menú Principal</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body>
+<body id="menuPrincipal">
   <div class="wrapper">
     <div class="contenedor-opaco">
       <img src="img/logo.png" alt="Logo" class="logo" />
       <h1>Bienvenido, <span id="nombreUsuario"></span></h1>
-
-    <script>
-     const sesionString = localStorage.getItem('sesion');
-     if (sesionString) {
-        const sesionData = JSON.parse(sesionString);
-        document.getElementById('nombreUsuario').textContent = sesionData.usuario;
-     } else {
-        window.location.href = 'login.html';
-     }
-    </script>
     
       <div class="botones">
-        <!-- Se ha eliminado el botón de creación manual -->
-        <a href="pendientes.html" class="btn">Revisar Eventos Pendientes</a>
-        <a href="registrados.html" class="btn">Ver Registros Históricos</a>
+
+        <!-- Deriva a la lista de eventos pendientes de revisión -->
+        <button class="btn" id="btnRegistrarRes">Registrar Resultado de Revisión Manual</button> 
+        
+        <!-- Deriva al historial de eventos registrados -->
+        <a href="registrados.html" class="btn">Ver Historial de Eventos</a>
+
       </div>
     </div>
   </div>
 </body>
 </html>
+
+<script>
+  const btnRegistrarResult = document.getElementById('btnRegistrarRes');
+  
+  function opcionRegistrarNuevaRevision(){
+    window.location.href = 'eventosPendientes.html';
+  }
+  if (btnRegistrarResult) {
+    btnRegistrarResult.addEventListener('click', opcionRegistrarNuevaRevision);
+  }
+</script>

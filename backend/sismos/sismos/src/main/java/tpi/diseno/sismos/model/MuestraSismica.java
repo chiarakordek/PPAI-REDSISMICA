@@ -1,84 +1,45 @@
 package tpi.diseno.sismos.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import tpi.diseno.sismos.dto.DetalleMuestraSismicaDTO;
+import tpi.diseno.sismos.dto.MuestraSismicaDTO;
+
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class MuestraSismica {
-////ATRIBUTOS
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime fechaHoraMuestra;
 
- /** Serie temporal a la que pertenece esta muestra. */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "serie_temporal_id")
     private SerieTemporal serieTemporal;
 
-/** Lista de detalles de la muestra, que contienen los valores y tipos de datos. */
-    @OneToMany(mappedBy = "muestraSismica", cascade = CascadeType.ALL)
-    private List<DetalleMuestraSismica> detallesMuestra;
+    @OneToMany(mappedBy = "muestraSismica", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DetalleMuestraSismica> detalleMuestraSismica = new ArrayList<>();
 
-/**Constructor */
-    public MuestraSismica() {
-    }
-
-    public MuestraSismica(LocalDateTime fechaHoraMuestra, SerieTemporal serieTemporal, List<DetalleMuestraSismica> detallesMuestra) {
-        this.fechaHoraMuestra = fechaHoraMuestra;
-        this.serieTemporal = serieTemporal;
-        this.detallesMuestra = detallesMuestra;
+    public MuestraSismicaDTO getDatosMuestra() { // MSG 44
+        List<DetalleMuestraSismicaDTO> detallesDTO = this.buscarDetalleMuestra(); // MSG 45
+        return new MuestraSismicaDTO(this.fechaHoraMuestra, detallesDTO);
     }
 
-    /////////// Getters y Setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getFechaHoraMuestra() {
-        return fechaHoraMuestra;
-    }
-    public void setFechaHoraMuestra(LocalDateTime fechaHoraMuestra) {
-        this.fechaHoraMuestra = fechaHoraMuestra;
-    }
-
-    public SerieTemporal getSerieTemporal() {
-        return serieTemporal;
-    }
-    public void setSerieTemporal(SerieTemporal serieTemporal) {
-        this.serieTemporal = serieTemporal;
-    }
-
-    public List<DetalleMuestraSismica> getDetallesMuestra() {
-        return detallesMuestra;
-    }
-    public void setDetallesMuestra(List<DetalleMuestraSismica> detallesMuestra) {
-        this.detallesMuestra = detallesMuestra;
-    }
-
-//////////// metodos DE negocio
-    /**
-     * Devuelve todos los detalles de esta muestra.
-     */
-    public List<Map<String, Object>> getDatosMuestra() {
-       return this.buscarDetalleMuestra();
-    }
-
-    /**
-     * Busca y devuelve un detalle específico según el tipo de dato 
-     * Si no se encuentra, devuelve null.
-     */
-    public List<Map<String, Object>> buscarDetalleMuestra() {
-        List<Map<String, Object>> detalles = new ArrayList<>();
-        for (DetalleMuestraSismica detalle : detallesMuestra) {
-            detalles.add(detalle.getDatosDetalleMuestra());
-        }
-        return detalles;
+    private List<DetalleMuestraSismicaDTO> buscarDetalleMuestra() { // MSG 45
+        // Inicia el loop [mientras haya detallesmuestras]
+        return this.detalleMuestraSismica.stream()
+                .map(detalle -> detalle.getDatosDetalleMuestra()) // MSG 46
+                .collect(Collectors.toList());
     }
 }

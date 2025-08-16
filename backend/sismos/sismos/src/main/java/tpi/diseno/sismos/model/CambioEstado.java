@@ -1,10 +1,16 @@
 package tpi.diseno.sismos.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference; // <-- AÑADIR IMPORT
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class CambioEstado {
 
  //ATRIBUTOS
@@ -15,85 +21,39 @@ public class CambioEstado {
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference("evento-cambioestado") 
-    private EventoSismico eventoSismico;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "estado_id")
     private Estado estado;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "evento_sismico_id")
+    private EventoSismico eventoSismico;
+
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "empleado_responsable_id")
     private Empleado empleadoResponsable;
 
-
-
-/////CONSTRUCTORES
-    public CambioEstado() {}
-
-    public CambioEstado( LocalDateTime fechaInicio, EventoSismico eventoSismico, Estado estado, Empleado empleadoResponsable) { 
-        this.fechaInicio = fechaInicio; 
-        this.eventoSismico = eventoSismico; 
-        this.estado = estado; 
-        this.empleadoResponsable = empleadoResponsable; 
+    /**
+     * MSG 29: esUltimoCambioEstado() -> Este método es invocado por EventoSismico.
+     * Es responsable de ejecutar la lógica de los mensajes 29 y 30 
+     * tambien mas adelante lo reutilizamos con el MSJ 71.
+     * Verifica si es el último estado y, si lo es, establece la fecha de fin.
+     */
+    public void esUltimoCambioEstado(LocalDateTime fecha) { // MSG 29 (verificación)
+        if (this.fechaFin == null) {
+            // MSG 30 (setea fecha de fin en caso de ser el último cambio)
+            this.setFechaFin(fecha);
+        }
     }
 
-
-    // MÉTODOS DE NEGOCIO
-// Comprueba si esta instancia representa el estado actual del evento sísmico.
-    public boolean esUltimoCambioEstado() {
-        return this.fechaFin == null;
-    }
-
-
-    // =====================================================================================
-    // GETTERS Y SETTERS
-    // =====================================================================================
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getFechaInicio() {
-        return fechaInicio;
-    }
-
-    public void setFechaFin(LocalDateTime fechaFin) { 
-        this.fechaFin = fechaFin;
-    }
-
-    public LocalDateTime getFechaFin() {
-        return fechaFin;
-    }
-
-    public void setFechaFin() {
-        this.fechaFin = LocalDateTime.now();
-    }
-
-    public EventoSismico getEventoSismico() {
-        return eventoSismico;
-    }
-
-    public void setEventoSismico(EventoSismico eventoSismico) {
-        this.eventoSismico = eventoSismico;
-    }
-
-    public Estado getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Estado estado) {
+    /**
+     * MSG 32: new() -> Este constructor es invocado por EventoSismico.
+     * Representa la creación de una nueva instancia de CambioEstado, en este caso,
+     * para el estado 'BloqueadoEnRevision' 
+     * posterior con el MSJ 73: para el estado 'Rechazado'.
+     */
+    public CambioEstado(LocalDateTime fechaInicio, Estado estado, EventoSismico eventoSismico, Empleado empleadoResponsable) {
+        this.fechaInicio = fechaInicio;
         this.estado = estado;
-    }
-
-    public Empleado getEmpleadoResponsable() {
-        return empleadoResponsable;
-    }
-
-    public void setEmpleadoResponsable(Empleado empleadoResponsable) {
+        this.eventoSismico = eventoSismico;
         this.empleadoResponsable = empleadoResponsable;
+        this.fechaFin = null; // Un nuevo estado siempre se crea sin fecha de fin.
     }
 }
