@@ -94,7 +94,7 @@ public class GestorRegistrarResultadoRevisionManual {
         throw new IllegalArgumentException("ID de evento no puede ser nulo."); 
     }
     
-    // AGREGAR: Buscar el evento por ID
+    // Buscar el evento por ID
     EventoSismico evento = eventoSismicoRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Evento no encontrado con ID: " + id));
     
@@ -102,12 +102,19 @@ public class GestorRegistrarResultadoRevisionManual {
     String clasificacion = evento.getClasificacion(); // MSG 35
     String alcance = evento.getAlcance(); // MSG 37
     String origen = evento.getOrigen(); // MSG 39
-
+    /////esto agregamos para que sea mostrado en el front el pase del estado de autodetectado a bloqueado en revision
+    String estadoActual = null;
+    if (evento.getEstadoActual() != null) {
+        estadoActual = evento.getEstadoActual().getNombreEstado(); 
+    }
+//////////////
     Map<String, Object> detalles = new HashMap<>();
     detalles.put("clasificacion", clasificacion);
     detalles.put("alcance", alcance);
     detalles.put("origen_evento", origen); // ← Nota: usar "origen_evento" para que coincida con el frontend
-    
+    //agregamos para mostrar en el front
+    detalles.put("estado", estadoActual);
+
     return detalles;
 }
     /*  this.seriesTemporalesEventoSeleccionado = this.eventoSeleccionado.obtenerSeriesTemporales(); // MSG 41

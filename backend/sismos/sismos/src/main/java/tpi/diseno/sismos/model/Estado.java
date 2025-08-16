@@ -23,7 +23,7 @@ public class Estado {
      * MSG 6: esAutoDetectado() -> Responde al mensaje que le envía el EventoSismico.
      */
     public boolean  esAutoDetectado() {
-        return "AutoDetectado".equals(this.nombreEstado);
+        return "Autodetectado".equals(this.nombreEstado);
     }
 
 
