@@ -118,6 +118,16 @@ public class RevisionManualController {
         return ResponseEntity.ok("Opción 'Modificar Datos' procesada.");
     }
 
+    @GetMapping("/eventos-sismicos")
+    public ResponseEntity<List<EventoSismicoResumenDTO>> obtenerEventosSismicos() {
+        System.out.println("Obteniendo eventos sismicos...");
+        List<EventoSismicoResumenDTO> eventos = gestor.buscarEventosSismicos().stream()
+            .map(e -> e.getDatos())
+            .toList();
+        
+        return ResponseEntity.ok(eventos);
+    }
+
     /**
      * MSG 61: tomarSeleccion() -> El Analista toma una decisión final (ej: Rechazar).
      */

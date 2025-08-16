@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td>${evento.latitudEpicentro && evento.longitudEpicentro ? 
                             `${evento.latitudEpicentro}, ${evento.longitudEpicentro}` : 'N/A'}</td>
 
-                        <td>${evento.latitudHipocentro && evento.longitudEpicentro ?
+                        <td>${evento.latitudHipocentro && evento.longitudHipocentro ?
                                 `${evento.latitudHipocentro}, ${evento.longitudHipocentro}` : 'N/A'}</td>
 
                         <td>${evento.valorMagnitud !== null ? evento.valorMagnitud : 'N/A'}</td>

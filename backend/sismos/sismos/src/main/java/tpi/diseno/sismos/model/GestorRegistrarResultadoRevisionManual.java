@@ -52,6 +52,10 @@ public class GestorRegistrarResultadoRevisionManual {
 
     // --- MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
 
+    public List<EventoSismico> buscarEventosSismicos() { // MSG 4
+        return this.eventoSismicoRepository.findAll();
+    }
+
     public List<EventoSismicoResumenDTO> registrarNuevaRevision() { // MSG 3
         this.sesionActual = sesionRepository.findById(1L).orElseThrow(() -> new RuntimeException("Sesión activa no encontrada."));
         this.eventosSismicos = this.buscarEventosSismicos(); // MSG 4
@@ -209,10 +213,6 @@ public class GestorRegistrarResultadoRevisionManual {
     }
 
     // --- MÉTODOS PRIVADOS (Implementación de auto-mensajes que no son parte de la cadena de rechazo) ---
-
-    private List<EventoSismico> buscarEventosSismicos() { // MSG 4
-        return this.eventoSismicoRepository.findAll();
-    }
     
     private List<EventoSismicoResumenDTO> ordenarEventoSismico(List<EventoSismicoResumenDTO> listaEventos) { // MSG 15
         listaEventos.sort(Comparator.comparing(EventoSismicoResumenDTO::getFechaHoraOcurrencia).reversed());
