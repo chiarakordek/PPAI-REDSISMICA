@@ -37,8 +37,8 @@ public class Sismografo {
      * tomar un parámetro para una verificación. Siendo literales, es un método que se llama.
      * Suponemos que si el objeto existe, es el correcto.
      */
-    public boolean sosMiSismografo() {
-        return true; 
+    public boolean sosMiSismografo(Sismografo sismografo) {
+        return this.equals(sismografo);
     }
 
     /**

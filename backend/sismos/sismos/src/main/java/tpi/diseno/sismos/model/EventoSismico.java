@@ -21,12 +21,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
 import tpi.diseno.sismos.dto.SerieTemporalDTO;
-import tpi.diseno.sismos.model.Estado;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 public class EventoSismico {
 
     // --- 1. ATRIBUTOS Y RELACIONES ---
@@ -35,11 +37,12 @@ public class EventoSismico {
     private Long id;
     private LocalDateTime fechaHoraFin;
     private LocalDateTime fechaHoraOcurrencia;
-    private Double latitudEpicentro;
-    private Double latitudHipocentro;
-    private Double longitudHipocentro;
-    private Double longitudEpicentro;
-    private Double valorMagnitud;
+    private double latitudEpicentro;
+    private double latitudHipocentro;
+    private double longitudHipocentro;
+    private double longitudEpicentro;
+    private Double ValorMagnitud;
+
 
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SerieTemporal> seriesTemporales = new ArrayList<>();
@@ -57,6 +60,8 @@ public class EventoSismico {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="alcance_sismo_id")
     private AlcanceSismo alcanceSismo;
+
+
 
     // --- 2. MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
     
@@ -82,26 +87,24 @@ public class EventoSismico {
 
     public void revisar(Estado nuevoEstado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 27
         CambioEstado ultimoCambio = this.buscarUltimoCambioEstado(); // MSG 28
-        if (ultimoCambio != null) {
-            ultimoCambio.esUltimoCambioEstado(fechaHoraActual); // MSG 29 -- Delega a CambioEstado
-        }
+        ultimoCambio.setFechaFin(fechaHoraActual);
         CambioEstado nuevoCambioEstado = this.crearCambioEstado(fechaHoraActual, nuevoEstado, empleadoResponsable); // MSG 31
         this.historialCambioEstado.add(nuevoCambioEstado);
         this.setEstado(nuevoEstado); // MSG 33
     }
 
     public String getClasificacion() { // MSG 35
-        if (this.clasificacion != null) { return this.clasificacion.getClasificacion(); } // MSG 36
+        if (this.clasificacion != null) { return this.clasificacion.getNombre(); } // MSG 36
         return "N/A";
     }
 
     public String getAlcance() { // MSG 37
-        if (this.alcanceSismo != null) { return this.alcanceSismo.getAlcance(); } // MSG 38
+        if (this.alcanceSismo != null) { return this.alcanceSismo.getNombre(); } // MSG 38
         return "N/A";
     }
 
     public String getOrigen() { // MSG 39
-        if (this.origenGeneracion != null) { return this.origenGeneracion.getOrigen(); } // MSG 40
+        if (this.origenGeneracion != null) { return this.origenGeneracion.getNombre(); } // MSG 40
         return "N/A";
     }
 
@@ -122,13 +125,11 @@ public class EventoSismico {
     }
 
     public void rechazar(Estado estadoRechazado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 70
-        CambioEstado ultimoCambio = this.buscarUltimoCambioEstado();
-        if (ultimoCambio != null) {
-            ultimoCambio.esUltimoCambioEstado(fechaHoraActual); // MSG 71
-        }
-        CambioEstado nuevoCambioEstadoRechazado = this.crearCambioEstado(fechaHoraActual, estadoRechazado, empleadoResponsable); // MSG 72
-        this.historialCambioEstado.add(nuevoCambioEstadoRechazado);
-        this.setEstado(estadoRechazado); // MSG 74
+        CambioEstado ultimoCambio = this.buscarUltimoCambioEstado(); // MSG 28
+        ultimoCambio.setFechaFin(fechaHoraActual);
+        CambioEstado nuevoCambioEstado = this.crearCambioEstado(fechaHoraActual, estadoRechazado , empleadoResponsable);
+        this.historialCambioEstado.add(nuevoCambioEstado);
+        this.setEstado(estadoRechazado); 
     }
 
     public void setEstado(Estado nuevoEstado) { // MSG 33 y 74
@@ -137,8 +138,18 @@ public class EventoSismico {
 
     // --- 3. MÉTODOS PRIVADOS ---
     private CambioEstado buscarUltimoCambioEstado() { // MSG 28
-        if (this.historialCambioEstado == null || this.historialCambioEstado.isEmpty()) { return null; }
-        return this.historialCambioEstado.get(this.historialCambioEstado.size() - 1);
+                List<CambioEstado> todosLosCambios = this.historialCambioEstado;
+        CambioEstado ultimoCambioEstado = null;
+
+        // Inicia el loop [mientras exista estados]
+        for (CambioEstado cambioEstado : todosLosCambios) {
+        
+            if (cambioEstado.esUltimoCambioEstado()) {
+                ultimoCambioEstado = cambioEstado;
+                break;
+            }
+        }
+        return ultimoCambioEstado;
     }
     
     private CambioEstado crearCambioEstado(LocalDateTime fecha, Estado estado, Empleado empleado) { // MSG 31 y 72

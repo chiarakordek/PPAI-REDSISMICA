@@ -24,7 +24,7 @@ public class Sesion {
      * MSG 25: obtenerUsuarioLogueado()
      * Devuelve el usuario asociado a esta sesión.
      */
-    public Usuario obtenerUsuarioLogueado() {
-        return this.usuario;
+    public Empleado obtenerUsuarioLogueado() {
+        return this.usuario.getEmpleado();
     }
 }

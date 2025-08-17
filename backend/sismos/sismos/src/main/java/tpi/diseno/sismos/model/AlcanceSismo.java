@@ -16,11 +16,4 @@ public class AlcanceSismo {
     private String descripcion;
     private String nombre;
 
-    /**
-     * MSG 38: getAlcance() -> Invocado por EventoSismico.
-     * Devuelve los datos relevantes del alcance, en este caso, su nombre.
-     */
-    public String getAlcance() {
-        return this.getNombre();
-    }
 }

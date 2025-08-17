@@ -36,12 +36,11 @@ public class CambioEstado {
      * tambien mas adelante lo reutilizamos con el MSJ 71.
      * Verifica si es el último estado y, si lo es, establece la fecha de fin.
      */
-    public void esUltimoCambioEstado(LocalDateTime fecha) { // MSG 29 (verificación)
-        if (this.fechaFin == null) {
-            // MSG 30 (setea fecha de fin en caso de ser el último cambio)
-            this.setFechaFin(fecha);
-        }
+    public boolean esUltimoCambioEstado() { // MSG 29 (verificación)
+        // MSG 30 (setea fecha de fin en caso de ser el último cambio)
+        return this.fechaFin == null;
     }
+
 
     /**
      * MSG 32: new() -> Este constructor es invocado por EventoSismico.
