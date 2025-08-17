@@ -12,11 +12,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('eventoId obtenido:', eventoId);
     console.log('origen obtenido:', origen);
 
-    if (!eventoId) {
-        document.body.innerHTML = '<h1>Error: No se especificó un ID de evento.</h1>';
-        return;
-    }
-
     const cambiarEstado = async (id, nuevoEstado, showAlerts = true) => {
         try {
             const response = await fetch(`${API_URL}/eventos/${id}/cambiar-estado`, {
@@ -31,20 +26,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             return false;
         }
     };
+    
+    const tomarSeleccionEventoSismico = async (eventoId) => {
+        if (!eventoId) {
+        document.body.innerHTML = '<h1>Error: No se especificó un ID de evento.</h1>';
+        return;
+        }
+         return await cambiarEstado(eventoId, 'BloqueadoEnRevision');
+    }
 
-            const cargarDetalles = async (id) => {
-            try {
-                const response = await fetch(`${API_URL}/detalles-evento?id=${id}`);
-                if (!response.ok) throw new Error(`El servidor respondió con error ${response.status}.`);
-                
-                const detalles = await response.json();
-                console.log('Detalles recibidos:', detalles); // ← AGREGA ESTA LÍNEA
+    const mostrarDatosEventoSelec = async (id) => {
+    try {
+        const response = await fetch(`${API_URL}/detalles-evento?id=${id}`);
+        if (!response.ok) throw new Error(`El servidor respondió con error ${response.status}.`);
         
-            document.getElementById('evento-id').textContent = `Evento #${id}`;
-            document.getElementById('clasificacion').textContent = `Clasificación: ${detalles.clasificacion}`;
-            document.getElementById('alcance').textContent = `Alcance: ${detalles.alcance}`;
-            document.getElementById('origen').textContent = `Origen del evento: ${detalles.origen_evento}`;
-            document.getElementById('estado-actual').textContent = `Estado: ${detalles.estado}`;
+        const detalles = await response.json();
+
+        console.log('Detalles recibidos:', detalles); 
+
+        document.getElementById('evento-id').textContent = `Evento #${id}`;
+        document.getElementById('clasificacion').textContent = `Clasificación: ${detalles.clasificacion}`;
+        document.getElementById('alcance').textContent = `Alcance: ${detalles.alcance}`;
+        document.getElementById('origen').textContent = `Origen del evento: ${detalles.origen_evento}`;
+        document.getElementById('estado-actual').textContent = `Estado: ${detalles.estado}`;
         } catch (error) {
             const card = document.querySelector('.detalle-evento-card');
             if(card) {
@@ -58,6 +62,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         cambiarEstado(eventoId, 'PendienteDeRevision', false);
     };
 
+    //MSG 55: tomarOpcVerMapa() -> El Analista selecciona la opción para ver el mapa.
+    const tomarOpcVerMapa = () => {
+        if (confirm("¿Desea visualizar el mapa del evento sísmico?")) {
+            alert('Funcionalidad para ver el mapa se implementará en un futuro.');
+        }
+    }
+
+    // MSG 58: tomarOpcModificarDatos() -> El Analista selecciona la opción para modificar datos.
+    const tomarOpcModificarDatos = () => {
+        if (confirm("¿Desea modificar los datos del evento sísmico?")) {
+            alert('Funcionalidad para modificar datos se implementará en un futuro.');
+        }
+    }
+
     const setupActionButtons = () => {
         // Seleccionamos todos los botones
         const btnModificar = document.querySelector('.btn-editar');
@@ -66,30 +84,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         const btnDerivar = document.querySelector('.btn-derivar');
         const btnRechazar = document.querySelector('.btn-rechazar');
         
-        // =========== INICIO DE LA MODIFICACIÓN DE TEXTOS ===========
-        
         if (btnModificar) {
-            btnModificar.addEventListener('click', () => {
-                if (confirm("¿Desea modificar los datos del evento sísmico?")) {
-                    // Texto ajustado
-                    alert('Funcionalidad para modificar datos se implementará en un futuro.');
-                }
-            });
+            btnModificar.addEventListener('click', tomarOpcModificarDatos);
         }
         
         if (btnVerMapa) {
-            btnVerMapa.addEventListener('click', () => {
-                if (confirm("¿Desea visualizar el mapa del evento sísmico?")) {
-                    // Texto ajustado
-                    alert('Funcionalidad para ver el mapa se implementará en un futuro.');
-                }
-            });
+            btnVerMapa.addEventListener('click', tomarOpcVerMapa);
         }
 
         if (btnConfirmar) {
             btnConfirmar.addEventListener('click', () => {
                 if (confirm("¿Desea CONFIRMAR el evento sísmico?")) {
-                     // Texto ajustado
                      alert('Funcionalidad para confirmar el evento se implementará en un futuro.');
                 }
             });
@@ -103,16 +108,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
         }
-        // =========== FIN DE LA MODIFICACIÓN DE TEXTOS ===========
 
-        // Lógica para el botón RECHAZAR 
-        const manejarDecisionRechazar = async () => {
+        if (btnRechazar) {
+            btnRechazar.addEventListener('click', tomarSeleccion);
+        }
+    };
+
+    // Lógica para el botón RECHAZAR 
+        // MSG61: tomarSeleccion() -> El Analista selecciona el botón RECHAZAR.
+        async function tomarSeleccion() {
             if (confirm("¿Está seguro de que desea RECHAZAR este evento?")) {
                 window.removeEventListener('beforeunload', handleBeforeUnload);
 
                 try {
                     const exito = await cambiarEstado(eventoId, "Rechazado");
                     if (exito) {
+                        //Cambia de página para evitar que al recargar la página se cambie el estado a BloqueadoEnRevision
                         const nuevaUrl = `detalleEvento.html?id=${eventoId}&origen=registrados`;
                         history.replaceState({ path: nuevaUrl }, '', nuevaUrl);
                         
@@ -121,7 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             accionesContainer.innerHTML = `
                                 <div class="accion-completada">
                                     <p>El evento ha sido marcado como "Rechazado".</p>
-                                    <a href="pendientes.html" class="btn-accion btn-volver">Volver a la lista</a>
+                                    <a href="eventosPendientes.html" class="btn-accion btn-volver">Volver a la lista</a>
                                 </div>
                             `;
                         }
@@ -137,23 +148,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         };
 
-        if (btnRechazar) {
-            btnRechazar.addEventListener('click', manejarDecisionRechazar);
+    // MSG 60: mostrarOpcionesParaSeleccion() -> La Pantalla devuelve la lista al front-end.
+    const mostrarOpcionesParaSeleccion = () => {
+        const botonesDecision = document.getElementById('botones-decision');
+        if (botonesDecision) {
+            botonesDecision.style.display = 'flex';
         }
     };
 
     if (origen === 'pendientes') {
         window.addEventListener('beforeunload', handleBeforeUnload);
-        const bloqueoExitoso = await cambiarEstado(eventoId, 'BloqueadoEnRevision');
+        const bloqueoExitoso = tomarSeleccionEventoSismico(eventoId);
         if (bloqueoExitoso) {
-            await cargarDetalles(eventoId);
-            const botonesDecision = document.getElementById('botones-decision');
-            if (botonesDecision) {
-                botonesDecision.style.display = 'flex';
-            }
+            await mostrarDatosEventoSelec(eventoId);
+            mostrarOpcionesParaSeleccion();
             setupActionButtons();
         }
     } else {
-        await cargarDetalles(eventoId);
+        await mostrarDatosEventoSelec(eventoId);
     }
 });

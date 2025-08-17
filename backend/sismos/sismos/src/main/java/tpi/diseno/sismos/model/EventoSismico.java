@@ -1,7 +1,6 @@
 package tpi.diseno.sismos.model;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,14 +16,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
 import tpi.diseno.sismos.dto.SerieTemporalDTO;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Entity
 @Getter
@@ -80,14 +75,16 @@ public class EventoSismico {
         this.longitudEpicentro,     // Acceso directo al campo
         this.latitudHipocentro,     // Acceso directo al campo
         this.longitudHipocentro,    // Acceso directo al campo
-        this.valorMagnitud          // Acceso directo al campo
+        this.ValorMagnitud          // Acceso directo al campo
     );
 }
  
 
     public void revisar(Estado nuevoEstado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 27
         CambioEstado ultimoCambio = this.buscarUltimoCambioEstado(); // MSG 28
-        ultimoCambio.setFechaFin(fechaHoraActual);
+        if (ultimoCambio != null) {
+            ultimoCambio.setFechaFin(fechaHoraActual);
+        }
         CambioEstado nuevoCambioEstado = this.crearCambioEstado(fechaHoraActual, nuevoEstado, empleadoResponsable); // MSG 31
         this.historialCambioEstado.add(nuevoCambioEstado);
         this.setEstado(nuevoEstado); // MSG 33
@@ -138,7 +135,7 @@ public class EventoSismico {
 
     // --- 3. MÉTODOS PRIVADOS ---
     private CambioEstado buscarUltimoCambioEstado() { // MSG 28
-                List<CambioEstado> todosLosCambios = this.historialCambioEstado;
+        List<CambioEstado> todosLosCambios = this.historialCambioEstado;
         CambioEstado ultimoCambioEstado = null;
 
         // Inicia el loop [mientras exista estados]
