@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 public class SerieTemporal {
 
     @Id
@@ -44,22 +43,18 @@ public class SerieTemporal {
      * Este método orquesta la recolección de los datos de las muestras y del sismógrafo asociado.
      */
     public SerieTemporalDTO getDatosSerieTemporal() {
-        
+
         // MSG 43: Se invoca el auto-mensaje para buscar los datos de las muestras.
         List<MuestraSismicaDTO> muestrasDTO = this.buscarMuestraSismica();
-        
+
         SismografoDTO sismografoDTO = null;
 
-        // El loop "Sismografo [mientras haya sismografo]" se traduce en verificar si existe.
-        if (this.sismografo != null) {
-            // MSG 49: sosMiSismografo() -> Se invoca la condición.
-            if (this.sismografo.sosMiSismografo()) {
-                // MSG 50: getDatosSismografo() -> Si la condición es verdadera, se piden los datos.
-                sismografoDTO = this.sismografo.getDatosSismografo();
-            }
-        }
-        
-        // Al final, se empaquetan todos los datos recolectados en el DTO de la SerieTemporal.
+        // Recorro todos los sismógrafos en el repositorio
+    if (sismografo.sosMiSismografo(this.sismografo)) {  // paso la serie temporal como parámetro 
+        sismografoDTO = sismografo.getDatosSismografo();
+    }
+
+        // Empaquetamos todos los datos recolectados en el DTO de la SerieTemporal
         return new SerieTemporalDTO(muestrasDTO, sismografoDTO);
     }
 

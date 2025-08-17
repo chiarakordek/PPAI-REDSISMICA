@@ -28,7 +28,8 @@ public class DetalleMuestraSismica {
 
     public DetalleMuestraSismicaDTO getDatosDetalleMuestra() { // MSG 46
         String denominacionTipoDato = this.buscarTipoDeDato(); // MSG 47
-        return new DetalleMuestraSismicaDTO(denominacionTipoDato, this.valor);
+        Double valor = this.getValor();
+        return new DetalleMuestraSismicaDTO(denominacionTipoDato, valor);
     }
 
     //Obtiene el tipo de dato para el valor del detalle

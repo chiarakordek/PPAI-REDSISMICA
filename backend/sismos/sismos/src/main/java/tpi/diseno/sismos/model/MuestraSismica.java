@@ -32,8 +32,9 @@ public class MuestraSismica {
     private List<DetalleMuestraSismica> detalleMuestraSismica = new ArrayList<>();
 
     public MuestraSismicaDTO getDatosMuestra() { // MSG 44
+        LocalDateTime fechaHoraMuestra = this.getFechaHoraMuestra();
         List<DetalleMuestraSismicaDTO> detallesDTO = this.buscarDetalleMuestra(); // MSG 45
-        return new MuestraSismicaDTO(this.fechaHoraMuestra, detallesDTO);
+        return new MuestraSismicaDTO(fechaHoraMuestra, detallesDTO);
     }
 
     private List<DetalleMuestraSismicaDTO> buscarDetalleMuestra() { // MSG 45

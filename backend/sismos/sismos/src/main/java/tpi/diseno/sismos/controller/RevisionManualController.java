@@ -56,22 +56,27 @@ public class RevisionManualController {
         // MSG 16: mostrarEventoSismicoParaSeleccion() -> La Pantalla devuelve la lista al front-end.
         return ResponseEntity.ok(eventos);
     }
-    @PatchMapping("/eventos/{id}/cambiar-estado")
-        public ResponseEntity<String> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+@PatchMapping("/eventos/{id}/cambiar-estado")
+public ResponseEntity<String> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> payload) {
     try {
         String nuevoEstado = payload.get("nuevoEstado");
     
-        if ("BloqueadoEnRevision".equals(nuevoEstado)){
-        // Delegar al gestor para cambiar el estado del evento
-        gestor.tomarSeleccionEventoSismico(id);
+        if ("BloqueadoEnRevision".equals(nuevoEstado)) {
+            gestor.tomarSeleccionEventoSismico(id);
+            return ResponseEntity.ok("Estado cambiado exitosamente a BloqueadoEnRevision");
 
-        return ResponseEntity.ok("Estado cambiado exitosamente a bloqueado en revision");
-        }  
-        return ResponseEntity.badRequest().body("Transición de estado no manejada: " + nuevoEstado);       
-        } catch (Exception e) {
-        return ResponseEntity.badRequest().body("Error al cambiar estado: " + e.getMessage());
+    
+        } else if ("Rechazado".equals(nuevoEstado)) {
+            gestor.tomarSeleccionRechazada(id); // Llama a un método stateless en el gestor
+            return ResponseEntity.ok("El evento ha sido RECHAZADO.");
+
+        } else { // Mejor usar un else para claridad
+            return ResponseEntity.badRequest().body("Transición de estado no manejada: " + nuevoEstado);
         }
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Error al cambiar estado: " + e.getMessage());
     }
+}
 
 
     
@@ -118,19 +123,5 @@ public class RevisionManualController {
         return ResponseEntity.ok("Opción 'Modificar Datos' procesada.");
     }
 
-    /**
-     * MSG 61: tomarSeleccion() -> El Analista toma una decisión final (ej: Rechazar).
-     */
-    @PostMapping("/finalizar-revision")
-    public ResponseEntity<String> tomarSeleccion(@RequestBody Map<String, String> payload) {
-        String decision = payload.get("decision");
-
-        if ("rechazar".equalsIgnoreCase(decision)) {
-            // MSG 62: tomarSeleccionRechazada() -> La Pantalla invoca al Gestor con la decisión de rechazar.
-            gestor.tomarSeleccionRechazada();
-            return ResponseEntity.ok("El evento ha sido RECHAZADO. Caso de uso finalizado.");
-        }
-        return ResponseEntity.badRequest().body("Decisión no válida.");
-    }
 
 }
