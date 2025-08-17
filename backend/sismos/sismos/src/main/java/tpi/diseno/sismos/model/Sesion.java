@@ -16,8 +16,8 @@ public class Sesion {
     private LocalDateTime fechaFin;
     private String observaciones;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "nombre")
     private Usuario usuario;
 
     /**

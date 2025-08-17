@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class Sismografo {
-
+    // ATRIBUTOS
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

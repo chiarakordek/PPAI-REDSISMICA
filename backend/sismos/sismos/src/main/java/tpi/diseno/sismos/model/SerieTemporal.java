@@ -9,8 +9,8 @@ import tpi.diseno.sismos.dto.SerieTemporalDTO;
 import tpi.diseno.sismos.dto.SismografoDTO;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Entity
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 public class SerieTemporal {
-
+   //ATRIBUTOS
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -52,12 +52,16 @@ public class GestorRegistrarResultadoRevisionManual {
 
     // --- MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
 
+    public List<EventoSismico> buscarEventosSismicos() { // MSG 4
+        return this.eventoSismicoRepository.findAll();
+    }
+
     public List<EventoSismicoResumenDTO> registrarNuevaRevision() { // MSG 3
         this.sesionActual = sesionRepository.findById(1L).orElseThrow(() -> new RuntimeException("Sesión activa no encontrada."));
         this.eventosSismicos = this.buscarEventosSismicos(); // MSG 4
         List<EventoSismicoResumenDTO> eventosParaRevision = new ArrayList<>();
         for (EventoSismico evento : this.eventosSismicos) {
-            if (evento.esPendienteDeRevision()) { // MSG 5
+            if (evento.esAutoDetectado()) { // MSG 5
                 eventosParaRevision.add(evento.getDatos()); // MSG 7
             }
         }
@@ -65,23 +69,21 @@ public class GestorRegistrarResultadoRevisionManual {
         return this.datosEventosSismicos;
     }
 
-        public void tomarSeleccionEventoSismico(Long id) { // MSG 18
-            /*if (id == null || this.datosEventosSismicos == null || id >= this.datosEventosSismicos.size()) {
-                throw new IndexOutOfBoundsException("Índice de selección inválido: " + id);
-            }*/
-            System.out.println("ID del evento seleccionado: " + id);
-            EventoSismicoResumenDTO dtoSeleccionado = this.datosEventosSismicos.get(id.intValue());
-        this.eventoSeleccionado = this.eventosSismicos.stream().filter(e -> e.getFechaHoraOcurrencia().equals(dtoSeleccionado.getFechaHoraOcurrencia()) &&
-                         e.getLatitudEpicentro() == dtoSeleccionado.getLatitudEpicentro() &&
-                         e.getLongitudEpicentro() == dtoSeleccionado.getLongitudEpicentro() &&
-                         e.getLatitudHipocentro() == dtoSeleccionado.getLatitudHipocentro() &&
-                         e.getLongitudHipocentro() == dtoSeleccionado.getLongitudHipocentro() &&
-                         e.getValorMagnitud() == dtoSeleccionado.getValorMagnitud())
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento original."));
+    public void tomarSeleccionEventoSismico(Long id) { // MSG 18 ACA MODIFICAMOS
+        if (id == null) {
+            throw new IllegalArgumentException("El ID del evento no puede ser nulo.");
+        }
+        System.out.println("ID del evento seleccionado para actuar: " + id);
+
+        this.sesionActual = sesionRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Sesión activa no encontrada para esta operación."));
+                
+        this.eventoSeleccionado = eventoSismicoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento con ID: " + id));
+        
         this.bloquearEvento(); // MSG 19
     }
-  
+
     public void bloquearEvento() { // MSG 19
         this.punteroBloqueadoEnRevision = this.buscarEstadoBloqueado(); // MSG 20
         this.fechaHoraActual = this.tomarFechaHoraActual(); // MSG 23
@@ -96,7 +98,7 @@ public class GestorRegistrarResultadoRevisionManual {
         throw new IllegalArgumentException("ID de evento no puede ser nulo."); 
     }
     
-    // AGREGAR: Buscar el evento por ID
+    // Buscar el evento por ID
     EventoSismico evento = eventoSismicoRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Evento no encontrado con ID: " + id));
     
@@ -104,12 +106,19 @@ public class GestorRegistrarResultadoRevisionManual {
     String clasificacion = evento.getClasificacion(); // MSG 35
     String alcance = evento.getAlcance(); // MSG 37
     String origen = evento.getOrigen(); // MSG 39
-
+    /////esto agregamos para que sea mostrado en el front el pase del estado de autodetectado a bloqueado en revision
+    String estadoActual = null;
+    if (evento.getEstadoActual() != null) {
+        estadoActual = evento.getEstadoActual().getNombreEstado(); 
+    }
+//////////////
     Map<String, Object> detalles = new HashMap<>();
     detalles.put("clasificacion", clasificacion);
     detalles.put("alcance", alcance);
     detalles.put("origen_evento", origen); // ← Nota: usar "origen_evento" para que coincida con el frontend
-    
+    //agregamos para mostrar en el front
+    detalles.put("estado", estadoActual);
+
     return detalles;
 }
     /*  this.seriesTemporalesEventoSeleccionado = this.eventoSeleccionado.obtenerSeriesTemporales(); // MSG 41
@@ -204,10 +213,6 @@ public class GestorRegistrarResultadoRevisionManual {
     }
 
     // --- MÉTODOS PRIVADOS (Implementación de auto-mensajes que no son parte de la cadena de rechazo) ---
-
-    private List<EventoSismico> buscarEventosSismicos() { // MSG 4
-        return this.eventoSismicoRepository.findAll();
-    }
     
     private List<EventoSismicoResumenDTO> ordenarEventoSismico(List<EventoSismicoResumenDTO> listaEventos) { // MSG 15
         listaEventos.sort(Comparator.comparing(EventoSismicoResumenDTO::getFechaHoraOcurrencia).reversed());

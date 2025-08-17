@@ -2,10 +2,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-registrados-body');
 
     
-    const API_URL = 'http://localhost:8080/revision-manual/eventos-todos'; //End-point del controlador
+    const API_URL = 'http://localhost:8080/revision-manual/eventos-sismicos'; //End-point del controlador
 
     const cargarEventosRegistrados = async () => {
         tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';
+        
+        console.log("Cargando eventos registrados...");
+        
 
         try {
             const response = await fetch(API_URL);
@@ -24,17 +27,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
             } else {
                 //Si hay eventos registrados, completa las filas de la tabla con los datos de cada uno
-                data.forEach(evento => {
-                    console.log('Evento completo:', evento); // ← AGREGA ESTA LÍNEA
-                    console.log('evento.id:', evento.id);     // ← Y ESTA TAMBIÉN
+                data.forEach(evento => {  
                     const fila = `
                         <tr>
                             <td>${evento.fechaHoraOcurrencia || 'N/A'}</td>
-                            <td>${evento.latitudEpicentro || 'N/A'}</td>
-                            <td>${evento.latitudHipocentro || 'N/A'}</td>
-                            <td>${evento.longitudEpicentro || 'N/A'}</td>
-                            <td>${evento.longitudHipocentro || 'N/A'}</td>
+
+                            <td>${evento.latitudEpicentro && evento.latitudEpicentro ? 
+                                `${evento.latitudEpicentro}, ${evento.latitudEpicentro}` : 'N/A'}</td>
+
+                            <td>${evento.latitudHipocentro && evento.longitudHipocentro ? 
+                                `${evento.latitudHipocentro}, ${evento.longitudHipocentro}`:'N/A'}</td>
+
                             <td>${evento.valorMagnitud !== null ? evento.valorMagnitud : 'N/A'}</td>
+                            
                             <td>
                                 <a href="detalleEvento.html?id=${evento.id}&origen=registrados" class="btn-editar">Editar</a>
                             </td>

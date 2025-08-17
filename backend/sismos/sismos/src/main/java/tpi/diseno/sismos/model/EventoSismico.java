@@ -1,6 +1,7 @@
 package tpi.diseno.sismos.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,9 +60,9 @@ public class EventoSismico {
 
     // --- 2. MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
     
-    public boolean esPendienteDeRevision() { // MSG 5
+    public boolean esAutoDetectado() { // MSG 5
         if (this.estadoActual != null) {
-            return this.estadoActual.esPendienteDeRevision(); // MSG 6 -> Delega al estado.
+            return this.estadoActual.esAutoDetectado(); // MSG 6 -> Delega al estado.
         }
         return false;
     }
