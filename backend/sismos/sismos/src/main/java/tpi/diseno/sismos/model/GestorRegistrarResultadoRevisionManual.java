@@ -24,7 +24,7 @@ public class GestorRegistrarResultadoRevisionManual {
     private final SesionRepository sesionRepository;
     private final GenerarSismogramaService generarSismogramaService;
 
-    // --- Atributos del DDC ---
+    // --- Atributos del DDS ---
     private List<EventoSismico> eventosSismicos;
     private List<EventoSismicoResumenDTO> datosEventosSismicos;
     private LocalDateTime fechaHoraActual;
@@ -53,13 +53,13 @@ public class GestorRegistrarResultadoRevisionManual {
 
     // --- MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
 
-    public List<EventoSismicoResumenDTO> registrarNuevaRevision() { // MSG 3
+    public List<EventoSismicoResumenDTO> registrarNuevaRevision() { 
         this.sesionActual = sesionRepository.findById(1L).orElseThrow(() -> new RuntimeException("Sesión activa no encontrada."));
-        this.datosEventosSismicos = this.ordenarEventoSismico(this.buscarEventosSismicos()); // MSG 15
+        this.datosEventosSismicos = this.ordenarEventoSismico(this.buscarEventosSismicos());  ///////EJEMPLO DEL PATRON CONTROLADOR
         return this.datosEventosSismicos;
     }
 
-    public void tomarSeleccionEventoSismico(Long id) { // MSG 18 ACA MODIFICAMOS
+    public void tomarSeleccionEventoSismico(Long id) { 
         if (id == null) {
             throw new IllegalArgumentException("El ID del evento no puede ser nulo.");
         }
@@ -68,74 +68,61 @@ public class GestorRegistrarResultadoRevisionManual {
         this.sesionActual = sesionRepository.findById(1L)
                 .orElseThrow(() -> new RuntimeException("Sesión activa no encontrada para esta operación."));
                 
-        EventoSismico evento = eventoSismicoRepository.findById(id)
+        EventoSismico evento = eventoSismicoRepository.findById(id) //Asignacion directamente por id ya que no encontramos otra manera de almacenar el dato
             .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento con ID: " + id));
-        this.bloquearEvento(evento); // MSG 19
+        this.bloquearEvento(evento); 
     }
 
-    public void bloquearEvento(EventoSismico evento) { // MSG 19
-        Estado punteroBloqueadoEnRevision = this.buscarEstadoBloqueado(); // MSG 20
-        LocalDateTime fechaHoraActual = this.tomarFechaHoraActual(); // MSG 23
-        Empleado punteroEmpleado = this.buscarEmpleadoLogueado(); // MSG 24
-        evento.revisar(punteroBloqueadoEnRevision, fechaHoraActual, punteroEmpleado); // MSG 27 -- Delega Evento Sismico
+    public void bloquearEvento(EventoSismico evento) { 
+        Estado punteroBloqueadoEnRevision = this.buscarEstadoBloqueado(); 
+        LocalDateTime fechaHoraActual = this.tomarFechaHoraActual();
+        Empleado punteroEmpleado = this.buscarEmpleadoLogueado(); 
+        evento.revisar(punteroBloqueadoEnRevision, fechaHoraActual, punteroEmpleado); //-- Delega Evento Sismico
         eventoSismicoRepository.save(evento);
-        this.buscarDatosSismicos(evento.getId()); // MSG 34
+        this.buscarDatosSismicos(evento.getId()); 
     }
 
-   public Map<String, Object> buscarDatosSismicos(Long id) { // MSG 34
+   public Map<String, Object> buscarDatosSismicos(Long id) { 
     if (id == null) { 
         throw new IllegalArgumentException("ID de evento no puede ser nulo."); 
     }
-    
     // Buscar el evento por ID
     EventoSismico evento = eventoSismicoRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Evento no encontrado con ID: " + id));
 
     // Usar el evento encontrado en lugar de this.eventoSeleccionado
-    String clasificacion = evento.getClasificacion(); // MSG 35
-    String alcance = evento.getAlcance(); // MSG 37
-    String origen = evento.getOrigen(); // MSG 39
+    String clasificacion = evento.getClasificacion(); 
+    String alcance = evento.getAlcance(); 
+    String origen = evento.getOrigen(); 
     /////esto agregamos para que sea mostrado en el front el pase del estado de autodetectado a bloqueado en revision
     String estadoActual = null;
     if (evento.getEstadoActual() != null) {
         estadoActual = evento.getEstadoActual().getNombreEstado(); 
     }
-//////////////
+    ////////////// aca termina lo que agregamos para mostrar en el front
     Map<String, Object> detalles = new HashMap<>();
     detalles.put("clasificacion", clasificacion);
     detalles.put("alcance", alcance);
-    detalles.put("origen_evento", origen); // ← Nota: usar "origen_evento" para que coincida con el frontend
+    detalles.put("origen_evento", origen); // 
     //agregamos para mostrar en el front
     detalles.put("estado", estadoActual);
     this.buscarSeriesTemporales(evento);
     return detalles;
 }
     public void buscarSeriesTemporales(EventoSismico evento){
-        this.seriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales(); // MSG 41
-        this.llamarCasoDeUsoGenerarSismograma(); // MSG 53 
+        this.seriesTemporalesEventoSeleccionado = evento.obtenerSeriesTemporales(); 
+        this.llamarCasoDeUsoGenerarSismograma(); 
     }
 
-    public void mostrarOpcionVisualizarMapa() { // MSG 54
-        System.out.println("Preparando para mostrar opción 'Ver Mapa'.");
-    }
-
-    public void tomarOpcVerMapa() { // MSG 56
+    public void tomarOpcVerMapa() { 
         System.out.println("Procesando selección 'Ver Mapa'.");
     }
 
-    public void mostrarOpcModificarDatos() { // MSG 57
-        System.out.println("Preparando para mostrar opción 'Modificar Datos'.");
-    }
-
-    public void tomarOpcModificarDatos() { // MSG 59
+    public void tomarOpcModificarDatos() { 
         System.out.println("Procesando selección 'Modificar Datos'.");
     }
 
-    public void mostrarOpcionesParaSeleccion() { // MSG 60
-        System.out.println("Preparando para mostrar opciones finales (ej: Aprobar/Rechazar).");
-    }
-    
-    public void tomarSeleccionRechazada(Long id ) { // MSG 62
+    public void tomarSeleccionRechazada(Long id ) { 
         if (id == null) {
             throw new IllegalArgumentException("El ID del evento no puede ser nulo.");
         }
@@ -143,14 +130,14 @@ public class GestorRegistrarResultadoRevisionManual {
 
         EventoSismico evento = eventoSismicoRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento con ID: " + id));
-        this.evaluarResultadoInspeccion(evento); // MSG 63
+        this.evaluarResultadoInspeccion(evento); 
     }
 
-    public void evaluarResultadoInspeccion(EventoSismico evento) { // MSG 63
-        this.validarExistenciaDatos(evento); // MSG 64
+    public void evaluarResultadoInspeccion(EventoSismico evento) { 
+        this.validarExistenciaDatos(evento); 
     }
 
-    public void validarExistenciaDatos(EventoSismico evento) { // MSG 64
+    public void validarExistenciaDatos(EventoSismico evento) { 
          if (evento == null) {
             throw new IllegalStateException("No hay un evento sísmico seleccionado para evaluar.");
         }
@@ -167,29 +154,26 @@ public class GestorRegistrarResultadoRevisionManual {
             throw new IllegalStateException("El evento sísmico no tiene definido el origen de generación.");
         }
 
-        this.rechazarEvento(evento); // MSG 65
+        this.rechazarEvento(evento); 
     }   
 
-    public void rechazarEvento(EventoSismico evento) { // MSG 65
+    public void rechazarEvento(EventoSismico evento) { 
             Estado punteroRechazado = this.buscarEstadoRechazado(); 
             LocalDateTime fechaHoraActual = this.tomarFechaHoraActual(); 
-            evento.rechazar(punteroRechazado, fechaHoraActual, punteroEmpleado); // MSG 70
+            evento.rechazar(punteroRechazado, fechaHoraActual, punteroEmpleado); 
             eventoSismicoRepository.save(evento);
             finCU();
         }
-    /**
-     * MSG 66: buscarEstadoRechazado()
-     * implementa el bucle literal del diagrama.
-     */
+
     public Estado buscarEstadoRechazado() {
         List<Estado> todosLosEstados = estadoRepository.findAll();
         Estado estadoRechazadoEncontrado = null;
 
         // Inicia el loop [mientras exista estados]
         for (Estado estado : todosLosEstados) {
-            // MSG 67: esAmbitoEventoSismico() -> Se delega la verificación del ámbito al estado.
+            // esAmbitoEventoSismico() -> Se delega la verificación del ámbito al estado.
             if (estado.esAmbitoEventoSismico()) {
-                // MSG 68: esRechazado() -> Se delega la verificación del nombre al estado.
+                // esRechazado() -> Se delega la verificación del nombre al estado.
                 if (estado.esRechazado()) {
                     estadoRechazadoEncontrado = estado;
                     break; // Se encontró el estado, se sale del bucle.
@@ -203,7 +187,7 @@ public class GestorRegistrarResultadoRevisionManual {
         return estadoRechazadoEncontrado;   
     }
 
-    public void finCU() { // MSG 75
+    public void finCU() { 
         this.eventosSismicos = null;
         this.datosEventosSismicos = null;
         this.fechaHoraActual = null;
@@ -220,33 +204,33 @@ public class GestorRegistrarResultadoRevisionManual {
         this.nombreOrigenGeneracion = null;
     }
 
-    // --- MÉTODOS PRIVADOS (Implementación de auto-mensajes que no son parte de la cadena de rechazo) ---
+    // --- MÉTODOS---
 
-    private List<EventoSismicoResumenDTO> buscarEventosSismicos() { // MSG 4
+    private List<EventoSismicoResumenDTO> buscarEventosSismicos() { 
         this.eventosSismicos = this.eventoSismicoRepository.findAll();
                 List<EventoSismicoResumenDTO> eventosParaRevision = new ArrayList<>();
         for (EventoSismico evento : this.eventosSismicos) {
-            if (evento.esAutoDetectado()) { // MSG 5
-                eventosParaRevision.add(evento.getDatos()); // MSG 7
+            if (evento.esAutoDetectado()) {  ///EJEMPLO DE PATRON EXPERTO DELEGA LA RESPONSABILIDAD A EVENTO QUIEN CONOCE SU ESTADO
+                eventosParaRevision.add(evento.getDatos()); 
             }
         }
         return eventosParaRevision;
     }
     
-    private List<EventoSismicoResumenDTO> ordenarEventoSismico(List<EventoSismicoResumenDTO> listaEventos) { // MSG 15
+    private List<EventoSismicoResumenDTO> ordenarEventoSismico(List<EventoSismicoResumenDTO> listaEventos) { 
         listaEventos.sort(Comparator.comparing(EventoSismicoResumenDTO::getFechaHoraOcurrencia).reversed());
         return listaEventos;
     }
 
-    public Estado buscarEstadoBloqueado() { // MSG 20
+    public Estado buscarEstadoBloqueado() { 
             List<Estado> todosLosEstados = estadoRepository.findAll();
             Estado estadoBloqueadoEncontrado = null;
 
         // Inicia el loop Estados Para eventos sismicos [mientras exista estados]
         for (Estado estado : todosLosEstados) {
-            // MSG 21: esAmbitoEventoSismico() -> Se delega la verificación del ámbito al estado.
+            // esAmbitoEventoSismico() -> Se delega la verificación del ámbito al estado, patron experto.
             if (estado.esAmbitoEventoSismico()) {
-                // MSG 22: esBloqueadoEnRevision() -> Se delega la verificación del nombre al estado.
+                // esBloqueadoEnRevision() -> Se delega la verificación del nombre al estado, patron experto.
                 if (estado.esBloqueadoEnRevision()) {
                     estadoBloqueadoEncontrado = estado;
                     break; // Se encontró el estado, se sale del bucle.
@@ -260,16 +244,16 @@ public class GestorRegistrarResultadoRevisionManual {
      return estadoBloqueadoEncontrado;
     }
 
-    private LocalDateTime tomarFechaHoraActual() { // MSG 23 y 69
+    private LocalDateTime tomarFechaHoraActual() { 
         return LocalDateTime.now();
     }
 
-    private Empleado buscarEmpleadoLogueado() { // MSG 24
+    private Empleado buscarEmpleadoLogueado() { 
         if (this.sesionActual == null) { throw new RuntimeException("No hay sesión activa"); }
-        return this.sesionActual.obtenerUsuarioLogueado(); // MSG 25
+        return this.sesionActual.obtenerUsuarioLogueado(); 
     }
     
-    private void llamarCasoDeUsoGenerarSismograma() { // MSG 53
+    private void llamarCasoDeUsoGenerarSismograma() { 
         this.generarSismogramaService.generarSismograma();
     }
 }

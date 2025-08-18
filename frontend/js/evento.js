@@ -1,5 +1,3 @@
-// Archivo completo, final y con la solución A PRUEBA DE TODO para: frontend/js/evento.js
-
 document.addEventListener('DOMContentLoaded', async () => {
     const API_URL = 'http://localhost:8080/revision-manual';
     const params = new URLSearchParams(window.location.search);
@@ -32,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-            const cargarDetalles = async (id) => {
+            const mostrarDatosEventoSelec = async (id) => {
             try {
                 const response = await fetch(`${API_URL}/detalles-evento?id=${id}`);
                 if (!response.ok) throw new Error(`El servidor respondió con error ${response.status}.`);
@@ -106,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // =========== FIN DE LA MODIFICACIÓN DE TEXTOS ===========
 
         // Lógica para el botón RECHAZAR 
-        const manejarDecisionRechazar = async () => {
+        const tomarSeleccion = async () => {
             if (confirm("¿Está seguro de que desea RECHAZAR este evento?")) {
                 window.removeEventListener('beforeunload', handleBeforeUnload);
 
@@ -121,7 +119,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             accionesContainer.innerHTML = `
                                 <div class="accion-completada">
                                     <p>El evento ha sido marcado como "Rechazado".</p>
-                                    <a href="pendientes.html" class="btn-accion btn-volver">Volver a la lista</a>
+                                    <a href="eventosPendientes.html" class="btn-accion btn-volver">Volver a la lista</a>
                                 </div>
                             `;
                         }
@@ -138,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         if (btnRechazar) {
-            btnRechazar.addEventListener('click', manejarDecisionRechazar);
+            btnRechazar.addEventListener('click', tomarSeleccion);
         }
     };
 
@@ -146,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.addEventListener('beforeunload', handleBeforeUnload);
         const bloqueoExitoso = await cambiarEstado(eventoId, 'BloqueadoEnRevision');
         if (bloqueoExitoso) {
-            await cargarDetalles(eventoId);
+            await mostrarDatosEventoSelec(eventoId);
             const botonesDecision = document.getElementById('botones-decision');
             if (botonesDecision) {
                 botonesDecision.style.display = 'flex';
@@ -154,6 +152,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             setupActionButtons();
         }
     } else {
-        await cargarDetalles(eventoId);
+        await mostrarDatosEventoSelec (eventoId);
     }
 });

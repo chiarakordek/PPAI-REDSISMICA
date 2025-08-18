@@ -31,13 +31,11 @@ public class CambioEstado {
 
     /**
      * MSG 29: esUltimoCambioEstado() -> Este método es invocado por EventoSismico.
-     * Es responsable de ejecutar la lógica de los mensajes 29 y 30 
-     * tambien mas adelante lo reutilizamos con el MSJ 71.
-     * Verifica si es el último estado y, si lo es, establece la fecha de fin.
+     * Es responsable de verificar si el cambio de estado es el ultimo
+     * un cambio de estado se considera el último si aún no tiene fecha de fin.
      */
-    public boolean esUltimoCambioEstado() { // MSG 29 (verificación)
-        // MSG 30 (setea fecha de fin en caso de ser el último cambio)
-        return this.fechaFin == null;
+    public boolean esUltimoCambioEstado() { //  (verificación)
+        return this.fechaFin == null; //true si fechaFin es null
     }
 
 
@@ -45,13 +43,13 @@ public class CambioEstado {
      * MSG 32: new() -> Este constructor es invocado por EventoSismico.
      * Representa la creación de una nueva instancia de CambioEstado, en este caso,
      * para el estado 'BloqueadoEnRevision' 
-     * posterior con el MSJ 73: para el estado 'Rechazado'.
+     * posterior para el estado 'Rechazado'.
      */
     public CambioEstado(LocalDateTime fechaInicio, Estado estado, EventoSismico eventoSismico, Empleado empleadoResponsable) {
-        this.fechaInicio = fechaInicio;
-        this.estado = estado;
-        this.eventoSismico = eventoSismico;
-        this.empleadoResponsable = empleadoResponsable;
+        this.fechaInicio = fechaInicio;  //fecha en que comienza el estado
+        this.estado = estado; //nuevo estado a registrar
+        this.eventoSismico = eventoSismico; //evento al que pertenece el cambio estado
+        this.empleadoResponsable = empleadoResponsable; //empleado que lo instancia.
         this.fechaFin = null; // Un nuevo estado siempre se crea sin fecha de fin.
     }
 }

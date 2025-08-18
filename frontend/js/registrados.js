@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 //Si hay eventos registrados, completa las filas de la tabla con los datos de cada uno
                 data.forEach(evento => {
-                    console.log('Evento completo:', evento); // ← AGREGA ESTA LÍNEA
-                    console.log('evento.id:', evento.id);     // ← Y ESTA TAMBIÉN
+                    console.log('Evento completo:', evento); 
+                    console.log('evento.id:', evento.id);    
                     const fila = `
                         <tr>
                             <td>${evento.fechaHora || 'N/A'}</td>

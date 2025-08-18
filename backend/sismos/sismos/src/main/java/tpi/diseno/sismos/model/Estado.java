@@ -20,7 +20,7 @@ public class Estado {
     private String nombreEstado;
 
     /**
-     * MSG 6: esAutoDetectado() -> Responde al mensaje que le envía el EventoSismico.
+     * esAutoDetectado() -> verifica si el nombre de este estado es autodetectado.
      */
     public boolean  esAutoDetectado() {
         return "Autodetectado".equals(this.nombreEstado);
@@ -28,22 +28,22 @@ public class Estado {
 
 
     /**
-     * MSG 21: esAmbitoEventoSismico() -> Responde al Gestor para verificar el ámbito.
-     * Este mensaje es reutilizado en MSG 67 secuencias del diagrama.
+     * esAmbitoEventoSismico() -> Responde al Gestor para verificar el ámbito.
+     * este debe ser evento sismico
      */
     public boolean esAmbitoEventoSismico() {
         return "EventoSismico".equals(this.ambito);
     }
 
     /**
-     * MSG 22: esBloqueadoEnRevision() -> Responde al Gestor para verificar si es el estado de bloqueo.
+     * esBloqueadoEnRevision() -> verificar si es el estado es bloqueado en revision.
      */
     public boolean esBloqueadoEnRevision() {
         return "BloqueadoEnRevision".equals(this.nombreEstado);
     }
 
     /**
-     * MSG 68: esRechazado() -> Responde al Gestor para verificar si es el estado de rechazo.
+     * esRechazado() -> verifica si el nombre del estado es rechazado.
      */
     public boolean esRechazado() {
         return "Rechazado".equals(this.nombreEstado);

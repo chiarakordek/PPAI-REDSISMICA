@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class SerieTemporal {
-
+//atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +26,7 @@ public class SerieTemporal {
     private LocalDateTime fechaHoraInicioRegistroMuestra;
     private LocalDateTime fechaHoraRegistro;
     private double frecuenciaMuestreo;
-
+//relaciones
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evento_sismico_id")
     private EventoSismico eventoSismico;
@@ -39,12 +39,12 @@ public class SerieTemporal {
     private Sismografo sismografo;
 
     /**
-     * MSG 42: getDatosSerieTemporal() -> Invocado por EventoSismico.
+     * getDatosSerieTemporal() -> Invocado por EventoSismico.
      * Este método orquesta la recolección de los datos de las muestras y del sismógrafo asociado.
      */
     public SerieTemporalDTO getDatosSerieTemporal() {
 
-        // MSG 43: Se invoca el auto-mensaje para buscar los datos de las muestras.
+        // Se invoca el auto-mensaje para buscar los datos de las muestras.
         List<MuestraSismicaDTO> muestrasDTO = this.buscarMuestraSismica();
 
         SismografoDTO sismografoDTO = null;
@@ -59,11 +59,10 @@ public class SerieTemporal {
     }
 
     /**
-     * MSG 43 (Implementación): buscarMuestraSismica()
+     * (Implementación): buscarMuestraSismica()
      * Este método implementa el bucle anidado para recolectar datos de todas las MuestraSismica.
      */
     private List<MuestraSismicaDTO> buscarMuestraSismica() {
-        // Inicia el loop [mientras haya muestras sismicas]
         return this.muestraSismica.stream()
                 .map(muestra -> muestra.getDatosMuestra()) // MSG 44
                 .collect(Collectors.toList());

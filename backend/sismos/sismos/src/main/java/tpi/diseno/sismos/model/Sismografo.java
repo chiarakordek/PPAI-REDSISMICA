@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class Sismografo {
-
+//atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,26 +23,21 @@ public class Sismografo {
     private LocalDateTime fechaAdquisicion;
     private String identificadorSismografo;
     private String nroSerie;
-
+//relaciones
     @OneToOne
     @JoinColumn(name = "estacion_sismologica_id")
     private EstacionSismologica estacionSismologica;
 
-    @OneToMany(mappedBy = "sismografo")
+    @OneToMany(mappedBy = "sismografo") /////serie temporal
     private List<SerieTemporal> seriesTemporales;
 
-    /**
-     * MSG 49: sosMiSismografo() -> Invocado por SerieTemporal.
-     * En el diagrama, esto actúa como una condición. En una implementación real, podría
-     * tomar un parámetro para una verificación. Siendo literales, es un método que se llama.
-     * Suponemos que si el objeto existe, es el correcto.
-     */
+//metodos
     public boolean sosMiSismografo(Sismografo sismografo) {
         return this.equals(sismografo);
     }
 
     /**
-     * MSG 50: getDatosSismografo() -> Invocado por SerieTemporal.
+     *getDatosSismografo() -> Invocado por SerieTemporal.
      * Orquesta la recolección de sus propios datos y los de su estación.
      */
     public SismografoDTO getDatosSismografo() {
