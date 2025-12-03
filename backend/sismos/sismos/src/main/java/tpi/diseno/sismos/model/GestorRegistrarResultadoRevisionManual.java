@@ -74,10 +74,9 @@ public class GestorRegistrarResultadoRevisionManual {
     }
 
     public void bloquearEvento(EventoSismico evento) { 
-        Estado punteroBloqueadoEnRevision = this.buscarEstadoBloqueado(); 
         LocalDateTime fechaHoraActual = this.tomarFechaHoraActual();
         Empleado punteroEmpleado = this.buscarEmpleadoLogueado(); 
-        evento.revisar(punteroBloqueadoEnRevision, fechaHoraActual, punteroEmpleado); //-- Delega Evento Sismico
+        evento.revisar(fechaHoraActual, punteroEmpleado, estadoRepository); // Delega al patrón State en EventoSismico
         eventoSismicoRepository.save(evento);
         this.buscarDatosSismicos(evento.getId()); 
     }
@@ -158,9 +157,9 @@ public class GestorRegistrarResultadoRevisionManual {
     }   
 
     public void rechazarEvento(EventoSismico evento) { 
-            Estado punteroRechazado = this.buscarEstadoRechazado(); 
             LocalDateTime fechaHoraActual = this.tomarFechaHoraActual(); 
-            evento.rechazar(punteroRechazado, fechaHoraActual, punteroEmpleado); 
+            Empleado punteroEmpleado = this.buscarEmpleadoLogueado();
+            evento.rechazar(fechaHoraActual, punteroEmpleado, estadoRepository); 
             eventoSismicoRepository.save(evento);
             finCU();
         }
@@ -249,7 +248,10 @@ public class GestorRegistrarResultadoRevisionManual {
     }
 
     private Empleado buscarEmpleadoLogueado() { 
-        if (this.sesionActual == null) { throw new RuntimeException("No hay sesión activa"); }
+        if (this.sesionActual == null) { 
+            this.sesionActual = sesionRepository.findById(1L)
+                    .orElseThrow(() -> new RuntimeException("No hay sesión activa"));
+        }
         return this.sesionActual.obtenerUsuarioLogueado(); 
     }
     

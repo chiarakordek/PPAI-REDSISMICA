@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import tpi.diseno.sismos.model.state.EventoEstado;
+import tpi.diseno.sismos.model.state.EventoEstadoFactory;
+import tpi.diseno.sismos.repository.EstadoRepository;
+
 @Entity
 @Getter
 @Setter
@@ -46,7 +50,8 @@ public class EventoSismico {
     @JoinColumn(name="alcance_sismo_id")
     private AlcanceSismo alcanceSismo;
 
-
+    @Transient
+    private EventoEstado estadoState;
 
     // --- 2. MÉTODOS PÚBLICOS  ---
     
@@ -70,12 +75,16 @@ public class EventoSismico {
     }
  
 
-    public void revisar(Estado nuevoEstado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { 
-        CambioEstado ultimoCambio = this.buscarUltimoCambioEstado(); 
-        ultimoCambio.setFechaFin(fechaHoraActual);
-        CambioEstado nuevoCambioEstado = this.crearCambioEstado(fechaHoraActual, nuevoEstado, empleadoResponsable); 
-        this.historialCambioEstado.add(nuevoCambioEstado);
-        this.setEstado(nuevoEstado); 
+    private void ensureState() {
+        if (this.estadoActual == null || this.estadoActual.getNombreEstado() == null) {
+            throw new IllegalStateException("El evento sísmico no tiene estadoActual definido");
+        }
+        this.estadoState = EventoEstadoFactory.fromNombre(this.estadoActual.getNombreEstado());
+    }
+
+    public void revisar(LocalDateTime fechaHoraActual, Empleado empleadoResponsable, EstadoRepository estadoRepository) { 
+        ensureState();
+        this.estadoState.revisar(fechaHoraActual, this, empleadoResponsable, estadoRepository);
     }
 
     public String getClasificacion() { 
@@ -101,12 +110,9 @@ public class EventoSismico {
         return dtos;
     }
 
-    public void rechazar(Estado estadoRechazado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { 
-        CambioEstado ultimoCambio = this.buscarUltimoCambioEstado(); 
-        ultimoCambio.setFechaFin(fechaHoraActual);
-        CambioEstado nuevoCambioEstado = this.crearCambioEstado(fechaHoraActual, estadoRechazado , empleadoResponsable);
-        this.historialCambioEstado.add(nuevoCambioEstado);
-        this.setEstado(estadoRechazado); 
+    public void rechazar(LocalDateTime fechaHoraActual, Empleado empleadoResponsable, EstadoRepository estadoRepository) { 
+        ensureState();
+        this.estadoState.rechazar(fechaHoraActual, this, empleadoResponsable, estadoRepository);
     }
 
     public void setEstado(Estado nuevoEstado) { 
