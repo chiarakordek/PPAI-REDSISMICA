@@ -13,7 +13,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
         btn.textContent = 'Ingresando...';
 
         //Autenticación del usuario --> Delegado al back (AuthController)
-        const response = await fetch('http://localhost:8080/api/auth/login', {
+        const response = await fetch('http://localhost:8081/api/auth/login', {
             //Se comunica con la API y hace un POST con los datos del form
             method: 'POST',
             headers: {
@@ -37,7 +37,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
         
     } catch (error) { //Manejo de errores
         console.error('Error completo:', error);
-        alert(`Error: ${error.message}\n\n¿El backend está corriendo en http://localhost:8080?`);
+        alert(`Error: ${error.message}\n\n¿El backend está corriendo en http://localhost:8081?`);
 
     } finally {
         btn.disabled = false;

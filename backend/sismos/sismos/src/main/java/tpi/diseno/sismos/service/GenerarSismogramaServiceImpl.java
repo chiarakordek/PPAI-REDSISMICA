@@ -10,7 +10,7 @@ public class GenerarSismogramaServiceImpl implements GenerarSismogramaService {
      */
     @Override
     public void generarSismograma() {
-        // Aquí iría la lógica completa del CU-18.
+        // Acá iría la lógica completa del CU-18.
         System.out.println("--- Ejecutando Caso de Uso Incluido: Generar Sismograma (CU-18) ---");
     }
 }

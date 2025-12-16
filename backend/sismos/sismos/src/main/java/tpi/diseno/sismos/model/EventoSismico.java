@@ -21,31 +21,37 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
 import tpi.diseno.sismos.dto.SerieTemporalDTO;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import tpi.diseno.sismos.model.Estado;
+import tpi.diseno.sismos.model.state.EventoEstadoFactory;
+import tpi.diseno.sismos.repository.EstadoRepository;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 public class EventoSismico {
-
-    // --- 1. ATRIBUTOS Y RELACIONES ---
-    @Id // Habria q agregar id en el diagrama de clase, para evitar incosistencias. Si no esta fechaHoraFin de Primary key, nos da error
+//atributos
+    @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime fechaHoraFin;
     private LocalDateTime fechaHoraOcurrencia;
-    private Double latitudEpicentro;
-    private Double latitudHipocentro;
-    private Double longitudHipocentro;
-    private Double longitudEpicentro;
-    private Double valorMagnitud;
+    private double latitudEpicentro;
+    private double latitudHipocentro;
+    private double longitudHipocentro;
+    private double longitudEpicentro;
+    private Double ValorMagnitud;
 
+//relaciones con otras entidades
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SerieTemporal> seriesTemporales = new ArrayList<>();
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estado_actual_id")
-    private Estado estadoActual;
+    private EstadoDatos estadoActual;
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("fechaInicio ASC")
     private List<CambioEstado> historialCambioEstado = new ArrayList<>();
@@ -58,94 +64,96 @@ public class EventoSismico {
     @JoinColumn(name="alcance_sismo_id")
     private AlcanceSismo alcanceSismo;
 
-    // --- 2. MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
+    @Transient
+    private Estado estadoState;
+
+    // --- 2. MÉTODOS PÚBLICOS  ---
     
-    public boolean esAutoDetectado() { // MSG 5
+    public boolean esAutoDetectado() { 
         if (this.estadoActual != null) {
-            return this.estadoActual.esAutoDetectado(); // MSG 6 -> Delega al estado.
+            return this.estadoActual.esAutoDetectado(); 
         }
         return false;
     }
 
-    public EventoSismicoResumenDTO getDatos() { // MSG 7
-    return new EventoSismicoResumenDTO(
-        this.id,                    // Acceso directo al campo
-        this.fechaHoraOcurrencia,   // Acceso directo al campo  
-        this.latitudEpicentro,      // Acceso directo al campo
-        this.longitudEpicentro,     // Acceso directo al campo
-        this.latitudHipocentro,     // Acceso directo al campo
-        this.longitudHipocentro,    // Acceso directo al campo
-        this.valorMagnitud          // Acceso directo al campo
-    );
-}
+    public EventoSismicoResumenDTO getDatos() { 
+        return new EventoSismicoResumenDTO(
+            this.getId(), 
+            this.getFechaHoraOcurrencia(), 
+            this.getLatitudEpicentro(), 
+            this.getLongitudEpicentro(), 
+            this.getLatitudHipocentro(), 
+            this.getLongitudHipocentro(), 
+            this.getValorMagnitud() 
+        );
+    }
  
 
-    public void revisar(Estado nuevoEstado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 27
-        CambioEstado ultimoCambio = this.buscarUltimoCambioEstado(); // MSG 28
-        if (ultimoCambio != null) {
-            ultimoCambio.esUltimoCambioEstado(fechaHoraActual); // MSG 29 -- Delega a CambioEstado
+    private void ensureState() {
+        if (this.estadoActual == null || this.estadoActual.getNombreEstado() == null) {
+            throw new IllegalStateException("El evento sísmico no tiene estadoActual definido");
         }
-        CambioEstado nuevoCambioEstado = this.crearCambioEstado(fechaHoraActual, nuevoEstado, empleadoResponsable); // MSG 31
-        this.historialCambioEstado.add(nuevoCambioEstado);
-        this.setEstado(nuevoEstado); // MSG 33
+        this.estadoState = EventoEstadoFactory.fromNombre(this.estadoActual.getNombreEstado());
     }
 
-    public String getClasificacion() { // MSG 35
-        if (this.clasificacion != null) { return this.clasificacion.getClasificacion(); } // MSG 36
+    public void revisar(LocalDateTime fechaHoraActual, Empleado empleadoResponsable, EstadoRepository estadoRepository) { 
+        ensureState();
+        this.estadoState.revisar(fechaHoraActual, this, empleadoResponsable, estadoRepository);
+    }
+
+    public String getClasificacion() { 
+        if (this.clasificacion != null) { return this.clasificacion.getNombre(); } 
         return "N/A";
     }
 
-    public String getAlcance() { // MSG 37
-        if (this.alcanceSismo != null) { return this.alcanceSismo.getAlcance(); } // MSG 38
+    public String getAlcance() { 
+        if (this.alcanceSismo != null) { return this.alcanceSismo.getNombre(); } 
         return "N/A";
     }
 
-    public String getOrigen() { // MSG 39
-        if (this.origenGeneracion != null) { return this.origenGeneracion.getOrigen(); } // MSG 40
+    public String getOrigen() { 
+        if (this.origenGeneracion != null) { return this.origenGeneracion.getNombre(); } 
         return "N/A";
     }
 
-    public String getEstado() { 
-    if (this.estadoActual != null) { 
-        return this.estadoActual.getNombreEstado(); 
-    }
-    return "N/A";
-}
-
-
-    public List<SerieTemporalDTO> obtenerSeriesTemporales() { // MSG 41
+    public List<SerieTemporalDTO> obtenerSeriesTemporales() { 
         List<SerieTemporalDTO> dtos = this.seriesTemporales.stream()
-                .map(serie -> serie.getDatosSerieTemporal()) // MSG 42 - Delega a SerieTemporal
+                .map(serie -> serie.getDatosSerieTemporal()) // Delega a SerieTemporal
                 .collect(Collectors.toList());
-        this.clasificarSeriesTemporales(dtos); // MSG 52
+        this.clasificarSeriesTemporales(dtos); 
         return dtos;
     }
 
-    public void rechazar(Estado estadoRechazado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 70
-        CambioEstado ultimoCambio = this.buscarUltimoCambioEstado();
-        if (ultimoCambio != null) {
-            ultimoCambio.esUltimoCambioEstado(fechaHoraActual); // MSG 71
-        }
-        CambioEstado nuevoCambioEstadoRechazado = this.crearCambioEstado(fechaHoraActual, estadoRechazado, empleadoResponsable); // MSG 72
-        this.historialCambioEstado.add(nuevoCambioEstadoRechazado);
-        this.setEstado(estadoRechazado); // MSG 74
+    public void rechazar(LocalDateTime fechaHoraActual, Empleado empleadoResponsable, EstadoRepository estadoRepository) { 
+        ensureState();
+        this.estadoState.rechazar(fechaHoraActual, this, empleadoResponsable, estadoRepository);
     }
 
-    public void setEstado(Estado nuevoEstado) { // MSG 33 y 74
+    public void setEstado(EstadoDatos nuevoEstado) { 
         this.setEstadoActual(nuevoEstado);
     }
 
     // --- 3. MÉTODOS PRIVADOS ---
-    private CambioEstado buscarUltimoCambioEstado() { // MSG 28
-        if (this.historialCambioEstado == null || this.historialCambioEstado.isEmpty()) { return null; }
-        return this.historialCambioEstado.get(this.historialCambioEstado.size() - 1);
+    private CambioEstado buscarUltimoCambioEstado() { 
+                List<CambioEstado> todosLosCambios = this.historialCambioEstado;
+        CambioEstado ultimoCambioEstado = null;
+
+        // Inicia el loop [mientras exista estados]
+        for (CambioEstado cambioEstado : todosLosCambios) {
+        
+            if (cambioEstado.esUltimoCambioEstado()) {
+                ultimoCambioEstado = cambioEstado;
+                break;
+            }
+        }
+        return ultimoCambioEstado;
     }
     
-    private CambioEstado crearCambioEstado(LocalDateTime fecha, Estado estado, Empleado empleado) { // MSG 31 y 72
-        return new CambioEstado(fecha, estado, this, empleado); // MSG 32 y 73
+    private CambioEstado crearCambioEstado(LocalDateTime fecha, EstadoDatos estado, Empleado empleado) { 
+        return new CambioEstado(fecha, estado, this, empleado); 
     }
     
-    private void clasificarSeriesTemporales(List<SerieTemporalDTO> series) { // MSG 52
+    private void clasificarSeriesTemporales(List<SerieTemporalDTO> series) { 
         System.out.println("Ejecutando MSG 52: ClasificarSeriesTemporales en EventoSismico...");
     }
 }

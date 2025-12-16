@@ -26,14 +26,14 @@ public class DetalleMuestraSismica {
     @JoinColumn(name = "tipo_dato_id")
     private TipoDeDato tipoDato;
 
-    public DetalleMuestraSismicaDTO getDatosDetalleMuestra() { // MSG 46
-        String denominacionTipoDato = this.buscarTipoDeDato(); // MSG 47
-        return new DetalleMuestraSismicaDTO(denominacionTipoDato, this.valor);
+    public DetalleMuestraSismicaDTO getDatosDetalleMuestra() { // prepara los datos de este detalle para ser enviados (formato dto)
+        String denominacionTipoDato = this.buscarTipoDeDato(); // llama al metodo para buscar el tipo de dato
+        Double valor = this.getValor(); //obtiene el valor numerico
+        return new DetalleMuestraSismicaDTO(denominacionTipoDato, valor); // crea y devuelve un objeto con el nombre y el valor
     }
 
-    //Obtiene el tipo de dato para el valor del detalle
+    //Obtiene el nombre del tipo de dato para el valor del detalle
     private String buscarTipoDeDato() { // MSG 47
-        //Si el tipo de dato es null, se informa que no se reconoce el tipo de dato.
         return this.tipoDato.getDenominacion(); // MSG 48
     }
 }

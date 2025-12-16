@@ -17,11 +17,5 @@ public class ClasificacionSismo {
     private double kmProfundidadHasta;
     private String nombre;
 
-    /**
-     * MSG 36: getClasificacion() -> Invocado por EventoSismico.
-     * Devuelve los datos relevantes de la clasificación, en este caso, su nombre.
-     */
-    public String getClasificacion() {
-        return this.getNombre();
-    }
+
 }

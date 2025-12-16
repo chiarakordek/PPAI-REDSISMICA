@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-pendientes-body');
-    const API_URL = 'http://localhost:8080/revision-manual';
+    const API_URL = 'http://localhost:8081/revision-manual';
 
     const cargarEventosPendientes = async () => {
         if (tablaBody.dataset.loading === 'true') return;
@@ -20,9 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 console.log('Entrando al forEach...'); 
                 data.forEach(evento => {
-                    console.log('ID del evento:', evento.id);           // ← AGREGA ESTA LÍNEA
-                    console.log('¿ID es null?:', evento.id === null);   // ← Y ESTA
-                    console.log('¿ID es undefined?:', evento.id === undefined); // ← Y ESTA
+                    console.log('ID del evento:', evento.id);           
+                    console.log('¿ID es null?:', evento.id === null);   
+                    console.log('¿ID es undefined?:', evento.id === undefined); 
     
                 const fila = `
                     <tr>

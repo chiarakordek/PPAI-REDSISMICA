@@ -17,10 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const tablaBody = document.getElementById('tabla-pendientes-body');
 
-    //MÉTODO ABRIR - MSG 2
+    //MÉTODO ABRIR 
     async function abrir(){
         
-        const API_URL = 'http://localhost:8080/revision-manual'; //End-point del controlador
+        const API_URL = 'http://localhost:8081/revision-manual'; //End-point del controlador
         tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';
 
         try {   
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    //MÉTODO MostrarEventoSismicoParaSeleccion - MSG 16
+    //MÉTODO MostrarEventoSismicoParaSeleccion - 
     function mostrarEventoSismicoparaSeleccion(data) {
         if (tablaBody.dataset.loading === 'true') return;
         tablaBody.dataset.loading = 'true';

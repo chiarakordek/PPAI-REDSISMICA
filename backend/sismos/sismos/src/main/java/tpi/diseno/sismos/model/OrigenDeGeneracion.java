@@ -16,11 +16,4 @@ public class OrigenDeGeneracion {
     private String descripcion;
     private String nombre;
 
-    /**
-     * MSG 40: getOrigen() -> Invocado por EventoSismico.
-     * Devuelve los datos relevantes del origen, en este caso, su nombre.
-     */
-    public String getOrigen() {
-        return this.getNombre();
-    }
 }
