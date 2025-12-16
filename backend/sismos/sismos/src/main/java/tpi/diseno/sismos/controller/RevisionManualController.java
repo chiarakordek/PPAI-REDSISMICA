@@ -102,7 +102,7 @@ public ResponseEntity<String> cambiarEstado(@PathVariable Long id, @RequestBody 
         detalles.put("clasificacion", evento.getClasificacion());
         detalles.put("alcance", evento.getAlcance());
         detalles.put("origen_evento", evento.getOrigen());
-        detalles.put("estado", evento.getEstado()); // ← Usa el nuevo método
+        detalles.put("estado", evento.getEstadoActual().getNombreEstado()); // ← Usa el nuevo método
         
         System.out.println("Detalles enviados: " + detalles);
         
