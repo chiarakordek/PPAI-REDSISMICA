@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import tpi.diseno.sismos.model.state.EventoEstado;
+import tpi.diseno.sismos.model.Estado;
 import tpi.diseno.sismos.model.state.EventoEstadoFactory;
 import tpi.diseno.sismos.repository.EstadoRepository;
 
@@ -37,7 +37,7 @@ public class EventoSismico {
     private List<SerieTemporal> seriesTemporales = new ArrayList<>();
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estado_actual_id")
-    private Estado estadoActual;
+    private EstadoDatos estadoActual;
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("fechaInicio ASC")
     private List<CambioEstado> historialCambioEstado = new ArrayList<>();
@@ -51,7 +51,7 @@ public class EventoSismico {
     private AlcanceSismo alcanceSismo;
 
     @Transient
-    private EventoEstado estadoState;
+    private Estado estadoState;
 
     // --- 2. MÉTODOS PÚBLICOS  ---
     
@@ -115,7 +115,7 @@ public class EventoSismico {
         this.estadoState.rechazar(fechaHoraActual, this, empleadoResponsable, estadoRepository);
     }
 
-    public void setEstado(Estado nuevoEstado) { 
+    public void setEstado(EstadoDatos nuevoEstado) { 
         this.setEstadoActual(nuevoEstado);
     }
 
@@ -135,7 +135,7 @@ public class EventoSismico {
         return ultimoCambioEstado;
     }
     
-    private CambioEstado crearCambioEstado(LocalDateTime fecha, Estado estado, Empleado empleado) { 
+    private CambioEstado crearCambioEstado(LocalDateTime fecha, EstadoDatos estado, Empleado empleado) { 
         return new CambioEstado(fecha, estado, this, empleado); 
     }
     

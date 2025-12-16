@@ -28,12 +28,12 @@ public class GestorRegistrarResultadoRevisionManual {
     private List<EventoSismico> eventosSismicos;
     private List<EventoSismicoResumenDTO> datosEventosSismicos;
     private LocalDateTime fechaHoraActual;
-    private Estado punteroBloqueadoEnRevision;
+    private EstadoDatos punteroBloqueadoEnRevision;
     private Sesion sesionActual;
     private Empleado punteroEmpleado;
     private EventoSismico eventoSeleccionado;
     private List<SerieTemporalDTO> seriesTemporalesEventoSeleccionado;
-    private Estado punteroRechazado;
+    private EstadoDatos punteroRechazado;
     private Object mapaUbicacion;
     private String opcionResultadoRevision;
 
@@ -164,28 +164,6 @@ public class GestorRegistrarResultadoRevisionManual {
             finCU();
         }
 
-    public Estado buscarEstadoRechazado() {
-        List<Estado> todosLosEstados = estadoRepository.findAll();
-        Estado estadoRechazadoEncontrado = null;
-
-        // Inicia el loop [mientras exista estados]
-        for (Estado estado : todosLosEstados) {
-            // esAmbitoEventoSismico() -> Se delega la verificación del ámbito al estado.
-            if (estado.esAmbitoEventoSismico()) {
-                // esRechazado() -> Se delega la verificación del nombre al estado.
-                if (estado.esRechazado()) {
-                    estadoRechazadoEncontrado = estado;
-                    break; // Se encontró el estado, se sale del bucle.
-                }
-            }
-        }
-
-        if (estadoRechazadoEncontrado == null) {
-             throw new RuntimeException("No se pudo encontrar el estado 'Rechazado' con ámbito 'EventoSismico'.");
-        }
-        return estadoRechazadoEncontrado;   
-    }
-
     public void finCU() { 
         this.eventosSismicos = null;
         this.datosEventosSismicos = null;
@@ -221,26 +199,8 @@ public class GestorRegistrarResultadoRevisionManual {
         return listaEventos;
     }
 
-    public Estado buscarEstadoBloqueado() { 
-            List<Estado> todosLosEstados = estadoRepository.findAll();
-            Estado estadoBloqueadoEncontrado = null;
-
-        // Inicia el loop Estados Para eventos sismicos [mientras exista estados]
-        for (Estado estado : todosLosEstados) {
-            // esAmbitoEventoSismico() -> Se delega la verificación del ámbito al estado, patron experto.
-            if (estado.esAmbitoEventoSismico()) {
-                // esBloqueadoEnRevision() -> Se delega la verificación del nombre al estado, patron experto.
-                if (estado.esBloqueadoEnRevision()) {
-                    estadoBloqueadoEncontrado = estado;
-                    break; // Se encontró el estado, se sale del bucle.
-                }
-            }
-        }
-
-        if (estadoBloqueadoEncontrado == null) {
-             throw new RuntimeException("No se pudo encontrar el estado 'Bloqueado' con ámbito 'EventoSismico'.");
-        }
-     return estadoBloqueadoEncontrado;
+    private void llamarCasoDeUsoGenerarSismograma() { 
+        this.generarSismogramaService.generarSismograma();
     }
 
     private LocalDateTime tomarFechaHoraActual() { 
@@ -253,9 +213,5 @@ public class GestorRegistrarResultadoRevisionManual {
                     .orElseThrow(() -> new RuntimeException("No hay sesión activa"));
         }
         return this.sesionActual.obtenerUsuarioLogueado(); 
-    }
-    
-    private void llamarCasoDeUsoGenerarSismograma() { 
-        this.generarSismogramaService.generarSismograma();
     }
 }

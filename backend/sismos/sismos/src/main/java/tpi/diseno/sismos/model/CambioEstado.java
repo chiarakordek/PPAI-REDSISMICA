@@ -21,7 +21,7 @@ public class CambioEstado {
     private LocalDateTime fechaFin;
 
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "estado_id")
-    private Estado estado;
+    private EstadoDatos estado;
 
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "evento_sismico_id")
     private EventoSismico eventoSismico;
@@ -45,7 +45,7 @@ public class CambioEstado {
      * para el estado 'BloqueadoEnRevision' 
      * posterior para el estado 'Rechazado'.
      */
-    public CambioEstado(LocalDateTime fechaInicio, Estado estado, EventoSismico eventoSismico, Empleado empleadoResponsable) {
+    public CambioEstado(LocalDateTime fechaInicio, EstadoDatos estado, EventoSismico eventoSismico, Empleado empleadoResponsable) {
         this.fechaInicio = fechaInicio;  //fecha en que comienza el estado
         this.estado = estado; //nuevo estado a registrar
         this.eventoSismico = eventoSismico; //evento al que pertenece el cambio estado

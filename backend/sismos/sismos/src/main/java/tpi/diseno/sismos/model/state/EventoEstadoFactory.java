@@ -1,8 +1,10 @@
 package tpi.diseno.sismos.model.state;
 
+import tpi.diseno.sismos.model.Estado;
+
 public class EventoEstadoFactory {
 
-    public static EventoEstado fromNombre(String nombre) {
+    public static Estado fromNombre(String nombre) {
         if ("PendienteDeRevision".equals(nombre) || "Autodetectado".equals(nombre)) {
             return new PendienteDeRevisionState();
         }

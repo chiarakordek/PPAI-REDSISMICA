@@ -1,51 +1,32 @@
 package tpi.diseno.sismos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDateTime;
+import tpi.diseno.sismos.repository.EstadoRepository;
 
+public interface Estado {
 
-@Entity
-@Getter
-@Setter
-public class Estado {
+    // Métodos de consulta
+    boolean esAutoDetectado();
+    boolean esAmbitoEventoSismico();
+    boolean esBloqueadoEnRevision();
+    boolean esRechazado();
+  
+    // Métodos de la maquina de estados
+    void revisar(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+    void derivado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+    void anulado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+    void confirmado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+    void cerrado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+    void rechazar(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+    void pendientedecierre();
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
-    private String ambito;
-    @Column(name="nombre_estado")
-    private String nombreEstado;
+    // Métodos específicos del patrón State según diagrama
+    void crearCambioEstado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+    void cerrarCambioEstado(LocalDateTime ahora, EventoSismico evento);
+    void crearNuevoEstadoBloqueadoEnRevision(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+    void crearNuevoEstadoRechazado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
 
-    /**
-     * esAutoDetectado() -> verifica si el nombre de este estado es autodetectado.
-     */
-    public boolean  esAutoDetectado() {
-        return "Autodetectado".equals(this.nombreEstado);
-    }
-
-
-    /**
-     * esAmbitoEventoSismico() -> Responde al Gestor para verificar el ámbito.
-     * este debe ser evento sismico
-     */
-    public boolean esAmbitoEventoSismico() {
-        return "EventoSismico".equals(this.ambito);
-    }
-
-    /**
-     * esBloqueadoEnRevision() -> verificar si es el estado es bloqueado en revision.
-     */
-    public boolean esBloqueadoEnRevision() {
-        return "BloqueadoEnRevision".equals(this.nombreEstado);
-    }
-
-    /**
-     * esRechazado() -> verifica si el nombre del estado es rechazado.
-     */
-    public boolean esRechazado() {
-        return "Rechazado".equals(this.nombreEstado);
-    }
+    // Métodos de acceso a datos
+    String getNombreEstado();
+    String getAmbito();
 }
