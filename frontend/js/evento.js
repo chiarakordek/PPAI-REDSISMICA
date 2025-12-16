@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const API_URL = 'http://localhost:8080/revision-manual';
+    const API_URL = 'http://localhost:8081/revision-manual';
     const params = new URLSearchParams(window.location.search);
     const eventoId = params.get('id');
     const origen = params.get('origen');

@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //MÉTODO ABRIR 
     async function abrir(){
         
-        const API_URL = 'http://localhost:8080/revision-manual'; //End-point del controlador
+        const API_URL = 'http://localhost:8081/revision-manual'; //End-point del controlador
         tablaBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Cargando eventos...</td></tr>';
 
         try {   

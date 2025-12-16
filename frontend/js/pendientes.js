@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const tablaBody = document.getElementById('tabla-pendientes-body');
-    const API_URL = 'http://localhost:8080/revision-manual';
+    const API_URL = 'http://localhost:8081/revision-manual';
 
     const cargarEventosPendientes = async () => {
         if (tablaBody.dataset.loading === 'true') return;
