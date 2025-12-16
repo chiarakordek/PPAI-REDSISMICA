@@ -2,7 +2,6 @@ package tpi.diseno.sismos.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tpi.diseno.sismos.dto.MuestraSismicaDTO;
 import tpi.diseno.sismos.dto.SerieTemporalDTO;

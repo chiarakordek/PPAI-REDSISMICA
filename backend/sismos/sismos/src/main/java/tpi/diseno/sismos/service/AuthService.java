@@ -6,7 +6,6 @@ import tpi.diseno.sismos.model.Sesion;
 import tpi.diseno.sismos.model.Usuario;
 import tpi.diseno.sismos.repository.SesionRepository;
 import tpi.diseno.sismos.repository.UsuarioRepository;
-import java.time.LocalDateTime; // <-- Importante añadir esta línea
 
 @Service
 public class AuthService {

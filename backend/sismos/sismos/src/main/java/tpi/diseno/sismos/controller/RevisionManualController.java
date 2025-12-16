@@ -3,9 +3,8 @@ package tpi.diseno.sismos.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,7 +32,6 @@ public class RevisionManualController {
     private final GestorRegistrarResultadoRevisionManual gestor;
     private final EventoSismicoRepository eventoRepo;
 
-    @Autowired
     public RevisionManualController(EventoSismicoRepository eventoRepo, EstadoRepository estadoRepo, SesionRepository sesionRepo, GenerarSismogramaService sismogramaService) {
         // La Pantalla es responsable de crear la instancia del Gestor.
         this.gestor = new GestorRegistrarResultadoRevisionManual(eventoRepo, estadoRepo, sesionRepo, sismogramaService);
@@ -150,7 +148,7 @@ public ResponseEntity<String> cambiarEstado(@PathVariable Long id, @RequestBody 
     @GetMapping("/eventos-sismicos")
     public ResponseEntity<List<EventoSismicoResumenDTO>> obtenerEventosSismicos() {
         System.out.println("Obteniendo eventos sismicos...");
-        List<EventoSismicoResumenDTO> eventos = gestor.buscarEventosSismicos().stream()
+        List<EventoSismicoResumenDTO> eventos = this.eventoRepo.findAll().stream()
             .map(e -> e.getDatos())
             .toList();
         

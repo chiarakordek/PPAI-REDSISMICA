@@ -1,7 +1,6 @@
 package tpi.diseno.sismos.model;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,18 +16,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
 import tpi.diseno.sismos.dto.SerieTemporalDTO;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import tpi.diseno.sismos.model.Estado;
-import tpi.diseno.sismos.model.state.EventoEstadoFactory;
-import tpi.diseno.sismos.repository.EstadoRepository;
 
 @Entity
 @Getter
@@ -46,7 +37,7 @@ public class EventoSismico {
     private double longitudEpicentro;
     private Double ValorMagnitud;
 
-//relaciones con otras entidades
+
     @OneToMany(mappedBy = "eventoSismico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SerieTemporal> seriesTemporales = new ArrayList<>();
     @ManyToOne(fetch = FetchType.LAZY)
@@ -76,29 +67,27 @@ public class EventoSismico {
         return false;
     }
 
-    public EventoSismicoResumenDTO getDatos() { 
-        return new EventoSismicoResumenDTO(
-            this.getId(), 
-            this.getFechaHoraOcurrencia(), 
-            this.getLatitudEpicentro(), 
-            this.getLongitudEpicentro(), 
-            this.getLatitudHipocentro(), 
-            this.getLongitudHipocentro(), 
-            this.getValorMagnitud() 
-        );
-    }
+    public EventoSismicoResumenDTO getDatos() { // MSG 7
+    return new EventoSismicoResumenDTO(
+        this.id,                    // Acceso directo al campo
+        this.fechaHoraOcurrencia,   // Acceso directo al campo  
+        this.latitudEpicentro,      // Acceso directo al campo
+        this.longitudEpicentro,     // Acceso directo al campo
+        this.latitudHipocentro,     // Acceso directo al campo
+        this.longitudHipocentro,    // Acceso directo al campo
+        this.ValorMagnitud          // Acceso directo al campo
+    );
+}
  
 
-    private void ensureState() {
-        if (this.estadoActual == null || this.estadoActual.getNombreEstado() == null) {
-            throw new IllegalStateException("El evento sísmico no tiene estadoActual definido");
+    public void revisar(Estado nuevoEstado, LocalDateTime fechaHoraActual, Empleado empleadoResponsable) { // MSG 27
+        CambioEstado ultimoCambio = this.buscarUltimoCambioEstado(); // MSG 28
+        if (ultimoCambio != null) {
+            ultimoCambio.setFechaFin(fechaHoraActual);
         }
-        this.estadoState = EventoEstadoFactory.fromNombre(this.estadoActual.getNombreEstado());
-    }
-
-    public void revisar(LocalDateTime fechaHoraActual, Empleado empleadoResponsable, EstadoRepository estadoRepository) { 
-        ensureState();
-        this.estadoState.revisar(fechaHoraActual, this, empleadoResponsable, estadoRepository);
+        CambioEstado nuevoCambioEstado = this.crearCambioEstado(fechaHoraActual, nuevoEstado, empleadoResponsable); // MSG 31
+        this.historialCambioEstado.add(nuevoCambioEstado);
+        this.setEstado(nuevoEstado); // MSG 33
     }
 
     public String getClasificacion() { 
@@ -134,8 +123,8 @@ public class EventoSismico {
     }
 
     // --- 3. MÉTODOS PRIVADOS ---
-    private CambioEstado buscarUltimoCambioEstado() { 
-                List<CambioEstado> todosLosCambios = this.historialCambioEstado;
+    private CambioEstado buscarUltimoCambioEstado() { // MSG 28
+        List<CambioEstado> todosLosCambios = this.historialCambioEstado;
         CambioEstado ultimoCambioEstado = null;
 
         // Inicia el loop [mientras exista estados]

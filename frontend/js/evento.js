@@ -10,11 +10,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('eventoId obtenido:', eventoId);
     console.log('origen obtenido:', origen);
 
-    if (!eventoId) {
-        document.body.innerHTML = '<h1>Error: No se especificó un ID de evento.</h1>';
-        return;
-    }
-
     const cambiarEstado = async (id, nuevoEstado, showAlerts = true) => {
         try {
             const response = await fetch(`${API_URL}/eventos/${id}/cambiar-estado`, {
@@ -56,6 +51,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         cambiarEstado(eventoId, 'PendienteDeRevision', false);
     };
 
+    //MSG 55: tomarOpcVerMapa() -> El Analista selecciona la opción para ver el mapa.
+    const tomarOpcVerMapa = () => {
+        if (confirm("¿Desea visualizar el mapa del evento sísmico?")) {
+            alert('Funcionalidad para ver el mapa se implementará en un futuro.');
+        }
+    }
+
+    // MSG 58: tomarOpcModificarDatos() -> El Analista selecciona la opción para modificar datos.
+    const tomarOpcModificarDatos = () => {
+        if (confirm("¿Desea modificar los datos del evento sísmico?")) {
+            alert('Funcionalidad para modificar datos se implementará en un futuro.');
+        }
+    }
+
     const setupActionButtons = () => {
         // Seleccionamos todos los botones
         const btnModificar = document.querySelector('.btn-editar');
@@ -64,30 +73,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         const btnDerivar = document.querySelector('.btn-derivar');
         const btnRechazar = document.querySelector('.btn-rechazar');
         
-        // =========== INICIO DE LA MODIFICACIÓN DE TEXTOS ===========
-        
         if (btnModificar) {
-            btnModificar.addEventListener('click', () => {
-                if (confirm("¿Desea modificar los datos del evento sísmico?")) {
-                    // Texto ajustado
-                    alert('Funcionalidad para modificar datos se implementará en un futuro.');
-                }
-            });
+            btnModificar.addEventListener('click', tomarOpcModificarDatos);
         }
         
         if (btnVerMapa) {
-            btnVerMapa.addEventListener('click', () => {
-                if (confirm("¿Desea visualizar el mapa del evento sísmico?")) {
-                    // Texto ajustado
-                    alert('Funcionalidad para ver el mapa se implementará en un futuro.');
-                }
-            });
+            btnVerMapa.addEventListener('click', tomarOpcVerMapa);
         }
 
         if (btnConfirmar) {
             btnConfirmar.addEventListener('click', () => {
                 if (confirm("¿Desea CONFIRMAR el evento sísmico?")) {
-                     // Texto ajustado
                      alert('Funcionalidad para confirmar el evento se implementará en un futuro.');
                 }
             });
@@ -101,7 +97,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
         }
-        // =========== FIN DE LA MODIFICACIÓN DE TEXTOS ===========
+
+        if (btnRechazar) {
+            btnRechazar.addEventListener('click', tomarSeleccion);
+        }
+    };
 
         // Lógica para el botón RECHAZAR 
         const tomarSeleccion = async () => {
@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 try {
                     const exito = await cambiarEstado(eventoId, "Rechazado");
                     if (exito) {
+                        //Cambia de página para evitar que al recargar la página se cambie el estado a BloqueadoEnRevision
                         const nuevaUrl = `detalleEvento.html?id=${eventoId}&origen=registrados`;
                         history.replaceState({ path: nuevaUrl }, '', nuevaUrl);
                         
@@ -119,6 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             accionesContainer.innerHTML = `
                                 <div class="accion-completada">
                                     <p>El evento ha sido marcado como "Rechazado".</p>
+                                    <a href="eventosPendientes.html" class="btn-accion btn-volver">Volver a la lista</a>
                                     <a href="eventosPendientes.html" class="btn-accion btn-volver">Volver a la lista</a>
                                 </div>
                             `;
@@ -142,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (origen === 'pendientes') {
         window.addEventListener('beforeunload', handleBeforeUnload);
-        const bloqueoExitoso = await cambiarEstado(eventoId, 'BloqueadoEnRevision');
+        const bloqueoExitoso = tomarSeleccionEventoSismico(eventoId);
         if (bloqueoExitoso) {
             await mostrarDatosEventoSelec(eventoId);
             const botonesDecision = document.getElementById('botones-decision');

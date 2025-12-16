@@ -1,6 +1,5 @@
 package tpi.diseno.sismos.model;
 
-import tpi.diseno.sismos.dto.EventoSismicoDetalleDTO;
 import tpi.diseno.sismos.dto.EventoSismicoResumenDTO;
 import tpi.diseno.sismos.dto.SerieTemporalDTO;
 import tpi.diseno.sismos.repository.EstadoRepository;
@@ -37,11 +36,6 @@ public class GestorRegistrarResultadoRevisionManual {
     private Object mapaUbicacion;
     private String opcionResultadoRevision;
 
-    // Atributos para almacenar datos de clasificación y alcance del sismo
-    private String nombreClasificacionSismo;
-    private String nombreAlcanceSismo;
-    private String nombreOrigenGeneracion;
-
 
     // --- CONSTRUCTOR ---
     public GestorRegistrarResultadoRevisionManual(EventoSismicoRepository e, EstadoRepository es, SesionRepository s, GenerarSismogramaService gss) {
@@ -53,7 +47,7 @@ public class GestorRegistrarResultadoRevisionManual {
 
     // --- MÉTODOS PÚBLICOS (En orden secuencial según el diagrama) ---
 
-    public List<EventoSismicoResumenDTO> registrarNuevaRevision() { 
+    public List<EventoSismicoResumenDTO> registrarNuevaRevision() { // MSG 3
         this.sesionActual = sesionRepository.findById(1L).orElseThrow(() -> new RuntimeException("Sesión activa no encontrada."));
         this.datosEventosSismicos = this.ordenarEventoSismico(this.buscarEventosSismicos());  ///////EJEMPLO DEL PATRON CONTROLADOR
         return this.datosEventosSismicos;
@@ -73,10 +67,11 @@ public class GestorRegistrarResultadoRevisionManual {
         this.bloquearEvento(evento); 
     }
 
-    public void bloquearEvento(EventoSismico evento) { 
-        LocalDateTime fechaHoraActual = this.tomarFechaHoraActual();
-        Empleado punteroEmpleado = this.buscarEmpleadoLogueado(); 
-        evento.revisar(fechaHoraActual, punteroEmpleado, estadoRepository); // Delega al patrón State en EventoSismico
+    public void bloquearEvento(EventoSismico evento) { // MSG 19
+        this.punteroBloqueadoEnRevision = this.buscarEstadoBloqueado(); // MSG 20
+        this.fechaHoraActual = this.tomarFechaHoraActual(); // MSG 23
+        this.punteroEmpleado = this.buscarEmpleadoLogueado(); // MSG 24
+        evento.revisar(punteroBloqueadoEnRevision, fechaHoraActual, punteroEmpleado); // MSG 27 -- Delega Evento Sismico
         eventoSismicoRepository.save(evento);
         this.buscarDatosSismicos(evento.getId()); 
     }
@@ -156,10 +151,10 @@ public class GestorRegistrarResultadoRevisionManual {
         this.rechazarEvento(evento); 
     }   
 
-    public void rechazarEvento(EventoSismico evento) { 
-            LocalDateTime fechaHoraActual = this.tomarFechaHoraActual(); 
-            Empleado punteroEmpleado = this.buscarEmpleadoLogueado();
-            evento.rechazar(fechaHoraActual, punteroEmpleado, estadoRepository); 
+    public void rechazarEvento(EventoSismico evento) { // MSG 65
+            this.punteroRechazado = this.buscarEstadoRechazado(); 
+            this.fechaHoraActual = this.tomarFechaHoraActual(); 
+            evento.rechazar(punteroRechazado, fechaHoraActual, punteroEmpleado); // MSG 70
             eventoSismicoRepository.save(evento);
             finCU();
         }
@@ -176,12 +171,9 @@ public class GestorRegistrarResultadoRevisionManual {
         this.punteroRechazado = null;
         this.mapaUbicacion = null;
         this.opcionResultadoRevision = null;
-        this.nombreClasificacionSismo = null;
-        this.nombreAlcanceSismo = null;
-        this.nombreOrigenGeneracion = null;
     }
 
-    // --- MÉTODOS---
+    // --- MÉTODOS PRIVADOS (Implementación de auto-mensajes que no son parte de la cadena de rechazo) ---
 
     private List<EventoSismicoResumenDTO> buscarEventosSismicos() { 
         this.eventosSismicos = this.eventoSismicoRepository.findAll();
