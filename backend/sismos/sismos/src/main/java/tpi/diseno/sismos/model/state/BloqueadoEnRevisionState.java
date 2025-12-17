@@ -26,12 +26,19 @@ public class BloqueadoEnRevisionState implements Estado {
         crearNuevoEstadoRechazado(ahora, evento, usuario, estadosRepo);
         
         // 3. Crear el cambio de estado según el diagrama
-        crearCambioEstado(ahora, evento, usuario, estadosRepo);
+        crearCambioEstadoRechazado(ahora, evento, usuario, estadosRepo);
     }
 
     @Override
     public void derivado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
-        throw new UnsupportedOperationException("Operación no permitida en estado BloqueadoEnRevision");
+        // 1. Cerrar el cambio de estado actual según el diagrama
+        cerrarCambioEstado(ahora, evento);
+        
+        // 2. Crear el nuevo estado Derivado según el diagrama
+        crearNuevoEstadoDerivadoAExperto(ahora, evento, usuario, estadosRepo);
+        
+        // 3. Crear el cambio de estado según el diagrama
+        crearCambioEstadoDerivadoAExperto(ahora, evento, usuario, estadosRepo);
     }
 
     @Override
@@ -41,7 +48,14 @@ public class BloqueadoEnRevisionState implements Estado {
 
     @Override
     public void confirmado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
-        throw new UnsupportedOperationException("Operación no permitida en estado BloqueadoEnRevision");
+        // 1. Cerrar el cambio de estado actual según el diagrama
+        cerrarCambioEstado(ahora, evento);
+        
+        // 2. Crear el nuevo estado Confirmado según el diagrama
+        crearNuevoEstadoConfirmado(ahora, evento, usuario, estadosRepo);
+        
+        // 3. Crear el cambio de estado según el diagrama
+        crearCambioEstadoConfirmado(ahora, evento, usuario, estadosRepo);
     }
 
     @Override
@@ -83,7 +97,28 @@ public class BloqueadoEnRevisionState implements Estado {
     }
 
     @Override
+    public void crearNuevoEstadoConfirmado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        // Crear el nuevo estado ConfirmadoPorPersonal
+        // Este método primero crea el estado y luego será usado por crearCambioEstado
+        estadosRepo.findByNombreEstado("ConfirmadoPorPersonal")
+                .orElseThrow(() -> new IllegalStateException("Estado 'ConfirmadoPorPersonal' no existe"));
+    }
+
+    @Override
+    public void crearNuevoEstadoDerivadoAExperto(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        // Crear el nuevo estado DerivadoAExperto
+        // Este método primero crea el estado y luego será usado por crearCambioEstado
+        estadosRepo.findByNombreEstado("DerivadoAExperto")
+                .orElseThrow(() -> new IllegalStateException("Estado 'DerivadoAExperto' no existe")); //flujo alternativo para el funcionamiento de derivado a experto
+    }
+
+    @Override
     public void crearCambioEstado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        // Este método es usado por rechazar(), necesitamos un método específico para confirmado
+        throw new UnsupportedOperationException("Usar crearCambioEstadoConfirmado() para la transición a ConfirmadoPorPersonal");
+    }
+
+    public void crearCambioEstadoRechazado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
         // Crear el nuevo estado Rechazado
         EstadoDatos rechazado = estadosRepo.findByNombreEstado("Rechazado")
                 .orElseThrow(() -> new IllegalStateException("Estado 'Rechazado' no existe"));
@@ -91,6 +126,26 @@ public class BloqueadoEnRevisionState implements Estado {
         CambioEstado nuevo = new CambioEstado(ahora, rechazado, evento, usuario);
         evento.getHistorialCambioEstado().add(nuevo);
         evento.setEstadoActual(rechazado);
+    }
+
+    public void crearCambioEstadoConfirmado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        // Crear el nuevo estado ConfirmadoPorPersonal
+        EstadoDatos confirmado = estadosRepo.findByNombreEstado("ConfirmadoPorPersonal")
+                .orElseThrow(() -> new IllegalStateException("Estado 'ConfirmadoPorPersonal' no existe"));
+
+        CambioEstado nuevo = new CambioEstado(ahora, confirmado, evento, usuario);
+        evento.getHistorialCambioEstado().add(nuevo);
+        evento.setEstadoActual(confirmado);
+    }
+
+    public void crearCambioEstadoDerivadoAExperto(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        // Crear el nuevo estado DerivadoAExperto
+        EstadoDatos derivado = estadosRepo.findByNombreEstado("DerivadoAExperto")
+                .orElseThrow(() -> new IllegalStateException("Estado 'DerivadoAExperto' no existe")); //flujo alternativo para el funcionamiento de derivado a experto
+
+        CambioEstado nuevo = new CambioEstado(ahora, derivado, evento, usuario);
+        evento.getHistorialCambioEstado().add(nuevo);
+        evento.setEstadoActual(derivado);
     }
 
     @Override
@@ -111,6 +166,16 @@ public class BloqueadoEnRevisionState implements Estado {
     @Override
     public boolean esRechazado() {
         return false;
+    }
+
+    @Override
+    public boolean esConfirmado() {
+        return false;
+    }
+
+    @Override
+    public boolean esDerivadoAExperto() {
+        return false; //flujo alternativo para el funcionamiento de derivado a experto
     }
 
     @Override

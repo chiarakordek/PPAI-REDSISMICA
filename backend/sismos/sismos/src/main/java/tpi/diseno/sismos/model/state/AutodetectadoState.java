@@ -29,6 +29,16 @@ public class AutodetectadoState implements Estado {
     }
 
     @Override
+    public boolean esConfirmado() {
+        return false;
+    }
+
+    @Override
+    public boolean esDerivadoAExperto() {
+        return false; //flujo alternativo para el funcionamiento de derivado a experto
+    }
+
+    @Override
     public void revisar(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
         // Implementación específica para autodetectado
     }
@@ -81,6 +91,16 @@ public class AutodetectadoState implements Estado {
     @Override
     public void crearNuevoEstadoRechazado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
         // Implementación específica para autodetectado
+    }
+
+    @Override
+    public void crearNuevoEstadoConfirmado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        // Implementación específica para autodetectado
+    }
+
+    @Override
+    public void crearNuevoEstadoDerivadoAExperto(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        // Implementación específica para autodetectado //flujo alternativo para el funcionamiento de derivado a experto
     }
 
     @Override

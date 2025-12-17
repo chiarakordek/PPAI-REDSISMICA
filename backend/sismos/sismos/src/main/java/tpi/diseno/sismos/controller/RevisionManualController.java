@@ -65,10 +65,17 @@ public ResponseEntity<String> cambiarEstado(@PathVariable Long id, @RequestBody 
             gestor.tomarSeleccionEventoSismico(id);
             return ResponseEntity.ok("Estado cambiado exitosamente a BloqueadoEnRevision");
 
-    
         } else if ("Rechazado".equals(nuevoEstado)) {
             gestor.tomarSeleccionRechazada(id); // Llama a un método stateless en el gestor
             return ResponseEntity.ok("El evento ha sido RECHAZADO.");
+
+        } else if ("ConfirmadoPorPersonal".equals(nuevoEstado)) {
+            gestor.tomarSeleccionConfirmada(id); // Llama a un método stateless en el gestor
+            return ResponseEntity.ok("El evento ha sido CONFIRMADO.");
+
+        } else if ("DerivadoAExperto".equals(nuevoEstado)) {
+            gestor.tomarSeleccionDerivada(id); // Llama a un método stateless en el gestor - flujo alternativo para el funcionamiento de derivado a experto
+            return ResponseEntity.ok("El evento ha sido DERIVADO A EXPERTO.");
 
         } else { // Mejor usar un else para claridad
             return ResponseEntity.badRequest().body("Transición de estado no manejada: " + nuevoEstado);

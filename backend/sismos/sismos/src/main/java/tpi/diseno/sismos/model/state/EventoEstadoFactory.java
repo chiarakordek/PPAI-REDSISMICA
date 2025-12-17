@@ -14,6 +14,12 @@ public class EventoEstadoFactory {
         if ("Rechazado".equals(nombre)) {
             return new RechazadoState();
         }
+        if ("Confirmado".equals(nombre)) {
+            return new ConfirmadoPorPersonalState();
+        }
+        if ("DerivadoAExperto".equals(nombre)) {
+            return new DerivadoState(); //flujo alternativo para el funcionamiento de derivado a experto
+        }
         throw new IllegalArgumentException("Estado no soportado para patrón State: " + nombre);
     }
 }

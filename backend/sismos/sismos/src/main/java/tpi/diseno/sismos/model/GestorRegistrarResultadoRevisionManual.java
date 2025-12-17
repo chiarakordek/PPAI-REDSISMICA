@@ -132,8 +132,23 @@ public class GestorRegistrarResultadoRevisionManual {
         this.evaluarResultadoInspeccion(evento); 
     }
 
+    public void tomarSeleccionConfirmada(Long id ) { 
+        if (id == null) {
+            throw new IllegalArgumentException("El ID del evento no puede ser nulo.");
+        }
+        System.out.println("ID del evento seleccionado para confirmar: " + id);
+
+        EventoSismico evento = eventoSismicoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento con ID: " + id));
+        this.evaluarResultadoConfirmacion(evento); 
+    }
+
     public void evaluarResultadoInspeccion(EventoSismico evento) { 
         this.validarExistenciaDatos(evento); 
+    }
+
+    public void evaluarResultadoConfirmacion(EventoSismico evento) { 
+        this.validarExistenciaDatosConfirmacion(evento); 
     }
 
     public void validarExistenciaDatos(EventoSismico evento) { 
@@ -154,7 +169,27 @@ public class GestorRegistrarResultadoRevisionManual {
         }
 
         this.rechazarEvento(evento); 
-    }   
+    }
+
+    public void validarExistenciaDatosConfirmacion(EventoSismico evento) { 
+         if (evento == null) {
+            throw new IllegalStateException("No hay un evento sísmico seleccionado para evaluar.");
+        }
+
+        if (evento.getValorMagnitud() == null) {
+            throw new IllegalStateException("El evento sísmico no tiene asignado un valor de magnitud.");
+        }
+
+        if (evento.getAlcanceSismo() == null) {
+            throw new IllegalStateException("El evento sísmico no tiene definido el alcance.");
+        }
+
+        if (evento.getOrigenGeneracion() == null) {
+            throw new IllegalStateException("El evento sísmico no tiene definido el origen de generación.");
+        }
+
+        this.confirmarEvento(evento); 
+    }
 
     public void rechazarEvento(EventoSismico evento) { 
             LocalDateTime fechaHoraActual = this.tomarFechaHoraActual(); 
@@ -163,6 +198,57 @@ public class GestorRegistrarResultadoRevisionManual {
             eventoSismicoRepository.save(evento);
             finCU();
         }
+
+    public void confirmarEvento(EventoSismico evento) { 
+            LocalDateTime fechaHoraActual = this.tomarFechaHoraActual(); 
+            Empleado punteroEmpleado = this.buscarEmpleadoLogueado();
+            evento.confirmar(fechaHoraActual, punteroEmpleado, estadoRepository); 
+            eventoSismicoRepository.save(evento);
+            finCU();
+        }
+
+    public void derivarEvento(EventoSismico evento) { 
+            LocalDateTime fechaHoraActual = this.tomarFechaHoraActual(); 
+            Empleado punteroEmpleado = this.buscarEmpleadoLogueado();
+            evento.derivar(fechaHoraActual, punteroEmpleado, estadoRepository); //flujo alternativo para el funcionamiento de derivado a experto
+            eventoSismicoRepository.save(evento);
+            finCU();
+        }
+
+    public void tomarSeleccionDerivada(Long id) { 
+        if (id == null) {
+            throw new IllegalArgumentException("El ID del evento no puede ser nulo.");
+        }
+        System.out.println("ID del evento seleccionado para actuar: " + id);
+
+        EventoSismico evento = eventoSismicoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("No se pudo encontrar el evento con ID: " + id));
+        this.evaluarResultadoDerivacion(evento); 
+    }
+
+    public void evaluarResultadoDerivacion(EventoSismico evento) { 
+        this.validarExistenciaDatosDerivacion(evento); 
+    }
+
+    public void validarExistenciaDatosDerivacion(EventoSismico evento) { 
+         if (evento == null) {
+            throw new IllegalStateException("No hay un evento sísmico seleccionado para evaluar.");
+        }
+
+        if (evento.getValorMagnitud() == null) {
+            throw new IllegalStateException("El evento sísmico no tiene asignado un valor de magnitud.");
+        }
+
+        if (evento.getAlcanceSismo() == null) {
+            throw new IllegalStateException("El evento sísmico no tiene definido el alcance.");
+        }
+
+        if (evento.getOrigenGeneracion() == null) {
+            throw new IllegalStateException("El evento sísmico no tiene definido el origen de generación.");
+        }
+
+        this.derivarEvento(evento); 
+    }
 
     public void finCU() { 
         this.eventosSismicos = null;

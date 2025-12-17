@@ -57,7 +57,8 @@ INSERT INTO estado_datos (id, ambito, nombre_estado) VALUES
 (7, 'EventoSismico', 'Cerrado'),
 (8, 'EventoSismico', 'SinRevision'),
 (9, 'EventoSismico', 'PendientedeCierre'),
-(10, 'EventoSismico', 'ConfirmadoPorPersonal');
+(10, 'EventoSismico', 'ConfirmadoPorPersonal'),
+(11, 'EventoSismico', 'Confirmado');
 
 INSERT INTO estacion_sismologica (id, codigo_estacion, nombre, latitud, longitud) VALUES
 (1, 'AND-01', 'Estación Los Andes', -32.89018, -68.84405),

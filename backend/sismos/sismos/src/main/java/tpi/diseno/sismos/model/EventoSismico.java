@@ -115,6 +115,16 @@ public class EventoSismico {
         this.estadoState.rechazar(fechaHoraActual, this, empleadoResponsable, estadoRepository);
     }
 
+    public void confirmar(LocalDateTime fechaHoraActual, Empleado empleadoResponsable, EstadoRepository estadoRepository) { 
+        ensureState();
+        this.estadoState.confirmado(fechaHoraActual, this, empleadoResponsable, estadoRepository);
+    }
+
+    public void derivar(LocalDateTime fechaHoraActual, Empleado empleadoResponsable, EstadoRepository estadoRepository) { 
+        ensureState();
+        this.estadoState.derivado(fechaHoraActual, this, empleadoResponsable, estadoRepository);
+    }
+
     public void setEstado(EstadoDatos nuevoEstado) { 
         this.setEstadoActual(nuevoEstado);
     }

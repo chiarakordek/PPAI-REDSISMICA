@@ -85,19 +85,67 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (btnConfirmar) {
-            btnConfirmar.addEventListener('click', () => {
-                if (confirm("¿Desea CONFIRMAR el evento sísmico?")) {
-                     // Texto ajustado
-                     alert('Funcionalidad para confirmar el evento se implementará en un futuro.');
+            btnConfirmar.addEventListener('click', async () => {
+                if (confirm("¿Está seguro de que desea CONFIRMAR este evento?")) {
+                    window.removeEventListener('beforeunload', handleBeforeUnload);
+
+                    try {
+                        const exito = await cambiarEstado(eventoId, "ConfirmadoPorPersonal");
+                        if (exito) {
+                            const nuevaUrl = `detalleEvento.html?id=${eventoId}&origen=registrados`;
+                            history.replaceState({ path: nuevaUrl }, '', nuevaUrl);
+                            
+                            const accionesContainer = document.getElementById('acciones-container');
+                            if (accionesContainer) {
+                                accionesContainer.innerHTML = `
+                                    <div class="accion-completada">
+                                        <p>El evento ha sido marcado como "Confirmado por personal".</p>
+                                        <a href="eventosPendientes.html" class="btn-accion btn-volver">Volver a la lista</a>
+                                    </div>
+                                `;
+                            }
+                            const estadoActualEl = document.getElementById('estado-actual');
+                            if(estadoActualEl) estadoActualEl.textContent = `Estado: ConfirmadoPorPersonal`;
+                        } else {
+                            throw new Error("El servidor no pudo procesar la solicitud.");
+                        }
+                    } catch(error) {
+                        alert(`Ocurrió un error al guardar el cambio: ${error.message}. Por favor, recargue la página e intente de nuevo.`);
+                        window.addEventListener('beforeunload', handleBeforeUnload);
+                    }
                 }
             });
         }
 
         if (btnDerivar) {
-            btnDerivar.addEventListener('click', () => {
-                if (confirm("¿Desea DERIVAR el evento sísmico?")) {
-                     // Texto ajustado
-                     alert('Funcionalidad para derivar el evento se implementará en un futuro.');
+            btnDerivar.addEventListener('click', async () => {
+                if (confirm("¿Está seguro de que desea DERIVAR este evento a experto?")) {
+                    window.removeEventListener('beforeunload', handleBeforeUnload);
+
+                    try {
+                        const exito = await cambiarEstado(eventoId, "DerivadoAExperto");
+                        if (exito) {
+                            const nuevaUrl = `detalleEvento.html?id=${eventoId}&origen=registrados`;
+                            history.replaceState({ path: nuevaUrl }, '', nuevaUrl);
+                            
+                            const accionesContainer = document.getElementById('acciones-container');
+                            if (accionesContainer) {
+                                accionesContainer.innerHTML = `
+                                    <div class="accion-completada">
+                                        <p>El evento ha sido marcado como "Derivado a Experto".</p>
+                                        <a href="eventosPendientes.html" class="btn-accion btn-volver">Volver a la lista</a>
+                                    </div>
+                                `;
+                            }
+                            const estadoActualEl = document.getElementById('estado-actual');
+                            if(estadoActualEl) estadoActualEl.textContent = `Estado: DerivadoAExperto`;
+                        } else {
+                            throw new Error("El servidor no pudo procesar la solicitud.");
+                        }
+                    } catch(error) {
+                        alert(`Ocurrió un error al guardar el cambio: ${error.message}. Por favor, recargue la página e intente de nuevo.`);
+                        window.addEventListener('beforeunload', handleBeforeUnload);
+                    }
                 }
             });
         }

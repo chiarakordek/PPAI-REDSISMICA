@@ -29,6 +29,16 @@ public class DerivadoState implements Estado {
     }
 
     @Override
+    public boolean esConfirmado() {
+        return false;
+    }
+
+    @Override
+    public boolean esDerivadoAExperto() {
+        return true; //flujo alternativo para el funcionamiento de derivado a experto
+    }
+
+    @Override
     public void revisar(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
         // Implementación específica para derivado
     }
@@ -81,6 +91,16 @@ public class DerivadoState implements Estado {
     @Override
     public void crearNuevoEstadoRechazado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
         // Implementación específica para derivado
+    }
+
+    @Override
+    public void crearNuevoEstadoConfirmado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        // Implementación específica para derivado
+    }
+
+    @Override
+    public void crearNuevoEstadoDerivadoAExperto(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        throw new UnsupportedOperationException("No se puede crear estado DerivadoAExperto desde Derivado"); //flujo alternativo para el funcionamiento de derivado a experto
     }
 
     @Override

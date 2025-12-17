@@ -61,6 +61,16 @@ public class RechazadoState implements Estado {
     }
 
     @Override
+    public void crearNuevoEstadoConfirmado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        throw new UnsupportedOperationException("No se puede crear estado Confirmado desde el estado Rechazado");
+    }
+
+    @Override
+    public void crearNuevoEstadoDerivadoAExperto(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        throw new UnsupportedOperationException("No se puede crear estado DerivadoAExperto desde el estado Rechazado"); //flujo alternativo para el funcionamiento de derivado a experto
+    }
+
+    @Override
     public void crearCambioEstado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
         throw new UnsupportedOperationException("No se pueden crear cambios de estado desde el estado Rechazado");
     }
@@ -83,6 +93,16 @@ public class RechazadoState implements Estado {
     @Override
     public boolean esRechazado() {
         return true;
+    }
+
+    @Override
+    public boolean esConfirmado() {
+        return false;
+    }
+
+    @Override
+    public boolean esDerivadoAExperto() {
+        return false; //flujo alternativo para el funcionamiento de derivado a experto
     }
 
     @Override

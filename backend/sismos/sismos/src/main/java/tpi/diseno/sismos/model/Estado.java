@@ -10,6 +10,8 @@ public interface Estado {
     boolean esAmbitoEventoSismico();
     boolean esBloqueadoEnRevision();
     boolean esRechazado();
+    boolean esConfirmado();
+boolean esDerivadoAExperto(); //flujo alternativo para el funcionamiento de derivado a experto
   
     // Métodos de la maquina de estados
     void revisar(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
@@ -25,6 +27,8 @@ public interface Estado {
     void cerrarCambioEstado(LocalDateTime ahora, EventoSismico evento);
     void crearNuevoEstadoBloqueadoEnRevision(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
     void crearNuevoEstadoRechazado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+    void crearNuevoEstadoConfirmado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo);
+void crearNuevoEstadoDerivadoAExperto(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo); //flujo alternativo para el funcionamiento de derivado a experto
 
     // Métodos de acceso a datos
     String getNombreEstado();

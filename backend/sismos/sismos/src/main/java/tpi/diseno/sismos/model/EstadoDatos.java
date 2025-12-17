@@ -57,4 +57,18 @@ public class EstadoDatos {
     public boolean esRechazado() {
         return "Rechazado".equals(this.nombreEstado);
     }
+
+    /**
+     * esConfirmado() -> verifica si el nombre del estado es confirmado.
+     */
+    public boolean esConfirmado() {
+        return "ConfirmadoPorPersonal".equals(this.nombreEstado);
+    }
+
+    /**
+     * esDerivadoAExperto() -> verifica si el nombre del estado es derivado a experto.
+     */
+    public boolean esDerivadoAExperto() {
+        return "DerivadoAExperto".equals(this.nombreEstado); //flujo alternativo para el funcionamiento de derivado a experto
+    }
 }

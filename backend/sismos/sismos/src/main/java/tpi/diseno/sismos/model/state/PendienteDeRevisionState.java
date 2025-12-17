@@ -52,6 +52,16 @@ public class PendienteDeRevisionState implements Estado {
     }
 
     @Override
+    public void crearNuevoEstadoConfirmado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        throw new UnsupportedOperationException("No se puede crear estado Confirmado desde PendienteDeRevision");
+    }
+
+    @Override
+    public void crearNuevoEstadoDerivadoAExperto(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
+        throw new UnsupportedOperationException("No se puede crear estado DerivadoAExperto desde PendienteDeRevision"); //flujo alternativo para el funcionamiento de derivado a experto
+    }
+
+    @Override
     public void crearCambioEstado(LocalDateTime ahora, EventoSismico evento, Empleado usuario, EstadoRepository estadosRepo) {
         // Crear el nuevo estado BloqueadoEnRevision
         EstadoDatos bloqueado = estadosRepo.findByNombreEstado("BloqueadoEnRevision")
@@ -111,6 +121,16 @@ public class PendienteDeRevisionState implements Estado {
     @Override
     public boolean esRechazado() {
         return false;
+    }
+
+    @Override
+    public boolean esConfirmado() {
+        return false;
+    }
+
+    @Override
+    public boolean esDerivadoAExperto() {
+        return false; //flujo alternativo para el funcionamiento de derivado a experto
     }
 
     @Override
